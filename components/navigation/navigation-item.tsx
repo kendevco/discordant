@@ -8,7 +8,7 @@ import { ActionTooltip } from "@/components/action-tooltip";
 
 interface NavigationItemProps {
     id: string;
-    imageUrl: string;
+    imageUrl: string | null;
     name: string;
 };
 
@@ -22,6 +22,10 @@ export const NavigationItem = ({
 
     const onClick = () => {
         router.push(`/servers/${id}`);
+    }
+
+    if (!imageUrl) {
+        return null;
     }
 
     return (

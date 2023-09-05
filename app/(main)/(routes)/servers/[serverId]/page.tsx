@@ -14,10 +14,6 @@ const ServerIdPage = async ({
   params
 }: ServerIdPageProps) => {
 
-  return (
-    <div>Server ID Page</div> 
-  )
-
   const profile = await currentProfile();
 
   if (!profile) {

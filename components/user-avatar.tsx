@@ -2,7 +2,7 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 
 interface UserAvatarProps {
-    src?: string;
+    src?: string | null;
     className?: string;
 };
 
@@ -10,6 +10,11 @@ export const UserAvatar = ({
     src,
     className
 }: UserAvatarProps ) => {
+
+    if (!src) {
+        return null;
+    }
+
     return (  
         <Avatar  className={cn(
             "h-7 w-7 md:h-10 md:w-10",
