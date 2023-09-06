@@ -32,7 +32,9 @@ export const SocketProvider = ({
 
     useEffect(() => {
 
-        const socketInstance = new (ClientIO as any)(process.env.NEXT_PUBLIC_SITE_URL!, {  
+        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL;
+
+        const socketInstance = new (ClientIO as any)(siteUrl!, {  
             path: "/api/socket/io",
             addTrailingSlash: false,
         });
