@@ -52,7 +52,7 @@ export async function DELETE(
         })
         return NextResponse.json(server);
     } catch (error) {
-        console.log ("MEMBERS_ID_DELETE", error)
+        console.log ("MEMBER_ID_DELETE", error)
         return new NextResponse("Internal Error", { status: 500 })
     }
 }
@@ -73,13 +73,13 @@ export async function PATCH(
            return new NextResponse("Unauthorized", { status: 401 });
        }
 
-        if (!serverId) {
-            return new NextResponse("Bad Request", { status: 400 });
-        }
+    if (!serverId) {
+      return new NextResponse("Server ID missing", { status: 400 });
+    }
 
-        if (!params.memberId) {
-            return new NextResponse("Bad Request", { status: 400 });
-        }   
+    if (!params.memberId) {
+      return new NextResponse("Member ID missing", { status: 400 });
+    }
 
         const server = await db.server.update({
             where: {

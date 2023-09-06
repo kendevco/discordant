@@ -6,7 +6,7 @@ import Image from "next/image";
 import { UploadDropzone } from "@/lib/uploadthing";
 
 import "@uploadthing/react/styles.css";
-import { Button } from "./ui/button";
+
 
 interface FileUploadProps {
   onChange: (url?: string) => void;

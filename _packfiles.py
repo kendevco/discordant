@@ -1,7 +1,7 @@
 import os
 import zipfile
 
-ROOT_FOLDER = r'C:\Users\kenne\OneDrive\Dev\FullStack\next13-discordant'
+ROOT_FOLDER = r'C:\Data\Dev\Fullstack\next13-discordant'
 
 FILE_TYPES = ['.js', '.ts', '.tsx', '.prisma', '.json']
 EXCLUDE_FOLDERS = ['.next', 'node_modules', '.vscode', '.git']
