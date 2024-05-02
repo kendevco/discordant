@@ -1,0 +1,178 @@
+[
+  {
+    "id": "012d7056-901b-416a-aec2-57ed1211b661",
+    "role": "GUEST",
+    "profileId": "a90a7a15-1419-4c72-b58f-52adfc11a0aa",
+    "serverId": "438a857c-3d8b-4ae9-ae4b-bddd8e8c653e",
+    "createdAt": "2023-09-08T17:33:36.562Z",
+    "updatedAt": "2023-09-08T17:33:36.562Z"
+  },
+  {
+    "id": "0204ed57-f49a-40fa-a494-cf60aa69c71e",
+    "role": "GUEST",
+    "profileId": "c76fb91b-4ca9-4d3d-8a24-6d56b012571a",
+    "serverId": "402c8873-3ee6-4b64-9af6-f1cc623cb831",
+    "createdAt": "2023-09-01T17:32:36.597Z",
+    "updatedAt": "2023-09-01T22:32:19.819Z"
+  },
+  {
+    "id": "24ab355a-1b75-4398-b4e6-e6cb6a1ce25f",
+    "role": "ADMIN",
+    "profileId": "a90a7a15-1419-4c72-b58f-52adfc11a0aa",
+    "serverId": "d57f2c14-c29a-473f-bad9-abc1100fb882",
+    "createdAt": "2023-09-01T01:47:22.598Z",
+    "updatedAt": "2023-09-01T01:47:22.598Z"
+  },
+  {
+    "id": "27fe7ba0-482c-4e7b-894d-7ceff7e35a90",
+    "role": "MODERATOR",
+    "profileId": "a90a7a15-1419-4c72-b58f-52adfc11a0aa",
+    "serverId": "a5a31c97-505d-43ae-a04a-136a4fd65c67",
+    "createdAt": "2023-09-07T19:48:49.523Z",
+    "updatedAt": "2023-09-07T19:55:33.785Z"
+  },
+  {
+    "id": "3170e780-185d-4f3f-bff0-f7b464095b92",
+    "role": "ADMIN",
+    "profileId": "f9c22f95-004d-4d29-9fc6-c30cb736a6bd",
+    "serverId": "438a857c-3d8b-4ae9-ae4b-bddd8e8c653e",
+    "createdAt": "2023-09-08T17:32:57.195Z",
+    "updatedAt": "2023-09-08T17:32:57.195Z"
+  },
+  {
+    "id": "392ac7d9-4d9f-49da-8b71-5b5979a37b3a",
+    "role": "ADMIN",
+    "profileId": "a90a7a15-1419-4c72-b58f-52adfc11a0aa",
+    "serverId": "cc1689ca-dbd9-4a6f-a3ab-4d4e555c2be7",
+    "createdAt": "2023-12-13T18:41:01.083Z",
+    "updatedAt": "2023-12-13T18:41:01.083Z"
+  },
+  {
+    "id": "39a4d7a1-a369-43a3-90ef-8b5134f45f63",
+    "role": "ADMIN",
+    "profileId": "c76fb91b-4ca9-4d3d-8a24-6d56b012571a",
+    "serverId": "a5a31c97-505d-43ae-a04a-136a4fd65c67",
+    "createdAt": "2023-09-07T19:40:53.305Z",
+    "updatedAt": "2023-09-07T19:40:53.305Z"
+  },
+  {
+    "id": "46337718-8901-4c05-a534-f9b7e7527856",
+    "role": "GUEST",
+    "profileId": "f9c22f95-004d-4d29-9fc6-c30cb736a6bd",
+    "serverId": "d57f2c14-c29a-473f-bad9-abc1100fb882",
+    "createdAt": "2023-09-08T17:36:35.477Z",
+    "updatedAt": "2023-09-08T17:36:35.477Z"
+  },
+  {
+    "id": "47fcafcd-aac3-4c4b-8452-ce722ffe8bf8",
+    "role": "ADMIN",
+    "profileId": "05692320-2824-45bd-98d8-0a2c70c28695",
+    "serverId": "221a082c-c4c5-4989-a367-5be9c857c175",
+    "createdAt": "2023-09-08T22:40:01.285Z",
+    "updatedAt": "2023-09-08T22:40:01.285Z"
+  },
+  {
+    "id": "4e6c3fa6-b43d-4418-b0a3-6eacdc5d329e",
+    "role": "ADMIN",
+    "profileId": "a90a7a15-1419-4c72-b58f-52adfc11a0aa",
+    "serverId": "402c8873-3ee6-4b64-9af6-f1cc623cb831",
+    "createdAt": "2023-09-01T01:48:08.615Z",
+    "updatedAt": "2023-09-01T01:48:08.615Z"
+  },
+  {
+    "id": "6aa9d525-6341-4f86-a9d1-044a036820a9",
+    "role": "GUEST",
+    "profileId": "a90a7a15-1419-4c72-b58f-52adfc11a0aa",
+    "serverId": "cb634302-ec1e-45fc-acfe-e452871b890e",
+    "createdAt": "2023-09-06T18:48:01.100Z",
+    "updatedAt": "2023-09-06T18:48:01.100Z"
+  },
+  {
+    "id": "858273a6-99cf-4c1d-8e29-4ce77e2b0f0d",
+    "role": "GUEST",
+    "profileId": "c76fb91b-4ca9-4d3d-8a24-6d56b012571a",
+    "serverId": "d57f2c14-c29a-473f-bad9-abc1100fb882",
+    "createdAt": "2023-09-01T02:05:09.900Z",
+    "updatedAt": "2023-09-01T02:05:09.900Z"
+  },
+  {
+    "id": "894ad3ef-5a65-495d-b713-f3efaf142a47",
+    "role": "GUEST",
+    "profileId": "c3ad3cbd-13a7-4b9b-a8f8-cb21a281c047",
+    "serverId": "d57f2c14-c29a-473f-bad9-abc1100fb882",
+    "createdAt": "2023-10-27T13:52:44.006Z",
+    "updatedAt": "2023-10-27T13:52:44.006Z"
+  },
+  {
+    "id": "8ebe751b-5155-4c95-ac51-78ee92f56e14",
+    "role": "GUEST",
+    "profileId": "aecee27f-202d-439b-bb2f-f56d7150d4d1",
+    "serverId": "a5a31c97-505d-43ae-a04a-136a4fd65c67",
+    "createdAt": "2023-09-11T05:10:18.893Z",
+    "updatedAt": "2023-09-11T05:10:18.893Z"
+  },
+  {
+    "id": "988fae1d-6622-4dae-a8e5-fb7eaa722cf6",
+    "role": "GUEST",
+    "profileId": "3f69fc0c-43e7-464a-bca4-be68c8ba7825",
+    "serverId": "d57f2c14-c29a-473f-bad9-abc1100fb882",
+    "createdAt": "2023-09-06T18:49:18.036Z",
+    "updatedAt": "2023-09-06T18:49:18.036Z"
+  },
+  {
+    "id": "a9cb8c57-642d-41cf-850a-739ed58b42e1",
+    "role": "ADMIN",
+    "profileId": "1bb2299f-d00c-4f7d-856c-9b30bb045393",
+    "serverId": "e44e5a30-9d4f-4f71-8ccc-b84fb1dd034a",
+    "createdAt": "2023-10-07T17:30:22.085Z",
+    "updatedAt": "2023-10-07T17:30:22.085Z"
+  },
+  {
+    "id": "ab23c474-3a72-4481-9a2a-183ab07491ed",
+    "role": "ADMIN",
+    "profileId": "3f69fc0c-43e7-464a-bca4-be68c8ba7825",
+    "serverId": "cb634302-ec1e-45fc-acfe-e452871b890e",
+    "createdAt": "2023-09-06T18:47:39.340Z",
+    "updatedAt": "2023-09-06T18:47:39.340Z"
+  },
+  {
+    "id": "bf81b485-1f86-4c86-96db-eca0b275cc53",
+    "role": "ADMIN",
+    "profileId": "c76fb91b-4ca9-4d3d-8a24-6d56b012571a",
+    "serverId": "1647e395-bfba-49d5-9c42-cfeb837b8e2d",
+    "createdAt": "2023-09-01T02:04:14.295Z",
+    "updatedAt": "2023-09-01T02:04:14.295Z"
+  },
+  {
+    "id": "c2a82efe-209f-4058-bec9-88882ba6bc82",
+    "role": "MODERATOR",
+    "profileId": "a90a7a15-1419-4c72-b58f-52adfc11a0aa",
+    "serverId": "1647e395-bfba-49d5-9c42-cfeb837b8e2d",
+    "createdAt": "2023-09-01T22:42:59.807Z",
+    "updatedAt": "2023-09-04T18:53:40.781Z"
+  },
+  {
+    "id": "d90ed8ac-201c-4397-9ffe-63aac5c27fb4",
+    "role": "GUEST",
+    "profileId": "3f69fc0c-43e7-464a-bca4-be68c8ba7825",
+    "serverId": "cc1689ca-dbd9-4a6f-a3ab-4d4e555c2be7",
+    "createdAt": "2023-12-13T18:41:21.053Z",
+    "updatedAt": "2023-12-13T18:41:21.053Z"
+  },
+  {
+    "id": "e3c87242-68a1-4d95-8d10-bac9a4a9afe9",
+    "role": "ADMIN",
+    "profileId": "00c43192-c462-42d9-afe3-998df2eabf8f",
+    "serverId": "2037d372-0f39-447d-b9e7-94452d380b2c",
+    "createdAt": "2023-12-14T05:02:12.017Z",
+    "updatedAt": "2023-12-14T05:02:12.017Z"
+  },
+  {
+    "id": "f06c36c8-0ebf-4c61-919f-95aa73d8e82f",
+    "role": "ADMIN",
+    "profileId": "c3ad3cbd-13a7-4b9b-a8f8-cb21a281c047",
+    "serverId": "2e62c943-e41c-4fa2-8fa4-4b2b15efa3d8",
+    "createdAt": "2023-10-27T13:47:51.085Z",
+    "updatedAt": "2023-10-27T13:47:51.085Z"
+  }
+]
