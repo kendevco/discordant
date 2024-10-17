@@ -2,16 +2,14 @@
 
 import { FileIcon, X } from "lucide-react";
 import Image from "next/image";
-
+import toast from "react-hot-toast";
 import { UploadDropzone } from "@/lib/uploadthing";
-
 import "@uploadthing/react/styles.css";
-
 
 interface FileUploadProps {
   onChange: (url?: string) => void;
   value: string;
-  endpoint: "messageFile" | "serverImage"
+  endpoint: "messageFile" | "serverImage";
 }
 
 export const FileUpload = ({
@@ -38,7 +36,7 @@ export const FileUpload = ({
           <X className="h-4 w-4" />
         </button>
       </div>
-    )
+    );
   }
 
   if (value && fileType === "pdf") {
@@ -61,19 +59,21 @@ export const FileUpload = ({
           <X className="h-4 w-4" />
         </button>
       </div>
-    )
+    );
   }
 
   return (
     <UploadDropzone
       endpoint={endpoint}
       onClientUploadComplete={(res) => {
-        onChange(res?.[0].url);
+        if (res && res[0]) {
+          toast.success("Upload successful!");
+          onChange(res[0].url);
+        }
       }}
       onUploadError={(error: Error) => {
-        console.log(error);
+        toast.error(`Upload failed: ${error.message}`);
       }}
     />
-  )
-  
+  );
 }
