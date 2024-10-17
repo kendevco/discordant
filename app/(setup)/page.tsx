@@ -22,16 +22,13 @@ const SetupPage = async () => {
         return redirect(`/servers/${server.id}`);
     }   
 
-
-    server = await db.server.findFirst()
+    server = await db.server.findFirst();
 
     if (!server) {
         await importData();
     }
     
-    return (<InitialModal/>);
-    
+    return (<InitialModal />);
 }
- 
 
 export default SetupPage;

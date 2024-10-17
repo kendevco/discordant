@@ -6,6 +6,7 @@ import { Edit, Hash, Lock, Mic, Trash, Video } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { ActionTooltip } from "../action-tooltip";
 import { ModalType, useModal } from "@/hooks/use-modal-store";
+import { track } from "@vercel/analytics";
 
 interface ServerChannelProps {
     channel: Channel;
@@ -32,6 +33,8 @@ export const ServerChannel = ({
     const Icon = iconMap[channel.type];
 
     const onClick = () => {
+        // Track the channel click event
+        track('Channel Clicked', { channelId: channel.id });
         router.push(`/servers/${params?.serverId}/channels/${channel.id}`)
     }
 

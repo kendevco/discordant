@@ -23,82 +23,82 @@ const MemberIdPage = async ({
   params,
   searchParams,
 }: MemberIdPageProps) => {
-    
+  try {
     const profile = await currentProfile();
 
     if (!profile) {
-        return redirectToSignIn();
+      return redirectToSignIn();
     }
 
     const currentMember = await db.member.findFirst({
-        where: {
-                serverId: params.serverId,
-                profileId: profile.id      
-        },
-        include: {
-            profile: true
-        }
+      where: {
+        serverId: params.serverId,
+        profileId: profile.id
+      },
+      include: {
+        profile: true
+      }
     });
 
     if (!currentMember) {
-        return redirect("/");
+      return redirect("/");
     }
 
     const conversation = await getOrCreateConversation(currentMember.id, params.memberId);
 
-    // If something went wrong, we can't load a conversation redirect to the server page
     if (!conversation) {
-        return redirect(`/servers/${params.serverId}`);
+      return redirect(`/servers/${params.serverId}`);
     }
 
     const { memberOne, memberTwo } = conversation;
-
-    // Pick the opposite member either could have initiated we have no way of knowing
-    // which one is the current member
     const otherMember = memberOne.profileId === currentMember.profileId ? memberTwo : memberOne;
 
-  return ( 
-    <div className="bg-white dark:bg-[#313338] flex flex-col h-full">
-      <ChatHeader
-        imageUrl={otherMember.profile.imageUrl ?? undefined}
-        name={otherMember.profile.name}
-        serverId={params.serverId}
-        type="conversation"
-      />
-      {searchParams.video && (
-        <MediaRoom
-          chatId={conversation.id}
-          video={true}
-          audio={true}
+    return (
+      <div className="bg-white dark:bg-[#313338] flex flex-col h-full">
+        <ChatHeader
+          imageUrl={otherMember.profile.imageUrl ?? undefined}
+          name={otherMember.profile.name}
+          serverId={params.serverId}
+          type="conversation"
         />
-      )}
-      {!searchParams.video && (
-        <>
-          <ChatMessages
-            member={currentMember}
-            name={otherMember.profile.name}
+        {searchParams.video && (
+          <MediaRoom
             chatId={conversation.id}
-            type="conversation"
-            apiUrl="/api/direct-messages"
-            paramKey="conversationId"
-            paramValue={conversation.id}
-            socketUrl="/api/socket/direct-messages"
-            socketQuery={{
-              conversationId: conversation.id,
-            }}
+            video={true}
+            audio={true}
           />
-          <ChatInput
-            name={otherMember.profile.name}
-            type="conversation"
-            apiUrl="/api/socket/direct-messages"
-            query={{
-              conversationId: conversation.id,
-            }}
-          />
-        </>
-      )}
-    </div>
-   );
+        )}
+        {!searchParams.video && (
+          <>
+            <ChatMessages
+              member={currentMember}
+              name={otherMember.profile.name}
+              chatId={conversation.id}
+              type="conversation"
+              apiUrl="/api/direct-messages"
+              paramKey="conversationId"
+              paramValue={conversation.id}
+              socketUrl="/api/socket/direct-messages"
+              socketQuery={{
+                conversationId: conversation.id,
+              }}
+            />
+            <ChatInput
+              name={otherMember.profile.name}
+              type="conversation"
+              apiUrl="/api/socket/direct-messages"
+              query={{
+                conversationId: conversation.id,
+              }}
+            />
+          </>
+        )}
+      </div>
+    );
+  } catch (error) {
+    console.error("Error in MemberIdPage:", error);
+    return redirect(`/servers/${params.serverId}`);
+  }
 }
 
 export default MemberIdPage;

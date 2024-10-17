@@ -34,6 +34,7 @@ import {
   SelectValue
 } from "@/components/ui/select";
 import { useEffect } from "react";
+import { track } from '@vercel/analytics';
 
 const formSchema = z.object({
   name: z.string().min(1, {
@@ -75,6 +76,9 @@ export const CreateChannelModal = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
+      // Track the create channel event
+      track('Create Channel', { name: values.name, type: values.type });
+
       const url = qs.stringifyUrl({
         url: "/api/channels",
         query: {
@@ -92,6 +96,8 @@ export const CreateChannelModal = () => {
   }
 
   const handleClose = () => {
+    // Track the modal close event
+    track('Create Channel Modal Closed');
     form.reset();
     onClose();
   }

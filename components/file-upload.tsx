@@ -3,13 +3,15 @@
 import { FileIcon, X } from "lucide-react";
 import Image from "next/image";
 import toast from "react-hot-toast";
-import { UploadDropzone } from "@/lib/uploadthing";
+import { UploadDropzone } from "@uploadthing/react";
+import { OurFileRouter } from "@/app/api/uploadthing/core";
 import "@uploadthing/react/styles.css";
+import { track } from "@vercel/analytics";
 
 interface FileUploadProps {
   onChange: (url?: string) => void;
   value: string;
-  endpoint: "messageFile" | "serverImage";
+  endpoint: keyof OurFileRouter
 }
 
 export const FileUpload = ({
@@ -43,7 +45,7 @@ export const FileUpload = ({
     return (
       <div className="relative flex items-center p-2 mt-2 rounded-md bg-background/10">
         <FileIcon className="h-10 w-10 fill-indigo-200 stroke-indigo-400" />
-        <a 
+        <a
           href={value}
           target="_blank"
           rel="noopener noreferrer"
@@ -61,17 +63,20 @@ export const FileUpload = ({
       </div>
     );
   }
-
   return (
-    <UploadDropzone
+    <UploadDropzone<OurFileRouter>
       endpoint={endpoint}
       onClientUploadComplete={(res) => {
         if (res && res[0]) {
+          // Track the upload success event
+          track('File Uploaded', { fileName: res[0].name });
+
           toast.success("Upload successful!");
           onChange(res[0].url);
         }
       }}
       onUploadError={(error: Error) => {
+        track('Upload Failed', { errorMessage: error.message });
         toast.error(`Upload failed: ${error.message}`);
       }}
     />

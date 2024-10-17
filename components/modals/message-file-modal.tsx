@@ -5,7 +5,7 @@ import qs from "query-string";
 import * as z from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-
+import { track } from '@vercel/analytics';
 
 import { 
     Dialog, 
@@ -55,6 +55,8 @@ export const MessageFileModal = () => {
     });
 
     const handleClose = () => {
+        // Track the modal close event
+        track('Message File Modal Closed');
         form.reset();
         onClose();
     }
@@ -63,6 +65,8 @@ export const MessageFileModal = () => {
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
+            // Track the message file send event
+            track('Message File Sent', { fileUrl: values.fileUrl });
 
             const url = qs.stringifyUrl({
                 url: apiUrl || "",
@@ -76,10 +80,7 @@ export const MessageFileModal = () => {
             
             form.reset();
             router.refresh();
-
-            // resets form as well instead of onClose()
-            handleClose(); 
-
+            handleClose();
         } catch (error) {   
             console.log(error);
         }

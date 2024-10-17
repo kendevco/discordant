@@ -3,7 +3,7 @@
 import qs from "query-string";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Video, VideoOff } from "lucide-react";
-
+import { track } from '@vercel/analytics';
 
 import { ActionTooltip } from "@/components/action-tooltip";
 
@@ -21,10 +21,11 @@ export const ChatVideoButton = () => {
         video: isVideo ? undefined : true,
       }
     }, { skipNull: true });
+    // Track the video button click event
+    track('Video Button Clicked', { isVideo: isVideo ? 'true' : 'false' });
 
     router.push(url);
   }
-  
   const Icon = isVideo ? VideoOff : Video;
   const tooltipLabel = isVideo ? "End video call" : "Start video call";
 

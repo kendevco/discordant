@@ -6,6 +6,7 @@ import { ShieldAlert, ShieldCheck } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { UserAvatar } from "../user-avatar";
+import { track } from "@vercel/analytics";
 
 interface ServerMemberProps {
     member: Member & { profile: Profile };
@@ -29,6 +30,8 @@ export const ServerMember = ({
     const icon = roleIconMap[member.role];
 
     const onClick = () => {
+        // Track the member click event
+        track('Member Clicked', { memberId: member.id });
         router.push(`/servers/${params?.serverId}/conversations/${member.id}`)
     }
 

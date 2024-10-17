@@ -1,5 +1,4 @@
 import { currentUser, redirectToSignIn } from "@clerk/nextjs";
-
 import { db } from "@/lib/db";
 
 export const initialProfile = async () => {
@@ -18,7 +17,6 @@ export const initialProfile = async () => {
     let firstName = user.firstName || "";
     let lastName = user.lastName || "";
 
-    // If the first and last name fields are null, trim the email address before the @ character and set it to the first name field.
     if (!firstName && !lastName) {
         const emailParts = user.emailAddresses[0].emailAddress.split("@");
         firstName = emailParts[0].trim();

@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { track } from '@vercel/analytics';
 
 import {
   Form,
@@ -56,6 +57,13 @@ export const ChatInput = ({
       });
 
       await axios.post(url, values);
+
+      // Track the send message event
+      track('Message Sent', {
+        contentLength: values.content.length,
+        type,
+        recipient: name,
+      });
 
       form.reset();
       router.refresh();

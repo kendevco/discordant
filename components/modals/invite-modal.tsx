@@ -1,5 +1,6 @@
 'use client';
 import axios from "axios";
+import { track } from '@vercel/analytics';
 
 import { 
     Dialog, 
@@ -53,8 +54,22 @@ export const InviteModal = () => {
         }
     }
 
+    const handleClose = () => {
+        // Track the modal close event
+        track('Invite Modal Closed');
+        onClose();
+    };
+
+    const handleCopy = () => {
+        // Track the copy invite link event
+        if (data.server) {
+            track('Invite Link Copied', { serverId: data.server.id });
+        }
+        onCopy();
+    };
+
     return ( 
-        <Dialog open={isModalOpen} onOpenChange={onClose}>
+        <Dialog open={isModalOpen} onOpenChange={handleClose}>
             <DialogContent className="bg-white text-black p-0 overflow-hidden mx-4">
                 <DialogHeader className="pt-8 px-6">
                     <DialogTitle className="text-2xl text-center font-bold">Invite Friends</DialogTitle>
@@ -75,7 +90,7 @@ export const InviteModal = () => {
                             focus-visible:ring-offset-0 w-full"
                             value={inviteUrl}
                         />
-                        <Button onClick={onCopy} size="icon" disabled={isLoading}>
+                        <Button onClick={handleCopy} size="icon" disabled={isLoading}>
                             {copied
                                 ? <Check className="h-4 w-4" />
                                 : <Copy className="h-4 w-4" />

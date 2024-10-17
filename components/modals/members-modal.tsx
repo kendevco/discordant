@@ -38,6 +38,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSubTrigger,
 } from "@/components/ui/dropdown-menu";
+import { track } from "@vercel/analytics";
     
 const roleIconMap = {
   GUEST: null,
@@ -95,8 +96,20 @@ export const MembersModal = () => {
     }
   };
 
+  const handleClose = () => {
+    // Track the modal close event
+    track('Members Modal Closed');
+    onClose();
+  };
+
+  const handleKick = (memberId: string) => {
+    // Track the kick member event
+    track('Member Kicked', { memberId });
+    onKick(memberId);
+  };
+
   return (
-    <Dialog open={isModalOpen} onOpenChange={onClose}>
+    <Dialog open={isModalOpen} onOpenChange={handleClose}>
       <DialogContent className="bg-white text-black overflow-hidden">
         <DialogHeader className="pt-8 px-6">
           <DialogTitle className="text-2xl text-center font-bold">
@@ -156,7 +169,7 @@ export const MembersModal = () => {
                           </DropdownMenuPortal>
                         </DropdownMenuSub>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => onKick(member.id)}>
+                        <DropdownMenuItem onClick={() => handleKick(member.id)}>
                           <Gavel className="h-4 w-4 mr-2" />
                           Kick
                         </DropdownMenuItem>
