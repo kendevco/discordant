@@ -5,6 +5,7 @@ import {
     useContext,
     useEffect,
     useState,
+    useCallback,
 } from "react";
 
 import { io as ClientIO } from "socket.io-client";
@@ -12,11 +13,15 @@ import { io as ClientIO } from "socket.io-client";
 type SocketContextType = {
     socket: any | null;
     isConnected: boolean;
+    lastActivity: number;
+    updateLastActivity: () => void;
 };
 
 const SocketContext = createContext<SocketContextType>({
     socket: null,
     isConnected: false,
+    lastActivity: Date.now(),
+    updateLastActivity: () => {},
 });
 
 export const useSocket = () => {
@@ -29,9 +34,13 @@ export const SocketProvider = ({
     
     const [socket, setSocket] = useState(null);
     const [isConnected, setIsConnected] = useState(false);
+    const [lastActivity, setLastActivity] = useState(Date.now());
+
+    const updateLastActivity = useCallback(() => {
+        setLastActivity(Date.now());
+    }, []);
 
     useEffect(() => {
-
         const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL;
 
         const socketInstance = new (ClientIO as any)(siteUrl!, {  
@@ -56,9 +65,8 @@ export const SocketProvider = ({
     }, []);
 
     return (
-        <SocketContext.Provider value={{ socket, isConnected }}>
+        <SocketContext.Provider value={{ socket, isConnected, lastActivity, updateLastActivity }}>
             {children}
         </SocketContext.Provider>
     );
-
 }

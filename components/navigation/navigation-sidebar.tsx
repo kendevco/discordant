@@ -9,7 +9,6 @@ import { db } from "@/lib/db";
 import { NavigationAction } from "./navigation-action";
 import { NavigationItem } from "./navigation-item";
 import { UserButton } from "@clerk/nextjs";
-import { DbImportExport } from "../db-import-export";
 
 export const NavigationSidebar = async () => {
     const profile = await currentProfile();
@@ -49,7 +48,7 @@ export const NavigationSidebar = async () => {
                 ))}
             </ScrollArea>
             <div className="flex flex-col items-center pb-3 mt-auto gap-y-4">
-                <DbImportExport />
+                
                 <ModeToggle />
                 <UserButton
                     afterSignOutUrl ="/"

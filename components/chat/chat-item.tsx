@@ -35,8 +35,8 @@ interface ChatItemProps {
 
 const roleIconMap = {
   GUEST: null,
-  MODERATOR: <ShieldCheck className="h-4 w-4 ml-2 text-indigo-500" />,
-  ADMIN: <ShieldAlert className="h-4 w-4 ml-2 text-rose-500" />,
+  MODERATOR: <ShieldCheck className="w-4 h-4 ml-2 text-indigo-500" />,
+  ADMIN: <ShieldAlert className="w-4 h-4 ml-2 text-rose-500" />,
 };
 
 const formSchema = z.object({
@@ -80,7 +80,7 @@ export const ChatItem = ({
   }, []);
 
 
-  
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -89,12 +89,12 @@ export const ChatItem = ({
   });
 
   useEffect(() => {
-      // your code here
-  } , [form]);
-  
+    // your code here
+  }, [form]);
+
   const isLoading = form.formState.isSubmitting;
   const [isExpanded, setIsExpanded] = useState(false);
- 
+
   const downloadImage = (url: string, fileName: string) => {
     console.log("fileUrl:", fileUrl);
     fetch(url)
@@ -141,11 +141,11 @@ export const ChatItem = ({
   const isImage = !isPDF && fileUrl;
 
   return (
-    <div className="relative group flex items-center hover:bg-black/5 p-4 transition w-full">
-      <div className="group flex gap-x-2 items-start w-full">
+    <div className="relative flex items-center w-full p-4 transition group hover:bg-black/5">
+      <div className="flex items-start w-full group gap-x-2">
         <div
           onClick={onMemberClick}
-          className="cursor-pointer hover:drop-shadow-md transition"
+          className="transition cursor-pointer hover:drop-shadow-md"
         >
           <UserAvatar src={member.profile.imageUrl} />
         </div>
@@ -154,7 +154,7 @@ export const ChatItem = ({
             <div className="flex items-center">
               <p
                 onClick={onMemberClick}
-                className="font-semibold text-sm hover:underline cursor-pointer"
+                className="text-sm font-semibold cursor-pointer hover:underline"
               >
                 {member.profile.name}
               </p>
@@ -167,38 +167,53 @@ export const ChatItem = ({
             </span>
           </div>
           {isImage && (
-            <div
-              className={cn(
-                "relative aspect-square rounded-md mt-2 overflow-hidden border flex items-center bg-secondary",
-                isExpanded ? "h-full w-full" : "h-48 w-48"
-              )}
-              onClick={() => setIsExpanded(!isExpanded)}
-              onBlur={() => setIsExpanded(false)}
-              tabIndex={0}
-            >
-              <Image
-                src={fileUrl}
-                alt={content}
-                className="z-5 object-cover"
-                fill
-              />
-              <div className="absolute bottom-0 left-0 right-0 p-2 bg-secondary/80 flex justify-end">
-                <Button
-                  size="sm"
-                  className="z-10  object-cover"
-                  onClick={() => {
-                    const filename = `${member.profile.name}_userfile.${fileType}`;
-                    downloadImage(fileUrl, filename);
-                  }}
-                >
-                  Download
-                </Button>
+            <div className="flex flex-col items-center w-full mt-2">
+              <div
+                className={cn(
+                  "relative rounded-md overflow-hidden border flex items-center justify-center bg-secondary cursor-pointer transition-all duration-300",
+                  isExpanded
+                    ? "w-full max-w-3xl h-auto"
+                    : "w-48 h-48 sm:w-64 sm:h-64 md:w-80 md:h-80"
+                )}
+                onClick={() => setIsExpanded(!isExpanded)}
+              >
+                <div className={cn(
+                  "relative w-full transition-all duration-300",
+                  isExpanded ? "h-auto" : "aspect-square"
+                )}>
+                  <Image
+                    src={fileUrl}
+                    alt={content || "Image"}
+                    className="object-contain"
+                    width={isExpanded ? 1000 : 400}
+                    height={isExpanded ? 1000 : 400}
+                    layout={isExpanded ? "responsive" : "intrinsic"}
+                  />
+                </div>
+                <div className="absolute bottom-0 left-0 right-0 flex justify-end p-2 bg-secondary/80">
+                  <Button
+                    size="sm"
+                    className="z-10"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const filename = `${member.profile.name}_userfile.${fileUrl.split('.').pop()}`;
+                      downloadImage(fileUrl, filename);
+                    }}
+                  >
+                    Download
+                  </Button>
+                </div>
               </div>
+              {content && (
+                <p className="mt-2 text-sm text-left text-zinc-600 dark:text-zinc-300">
+                  {content}
+                </p>
+              )}
             </div>
           )}
           {isPDF && (
             <div className="relative flex items-center p-2 mt-2 rounded-md bg-background/10">
-              <FileIcon className="h-10 w-10 fill-indigo-200 stroke-indigo-400" />
+              <FileIcon className="w-10 h-10 fill-indigo-200 stroke-indigo-400" />
               <a
                 href={fileUrl}
                 target="_blank"
@@ -214,7 +229,7 @@ export const ChatItem = ({
               className={cn(
                 "text-sm text-zinc-600 dark:text-zinc-300",
                 deleted &&
-                  "italic text-zinc-500 dark:text-zinc-400 text-xs mt-1"
+                "italic text-zinc-500 dark:text-zinc-400 text-xs mt-1"
               )}
             >
               {content}
@@ -228,7 +243,7 @@ export const ChatItem = ({
           {!fileUrl && isEditing && (
             <Form {...form}>
               <form
-                className="flex items-center w-full gap-x-2 pt-2"
+                className="flex items-center w-full pt-2 gap-x-2"
                 onSubmit={form.handleSubmit(onSubmit)}
               >
                 <FormField
@@ -240,7 +255,7 @@ export const ChatItem = ({
                         <div className="relative w-full">
                           <Textarea
                             disabled={isLoading}
-                            className="w-full p-2 bg-zinc-200/90 dark:bg-zinc-700/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-200"
+                            className="w-full p-2 border-0 border-none bg-zinc-200/90 dark:bg-zinc-700/75 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-200"
                             placeholder="Edited message"
                             {...field}
                             resize="vertical"
@@ -262,12 +277,12 @@ export const ChatItem = ({
         </div>
       </div>
       {canDeleteMessage && (
-        <div className="hidden group-hover:flex items-center gap-x-2 absolute p-1 -top-2 right-5 bg-white dark:bg-zinc-800 border rounded-sm">
+        <div className="absolute items-center hidden p-1 bg-white border rounded-sm group-hover:flex gap-x-2 -top-2 right-5 dark:bg-zinc-800">
           {canEditMessage && (
             <ActionTooltip label="Edit">
               <Edit
                 onClick={() => setIsEditing(true)}
-                className="cursor-pointer ml-auto w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition"
+                className="w-4 h-4 ml-auto transition cursor-pointer text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300"
               />
             </ActionTooltip>
           )}
@@ -279,7 +294,7 @@ export const ChatItem = ({
                   query: socketQuery,
                 })
               }
-              className="cursor-pointer ml-auto w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition"
+              className="w-4 h-4 ml-auto transition cursor-pointer text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300"
             />
           </ActionTooltip>
         </div>

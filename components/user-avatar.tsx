@@ -9,14 +9,28 @@ interface UserAvatarProps {
 export const UserAvatar = ({
     src,
     className
-}: UserAvatarProps ) => {
+}: UserAvatarProps) => {
 
     if (!src) {
         return null;
     }
+    // Check if NEXT_PUBLIC_SITE_URL or Vercel URL is available
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL || '';
 
-    return (  
-        <Avatar  className={cn(
+    // Check if the src is a system user image
+    if (src === process.env.SYSTEM_USER_IMAGE) {
+        const fullSrc = src.startsWith('http') ? src : `${baseUrl}${src}`;
+        return (
+            <Avatar className={cn(
+                "h-7 w-7 md:h-10 md:w-10",
+                className
+            )}>
+                <AvatarImage src={fullSrc} />
+            </Avatar>
+        );
+    }
+    return (
+        <Avatar className={cn(
             "h-7 w-7 md:h-10 md:w-10",
             className
         )}>
@@ -24,4 +38,3 @@ export const UserAvatar = ({
         </Avatar>
     );
 }
- 

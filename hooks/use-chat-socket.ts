@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Member, Message, Profile } from "@prisma/client";
+import toast from "react-hot-toast";
 
 import { useSocket } from "@/components/providers/socket-provider";
 
@@ -26,8 +27,14 @@ export const useChatSocket = ({
 
   useEffect(() => {
     if (!socket) {
+      toast.error("Failed to connect to chat. Please refresh the page.");
       return;
     }
+
+    socket.on("connect_error", (error: Error) => {
+      console.error("Socket connection error:", error);
+      toast.error("Chat connection error. Please check your internet connection.");
+    });
 
     socket.on(updateKey, (message: MessageWithMemberWithProfile) => {
       queryClient.setQueryData([queryKey], (oldData: any) => {
@@ -69,8 +76,8 @@ export const useChatSocket = ({
         newData[0] = {
           ...newData[0],
           items: [
-            message,
             ...newData[0].items,
+            message,  // Add the new message to the end of the array
           ]
         };
 
@@ -84,6 +91,7 @@ export const useChatSocket = ({
     return () => {
       socket.off(addKey);
       socket.off(updateKey);
+      socket.off("connect_error");
     }
   }, [queryClient, addKey, queryKey, socket, updateKey]);
 }

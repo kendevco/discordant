@@ -34,9 +34,12 @@ export async function exportData() {
     const json = JSON.stringify(records, null, 2);
 
     const filename = `${model}.json`;
-    const file = path.join(process.cwd(), 'public', filename);
+    const file = path.join(process.cwd(), 'public', 'seed', filename);
 
-    await fs.writeFile(file, json); // <-- Use fs.writeFile directly
+    // Ensure the seed directory exists
+    await fs.mkdir(path.dirname(file), { recursive: true });
+
+    await fs.writeFile(file, json);
 
     console.log(`Exported ${records.length} ${model} to ${file}`);
   }
@@ -47,75 +50,76 @@ export async function importData() {
 
   for (const model of models) {
     const filename = `${model}.json`;
-    const file = path.join(process.cwd(), 'public', filename);
+    const file = path.join(process.cwd(), 'public', 'seed', filename);
 
-    // Read the JSON file
-    const json = await fs.readFile(file, 'utf-8');
-    // Parse the JSON data
-    const records = JSON.parse(json);
+    try {
+      // Read the JSON file
+      const json = await fs.readFile(file, 'utf-8');
+      // Parse the JSON data
+      const records = JSON.parse(json);
 
-    // Iterate over each record
-    for (const record of records) {
-      switch (model) {
-        case 'profile':
-          const existingProfile = await db.profile.findUnique({ where: { id: record.id } });
-          if (!existingProfile) {
-            try {
-              await db.profile.create({ data: record });
-            } catch (error) {
-              if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
-                // Unique constraint violation, update the existing record
-                const { userId, ...data } = record;
-                await db.profile.update({
-                  where: { userId },
-                  data,
-                });
-              } else {
-                throw error;
-              }
-            }
-          }
-          break;
-        case 'server':
-          const existingServer = await db.server.findUnique({ where: { id: record.id } });
-          if (!existingServer) {
-            await db.server.create({ data: record });
-          }
-          break;
-        case 'member':
-          const existingMember = await db.member.findUnique({ where: { id: record.id } });
-          if (!existingMember) {
-            await db.member.create({ data: record });
-          }
-          break;
-        case 'channel':
-          const existingChannel = await db.channel.findUnique({ where: { id: record.id } });
-          if (!existingChannel) {
-            await db.channel.create({ data: record });
-          }
-          break;
-        case 'message':
-          const existingMessage = await db.message.findUnique({ where: { id: record.id } });
-          if (!existingMessage) {
-            await db.message.create({ data: record });
-          }
-          break;
-        case 'conversation':
-          const existingConversation = await db.conversation.findUnique({ where: { id: record.id } });
-          if (!existingConversation) {
-            await db.conversation.create({ data: record });
-          }
-          break;
-        case 'directMessage':
-          const existingDirectMessage = await db.directMessage.findUnique({ where: { id: record.id } });
-          if (!existingDirectMessage) {
-            await db.directMessage.create({ data: record });
-          }
-          break;
+      // Iterate over each record
+      for (const record of records) {
+        switch (model) {
+          case 'profile':
+            await db.profile.upsert({
+              where: { id: record.id },
+              update: record,
+              create: record,
+            });
+            break;
+          case 'server':
+            await db.server.upsert({
+              where: { id: record.id },
+              update: record,
+              create: record,
+            });
+            break;
+          case 'member':
+            await db.member.upsert({
+              where: { id: record.id },
+              update: record,
+              create: record,
+            });
+            break;
+          case 'channel':
+            await db.channel.upsert({
+              where: { id: record.id },
+              update: record,
+              create: record,
+            });
+            break;
+          case 'message':
+            await db.message.upsert({
+              where: { id: record.id },
+              update: record,
+              create: record,
+            });
+            break;
+          case 'conversation':
+            await db.conversation.upsert({
+              where: { id: record.id },
+              update: record,
+              create: record,
+            });
+            break;
+          case 'directMessage':
+            await db.directMessage.upsert({
+              where: { id: record.id },
+              update: record,
+              create: record,
+            });
+            break;
+        }
+      }
+
+      console.log(`Imported ${records.length} ${model} from ${file}`);
+    } catch (error) {
+      if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
+        console.log(`No seed file found for ${model}, skipping...`);
+      } else {
+        console.error(`Error importing ${model}:`, error);
       }
     }
-
-    console.log(`Imported ${records.length} ${model} from ${file}`);
   }
 }
-

@@ -98,8 +98,8 @@ model Channel {
 
 model Message {
   id String @id @default(uuid())
+  role Role
   content String @db.Text
-
   fileUrl String? @db.Text
 
   memberId String
@@ -113,9 +113,13 @@ model Message {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index ([channelId])
-  @@index ([memberId])
+  @@index([channelId])
+  @@index([memberId])
+}
 
+enum Role {
+  user
+  system
 }
 
 model Conversation {

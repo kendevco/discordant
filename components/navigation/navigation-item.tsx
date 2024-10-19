@@ -52,6 +52,7 @@ export const NavigationItem = ({
                         fill
                         src={imageUrl}
                         alt="Channel"
+                        sizes="48px" // Since the image is always 48x48, we can use a fixed size
                     />
                 </div>
             </button>

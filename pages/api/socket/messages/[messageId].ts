@@ -32,6 +32,10 @@ export default async function handler(
             return res.status(400).json({ error: "Channel ID missing" });
         }
 
+        if (!messageId) {
+            return res.status(400).json({ error: "Message ID missing" });
+        }
+
         const server = await db.server.findFirst({
             where: {
                 id: serverId as string, 
@@ -114,6 +118,7 @@ export default async function handler(
             });
         }
 
+        // We deliberately do not update the fileUrl ever again - its stored in Upload Thing ...
         if (req.method === "PATCH") {
       if (!isMessageOwner) {
         return res.status(401).json({ error: "Unauthorized" });

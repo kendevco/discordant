@@ -53,10 +53,14 @@ export const ChatInput = ({
     try {
       const url = qs.stringifyUrl({
         url: apiUrl,
-        query,
+        query: query,
       });
 
-      await axios.post(url, values);
+      await axios.post(url, {
+        content: values.content,
+        fileUrl: null, // Since this is text input, there's no file
+        channelId: query.channelId,
+      });
 
       // Track the send message event
       track('Message Sent', {
