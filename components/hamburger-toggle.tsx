@@ -3,8 +3,8 @@
 import { Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { ChannelList } from "@/components/UnifiedSidebar/components/ChannelList";
-import { UserSection } from "@/components/UnifiedSidebar/components/UserSection";
+import { ChannelList } from "@/components/UnifiedSidebar/components/sidebar/channel-list";
+
 import { useParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
@@ -46,11 +46,9 @@ export const HamburgerToggle = ({
             theme === 'dark' ? "bg-[#2B2D31]" : "bg-[#F2F3F5]"
           )}>
             <ChannelList
-              serverId={serverId}
               server={server}
-              initialProfile={initialProfile}
             />
-            <UserSection />
+
           </div>
         )}
       </SheetContent>

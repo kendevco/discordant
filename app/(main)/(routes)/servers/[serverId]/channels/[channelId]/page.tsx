@@ -39,12 +39,33 @@ const ChannelIdPage = async ({ params }: ChannelIdPageProps) => {
         return redirect("/");
     }
 
+    const servers = await db.server.findMany({
+        where: {
+            members: {
+                some: {
+                    profileId: profile.id
+                }
+            }
+        },
+        include: {
+            channels: true,
+            members: {
+                include: {
+                    profile: true
+                }
+            }
+        }
+    });
+
+    const server = servers.find(s => s.id === params.serverId);
+
     return (
         <div className="flex flex-col h-full">
             <ChatHeader
                 name={channel.name}
-                serverId={params.serverId}
+                serverId={channel.serverId}
                 type="channel"
+                server={server}
             />
             {channel.type === ChannelType.TEXT && (
                 <>

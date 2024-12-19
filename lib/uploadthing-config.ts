@@ -15,7 +15,4 @@ try {
   console.error("Error validating UPLOADTHING_TOKEN:", error);
   throw new Error("Invalid UPLOADTHING_TOKEN format");
 }
-
-export const uploadthing = createUploadthing({
-  token: process.env.UPLOADTHING_TOKEN,
-});
+export const uploadthing = createUploadthing();

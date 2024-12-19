@@ -1,11 +1,10 @@
 import * as React from 'react';
 import { redirect } from "next/navigation";
-import { currentProfile } from "../../../lib/current-profile";
-import { db } from "../../../lib/db";
-import { ServerListClient } from "./ServerListClient";
-import { ServerWithMembersWithProfiles } from "../../../types";
+import { currentProfile } from "@/lib/current-profile";
+import { db } from "@/lib/db";
+import { ServerList } from "./server-list";
 
-export const ServerList = async () => {
+export const ServerListServer = async () => {
     const profile = await currentProfile();
 
     if (!profile) {
@@ -33,5 +32,5 @@ export const ServerList = async () => {
         }
     });
 
-    return <ServerListClient servers={servers} />;
+    return <ServerList servers={servers} />;
 }; 

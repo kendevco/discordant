@@ -1,23 +1,23 @@
 import { useQuery } from "@tanstack/react-query";
-import { ServerWithMembersWithProfiles } from "@/types";
+import type { ServerWithMembersWithProfiles } from "@/types/server";
 
-async function getServers() {
+async function fetchServers() {
   const response = await fetch("/api/servers");
   if (!response.ok) {
     throw new Error("Failed to fetch servers");
   }
-  return response.json();
+  return response.json() as Promise<ServerWithMembersWithProfiles[]>;
 }
 
 export function useServers() {
-  const { data: servers, isLoading, error } = useQuery<ServerWithMembersWithProfiles[]>({
+  const { data, isLoading, error } = useQuery<ServerWithMembersWithProfiles[]>({
     queryKey: ["servers"],
-    queryFn: getServers,
+    queryFn: fetchServers,
   });
 
   return {
-    servers: servers || [],
+    servers: data || [],
     isLoading,
-    error,
+    error: error as Error | null,
   };
 } 

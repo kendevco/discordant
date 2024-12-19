@@ -18,15 +18,15 @@ interface ServerSidebarProps {
 }
 
 const iconMap = {
-  [ChannelType.TEXT]: <Hash className="mr-2 h-4 w-4" />,
-  [ChannelType.AUDIO]: <Mic className="mr-2 h-4 w-4" />,
-  [ChannelType.VIDEO]: <Video className="mr-2 h-4 w-4" />
+  [ChannelType.TEXT]: <Hash className="w-4 h-4 mr-2" />,
+  [ChannelType.AUDIO]: <Mic className="w-4 h-4 mr-2" />,
+  [ChannelType.VIDEO]: <Video className="w-4 h-4 mr-2" />
 };
 
 const roleIconMap = {
   [MemberRole.GUEST]: null,
-  [MemberRole.MODERATOR]: <ShieldCheck className="h-4 w-4 mr-2 text-indigo-500" />,
-  [MemberRole.ADMIN]: <ShieldAlert className="h-4 w-4 mr-2 text-rose-500" />
+  [MemberRole.MODERATOR]: <ShieldCheck className="w-4 h-4 mr-2 text-indigo-500" />,
+  [MemberRole.ADMIN]: <ShieldAlert className="w-4 h-4 mr-2 text-rose-500" />
 }
 
 export const ServerSidebarLeft = async ({
@@ -74,10 +74,12 @@ export const ServerSidebarLeft = async ({
       <ServerHeader
         server={server}
         role={role}
+        serverId={serverId}
       />
       <ScrollArea className="flex-1 px-3">
         <div className="mt-2">
           <ServerSearch
+            serverId={serverId}
             data={[
               {
                 label: "Text Channels",
@@ -109,7 +111,7 @@ export const ServerSidebarLeft = async ({
             ]}
           />
         </div>
-        <Separator className="bg-zinc-200 dark:bg-zinc-700 rounded-md my-2" />
+        <Separator className="my-2 rounded-md bg-zinc-200 dark:bg-zinc-700" />
         {!!textChannels?.length && (
           <div className="mb-2">
             <ServerSection

@@ -6,9 +6,8 @@ import { cn } from "@/lib/utils";
 import { ActionTooltip } from "@/components/action-tooltip";
 import Image from "next/image";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { ChevronDown, PlusCircle, Settings, Trash, UserPlus, Users } from "lucide-react";
+import { ChevronDown, LogOut, PlusCircle, Settings, Trash, UserPlus, Users } from "lucide-react";
 import { useModal } from "@/hooks/use-modal-store";
-import { useMobileSidebar } from "@/hooks/use-mobile-sidebar";
 
 interface ServerWithMembersAndChannels extends Server {
   channels: Channel[];
@@ -27,14 +26,8 @@ export const ServerListClient = ({
   const params = useParams();
   const router = useRouter();
   const { onOpen } = useModal();
-  const { onClose: closeMobileSidebar } = useMobileSidebar();
 
   const currentServer = servers.find(s => s.id === params?.serverId);
-
-  const onClick = (serverId: string) => {
-    router.push(`/servers/${serverId}`);
-    closeMobileSidebar();
-  };
 
   return (
     <div className="space-y-4">
@@ -103,7 +96,7 @@ export const ServerListClient = ({
             label={server.name}
           >
             <button
-              onClick={() => onClick(server.id)}
+              onClick={() => router.push(`/servers/${server.id}`)}
               className={cn(
                 "group relative flex items-center justify-center",
                 "w-full h-12",

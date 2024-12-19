@@ -1,25 +1,22 @@
 // path: app/(main)/(routes)/servers/[serverId]/layout.tsx
 
-import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
-import { UnifiedSidebar } from "@/components/UnifiedSidebar/UnifiedSidebar";
+import { ServerLayoutClient } from "@/app/(main)/(routes)/servers/[serverId]/server-layout-client";
 
 interface ServerIdLayoutProps {
   children: React.ReactNode;
   params: { serverId: string };
 }
 
-export default async function ServerIdLayout({
+const ServerIdLayout = async ({
   children,
-  params,
-}: ServerIdLayoutProps) {
+  params
+}: ServerIdLayoutProps) => {
   const profile = await currentProfile();
-  const { userId } = await auth();
 
-  if (!profile || !userId) {
+  if (!profile) {
     return redirect("/");
   }
 
@@ -28,24 +25,58 @@ export default async function ServerIdLayout({
       id: params.serverId,
       members: {
         some: {
-          profileId: profile.id,
+          profileId: profile.id
+        }
+      }
+    },
+    include: {
+      channels: {
+        orderBy: {
+          createdAt: "asc",
         },
       },
-    },
+      members: {
+        include: {
+          profile: true,
+        },
+        orderBy: {
+          role: "asc",
+        },
+      },
+    }
   });
 
   if (!server) {
     return redirect("/");
   }
 
+  const servers = await db.server.findMany({
+    where: {
+      members: {
+        some: {
+          profileId: profile.id
+        }
+      }
+    },
+    include: {
+      channels: true,
+      members: {
+        include: {
+          profile: true
+        }
+      }
+    }
+  });
+
   return (
-    <div className="h-full">
-      <div className=" md:block">
-        <UnifiedSidebar />
-      </div>
-      <main className="h-full md:pl-[312px]">
-        {children}
-      </main>
-    </div>
+    <ServerLayoutClient
+      server={server}
+      servers={servers}
+      profile={profile}
+    >
+      {children}
+    </ServerLayoutClient>
   );
 }
+
+export default ServerIdLayout;

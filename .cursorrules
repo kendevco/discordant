@@ -1,6 +1,32 @@
 # Discord Clone Project Rules
 # This file defines the rules and processes for our Discord-like chat application
 
+# Component Boundaries
+component_boundaries:
+  server_components:
+    rules:
+      - "Layouts using Clerk auth MUST be server components"
+      - "Components using database access MUST be server components"
+      - "Never wrap server components in client components"
+      - "Never convert server components to client components"
+      - "If a component is server-only, it's that way for a reason"
+    examples:
+      - "app/**/layout.tsx - Uses Clerk auth"
+      - "app/**/page.tsx - Uses database access"
+      - "components/**/server-*.tsx - Named explicitly"
+
+  client_components:
+    rules:
+      - "Components using hooks MUST be client components"
+      - "Components using browser APIs MUST be client components"
+      - "Components using interactivity MUST be client components"
+      - "Never add server-only features to client components"
+      - "If a component is client-only, it's that way for a reason"
+    examples:
+      - "components/**/*-client.tsx - Named explicitly"
+      - "components/**/interactive/*.tsx - All interactive components"
+      - "hooks/*.ts - All custom hooks"
+
 # Template Preservation Guidelines
 template_preservation:
   holy_files:

@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 interface NavigationState {
   isOpen: boolean;
@@ -7,7 +7,7 @@ interface NavigationState {
   serverId: string | null;
 }
 
-interface NavigationActions {
+interface ServerNavigationActions {
   onOpen: () => void;
   onClose: () => void;
   onMobileOpen: () => void;
@@ -15,7 +15,7 @@ interface NavigationActions {
   setServerId: (id: string | null) => void;
 }
 
-type NavigationStore = NavigationState & NavigationActions;
+type NavigationStore = NavigationState & ServerNavigationActions;
 
 export const useNavigationStore = create<NavigationStore>()(
   persist(
@@ -38,7 +38,7 @@ export const useNavigationStore = create<NavigationStore>()(
       },
     }),
     {
-      name: 'navigation-storage',
+      name: "navigation-storage",
     }
   )
-); 
+);

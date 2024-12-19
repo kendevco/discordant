@@ -5,10 +5,11 @@ import { useParams, useRouter } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 import { ActionTooltip } from "@/components/action-tooltip";
+import { useMobileSidebar } from "@/hooks/use-mobile-sidebar";
 
 interface NavigationItemProps {
     id: string;
-    imageUrl: string | null;
+    imageUrl?: string | null;
     name: string;
 };
 
@@ -19,13 +20,11 @@ export const NavigationItem = ({
 }: NavigationItemProps) => {
     const params = useParams();
     const router = useRouter();
+    const { onClose: closeMobileSidebar } = useMobileSidebar();
 
     const onClick = () => {
         router.push(`/servers/${id}`);
-    }
-
-    if (!imageUrl) {
-        return null;
+        closeMobileSidebar();
     }
 
     return (
@@ -36,26 +35,29 @@ export const NavigationItem = ({
         >
             <button
                 onClick={onClick}
-                className="group relative flex items-center"
+                className={cn(
+                    "group relative flex items-center",
+                    "w-12 h-12",
+                    "rounded-[24px]",
+                    "bg-[#2B2D31] dark:bg-[#2B2D31]",
+                    "hover:rounded-[16px] hover:bg-emerald-500",
+                    "transition-all",
+                    params?.serverId === id && "rounded-[16px] bg-emerald-500"
+                )}
             >
-                <div className={cn (
-                    "absolute left-0 bg-primary rounded-r-full transition-all w-[4px]",
-                    params?.serverId !== id && "group-hover:h-[20px]",
-                    params?.serverId === id ? "h-[36px]" : "h-[8px]"
-                )} />
-
-                <div className={cn (
-                    "relative group flex mx-3 h-[48px] w-[48px] rounded-[24px] group-hover:rounded-[16px] transition-all overflow-hidden",
-                    params?.serverId === id && "bg-primary/10 text-primary rounded-[16px]"
-                )} >
+                {imageUrl && (
                     <Image
                         fill
                         src={imageUrl}
                         alt="Channel"
+                        className={cn(
+                            "object-cover transition",
+                            "rounded-[24px] group-hover:rounded-[16px]",
+                            params?.serverId === id && "rounded-[16px]"
+                        )}
                     />
-                </div>
+                )}
             </button>
         </ActionTooltip>
     )
-           
 }

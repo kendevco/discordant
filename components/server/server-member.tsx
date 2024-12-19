@@ -1,12 +1,12 @@
 "use client";
 
-import { Member, Profile, Server } from "@prisma/client";
+import { Member, MemberRole, Profile, Server } from "@prisma/client";
 import { ShieldAlert, ShieldCheck } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 
 import { cn } from "@/lib/utils";
-import { useMessages } from "@/components/providers/message-provider";
 import { UserAvatar } from "@/components/user-avatar";
+import { useMobileSidebar } from "@/hooks/use-mobile-sidebar";
 
 interface ServerMemberProps {
   member: Member & {
@@ -16,9 +16,9 @@ interface ServerMemberProps {
 }
 
 const roleIconMap = {
-  "GUEST": null,
-  "MODERATOR": <ShieldCheck className="w-4 h-4 ml-2 text-indigo-500" />,
-  "ADMIN": <ShieldAlert className="w-4 h-4 ml-2 text-rose-500" />
+  [MemberRole.GUEST]: null,
+  [MemberRole.MODERATOR]: <ShieldCheck className="h-4 w-4 ml-2 text-indigo-500" />,
+  [MemberRole.ADMIN]: <ShieldAlert className="h-4 w-4 ml-2 text-rose-500" />
 }
 
 export const ServerMember = ({
@@ -27,12 +27,13 @@ export const ServerMember = ({
 }: ServerMemberProps) => {
   const params = useParams();
   const router = useRouter();
-  const { isConnected } = useMessages();
+  const { onClose: closeMobileSidebar } = useMobileSidebar();
 
   const icon = roleIconMap[member.role];
 
   const onClick = () => {
-    router.push(`/servers/${params?.serverId}/conversations/${member.id}`)
+    router.push(`/servers/${server.id}/conversations/${member.id}`);
+    closeMobileSidebar();
   }
 
   return (
@@ -45,8 +46,7 @@ export const ServerMember = ({
     >
       <UserAvatar 
         src={member.profile.imageUrl} 
-        className="w-8 h-8 md:h-8 md:w-8"
-        status={isConnected ? "online" : "offline"}
+        className="h-8 w-8 md:h-8 md:w-8"
       />
       <p
         className={cn(
