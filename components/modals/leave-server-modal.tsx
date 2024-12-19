@@ -1,5 +1,6 @@
 'use client';
 import axios from "axios";
+import { track } from '@vercel/analytics';
 
 import { 
     Dialog, 
@@ -27,11 +28,19 @@ export const LeaveServerModal = () => {
 
     const [isLoading, setIsLoading] = useState(false);
 
-    const onClick = async () => {   
+    const handleClose = () => {
+        // Track the modal close event
+        track('Leave Server Modal Closed');
+        onClose();
+    };
+
+    const handleConfirm = async () => {
+        if (!data.server) return;
+        // Track the leave server event
+        track('Server Left', { serverId: data.server.id });
         try {
             setIsLoading(true);
-            const { data } = await axios.patch(`/api/servers/${server?.id}/leave`);
-            setIsLoading(false);
+            await axios.patch(`/api/servers/${server?.id}/leave`);
             onClose();
             router.refresh();
             router.push("/")
@@ -44,7 +53,7 @@ export const LeaveServerModal = () => {
     }
 
     return ( 
-        <Dialog open={isModalOpen} onOpenChange={onClose}>
+        <Dialog open={isModalOpen} onOpenChange={handleClose}>
             <DialogContent className="bg-white text-black p-0 overflow-hidden mx-4">
                 <DialogHeader className="pt-8 px-6">
                     <DialogTitle className="text-2xl text-center font-bold">Leave Server</DialogTitle>
@@ -60,14 +69,14 @@ export const LeaveServerModal = () => {
                     <div className="flex items-center justify-between w-full">
                         <Button 
                             disabled={isLoading}
-                            onClick={onClose}
+                            onClick={handleClose}
                             variant="ghost"
                         >
                             Cancel
                         </Button>
                         <Button
                             disabled={isLoading}
-                            onClick={onClick}
+                            onClick={handleConfirm}
                             variant="primary"  
                         >
                             Confirm 

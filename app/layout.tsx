@@ -1,17 +1,21 @@
 import './globals.css'
 import type { Metadata } from 'next'
-import { Open_Sans } from 'next/font/google'
-import { ClerkProvider } from '@clerk/nextjs' 
+import { GeistSans } from 'geist/font/sans'
+import { ClerkProvider } from '@clerk/nextjs'
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
+import { extractRouterConfig } from "uploadthing/server";
+import { ourFileRouter } from "./api/uploadthing/core";
+import { Suspense } from "react";
 
 import { cn } from '@/lib/utils'
-import { ThemeProvider } from '@/components/ui/providers/theme-provider'
+import { ThemeProvider } from '@/components/providers/theme-provider'
 import { ModalProvider } from '@/components/providers/modal-provider'
-
-const font = Open_Sans({ subsets: ['latin'] })
+import { SocketProvider } from '@/components/providers/socket-provider'
+import { QueryProvider } from '@/components/providers/query-provider'
 
 export const metadata: Metadata = {
-  title: 'Discordant Chat Application',
-  description: 'Mack Daddy Chat Application',
+  title: 'Discordant Chat - Unleash the Chaos',
+  description: 'The Ultimate Edgy Chat Experience',
 }
 
 export default function RootLayout({
@@ -23,17 +27,25 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
         <body className={cn(
-          font.className,  
+          GeistSans.className,
           "bg-white dark:bg-[#313338]"
-  )}>
+        )}>
+          <Suspense>
+            <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
+          </Suspense>
           <ThemeProvider
             attribute="class"
             defaultTheme='dark'
             enableSystem={false}
             storageKey='discord-theme'
-            >
-            <ModalProvider />
-            {children}
+          >
+            <QueryProvider>
+              <SocketProvider>
+                <ModalProvider>
+                  {children}
+                </ModalProvider>
+              </SocketProvider>
+            </QueryProvider>
           </ThemeProvider>
         </body>
       </html>

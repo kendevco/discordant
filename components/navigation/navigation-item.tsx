@@ -8,7 +8,7 @@ import { ActionTooltip } from "@/components/action-tooltip";
 
 interface NavigationItemProps {
     id: string;
-    imageUrl: string;
+    imageUrl: string | null;
     name: string;
 };
 
@@ -24,6 +24,10 @@ export const NavigationItem = ({
         router.push(`/servers/${id}`);
     }
 
+    if (!imageUrl) {
+        return null;
+    }
+
     return (
         <ActionTooltip 
             side="right"
@@ -36,7 +40,7 @@ export const NavigationItem = ({
             >
                 <div className={cn (
                     "absolute left-0 bg-primary rounded-r-full transition-all w-[4px]",
-                    params?.serverId !== id && "group-hover:h[20px]",
+                    params?.serverId !== id && "group-hover:h-[20px]",
                     params?.serverId === id ? "h-[36px]" : "h-[8px]"
                 )} />
 

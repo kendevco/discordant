@@ -38,11 +38,12 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSubTrigger,
 } from "@/components/ui/dropdown-menu";
+import { track } from "@vercel/analytics";
     
 const roleIconMap = {
   GUEST: null,
-  MODERATOR: <ShieldCheck className="h-4 w-4 ml-2 text-indigo-500" />,
-  ADMIN: <ShieldAlert className="h-4 w-4 text-rose-500" />,
+  MODERATOR: <ShieldCheck className="w-4 h-4 ml-2 text-indigo-500" />,
+  ADMIN: <ShieldAlert className="w-4 h-4 text-rose-500" />,
 };
 
 export const MembersModal = () => {
@@ -95,11 +96,23 @@ export const MembersModal = () => {
     }
   };
 
+  const handleClose = () => {
+    // Track the modal close event
+    track('Members Modal Closed');
+    onClose();
+  };
+
+  const handleKick = (memberId: string) => {
+    // Track the kick member event
+    track('Member Kicked', { memberId });
+    onKick(memberId);
+  };
+
   return (
-    <Dialog open={isModalOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-white text-black overflow-hidden">
-        <DialogHeader className="pt-8 px-6">
-          <DialogTitle className="text-2xl text-center font-bold">
+    <Dialog open={isModalOpen} onOpenChange={handleClose}>
+      <DialogContent className="overflow-hidden text-black bg-white">
+        <DialogHeader className="px-6 pt-8">
+          <DialogTitle className="text-2xl font-bold text-center">
             Manage Members
           </DialogTitle>
           <DialogDescription className="text-center text-zinc-500">
@@ -108,10 +121,10 @@ export const MembersModal = () => {
         </DialogHeader>
         <ScrollArea className="mt-8 max-h-[420px] pr-6">
           {server?.members?.map((member) => (
-            <div key={member.id} className="flex items-center gap-x-2 mb-6">
-              <UserAvatar src={member.profile.imageUrl} />
+            <div key={member.id} className="flex items-center mb-6 gap-x-2">
+              <UserAvatar src={member.profile?.imageUrl} />
               <div className="flex flex-col gap-y-1">
-                <div className="text-xs font-semibold flex items-center gap-x-1">
+                <div className="flex items-center text-xs font-semibold gap-x-1">
                   {member.profile.name}
                   {roleIconMap[member.role]}
                 </div>
@@ -122,7 +135,7 @@ export const MembersModal = () => {
                   <div className="ml-auto">
                     <DropdownMenu>
                       <DropdownMenuTrigger>
-                        <MoreVertical className="h-4 w-4 text-zinc-500" />
+                        <MoreVertical className="w-4 h-4 text-zinc-500" />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent side="left">
                         <DropdownMenuSub>
@@ -135,10 +148,10 @@ export const MembersModal = () => {
                               <DropdownMenuItem
                                 onClick={() => onRoleChange(member.id, "GUEST")}
                               >
-                                <Shield className="h-4 w-4 mr-2" />
+                                <Shield className="w-4 h-4 mr-2" />
                                 Guest
                                 {member.role === "GUEST" && (
-                                  <Check className="h-4 w-4 ml-auto" />
+                                  <Check className="w-4 h-4 ml-auto" />
                                 )}
                               </DropdownMenuItem>
                               <DropdownMenuItem
@@ -146,18 +159,18 @@ export const MembersModal = () => {
                                   onRoleChange(member.id, "MODERATOR")
                                 }
                               >
-                                <ShieldCheck className="h-4 w-4 mr-2" />
+                                <ShieldCheck className="w-4 h-4 mr-2" />
                                 Moderator
                                 {member.role === "MODERATOR" && (
-                                  <Check className="h-4 w-4 ml-auto" />
+                                  <Check className="w-4 h-4 ml-auto" />
                                 )}
                               </DropdownMenuItem>
                             </DropdownMenuSubContent>
                           </DropdownMenuPortal>
                         </DropdownMenuSub>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => onKick(member.id)}>
-                          <Gavel className="h-4 w-4 mr-2" />
+                        <DropdownMenuItem onClick={() => handleKick(member.id)}>
+                          <Gavel className="w-4 h-4 mr-2" />
                           Kick
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -165,7 +178,7 @@ export const MembersModal = () => {
                   </div>
                 )}
               {loadingId === member.id && (
-                <Loader2 className="animate-spin text-zinc-500 ml-auto w-4 h-4" />
+                <Loader2 className="w-4 h-4 ml-auto animate-spin text-zinc-500" />
               )}
             </div>
           ))}

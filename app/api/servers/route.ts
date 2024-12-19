@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
-import { MemberRole } from "@prisma/client";
+import { MemberRole, ChannelType } from "@prisma/client";
 
 export async function POST(req: Request) {
     try {
@@ -15,18 +15,31 @@ export async function POST(req: Request) {
 
         const server = await db.server.create({
             data: {
+                id: uuidv4(),
                 profileId: profile.id,
                 name,
                 imageUrl,
                 inviteCode: uuidv4(),
+                updatedAt: new Date(),
                 channels: {
                     create: [
-                        { name: "general", profileId: profile.id }
+                        { 
+                            id: uuidv4(),
+                            name: "general", 
+                            profileId: profile.id,
+                            type: ChannelType.TEXT,
+                            updatedAt: new Date()
+                        }
                     ]
                 },
                 members: {
                     create: [
-                        { profileId: profile.id, role: MemberRole.ADMIN }
+                        { 
+                            id: uuidv4(),
+                            profileId: profile.id, 
+                            role: MemberRole.ADMIN,
+                            updatedAt: new Date()
+                        }
                     ]
                 }
             }
@@ -38,5 +51,4 @@ export async function POST(req: Request) {
         console.log("[SERVERS_POST]", error)
         return new NextResponse("Internal Error", { status: 500 });
     }
-
 }

@@ -4,6 +4,7 @@ import * as z from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 import { 
     Dialog, 
@@ -66,12 +67,14 @@ export const EditServerModal = () => {
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
-            await axios.patch(`/api/servers/${(server as any)?.id}`, values)         
+            await axios.patch(`/api/servers/${(server as any)?.id}`, values);
             form.reset();
             router.refresh();
             onClose();
-        } catch (error) {   
-            console.log(error);
+            toast.success("Server updated successfully!");
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to update server. Please try again.");
         }
     }
 

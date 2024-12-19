@@ -1,15 +1,50 @@
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
-import { v4 as uuidv4 } from "uuid";
 
+export async function GET(
+    req: Request,
+    { params }: { params: { serverId: string } }
+) {
+    try {
+        const profile = await currentProfile();
+        
+        if (!profile) {
+            return new NextResponse("Unauthorized", { status: 401 });
+        }
 
-// write a good comment about the fact that this has yet to be tested and is the last code I worked on
-// at roughly 20 hours my time to 5:45 hours tutorial time. I'm definately certain I'm absolutely going
-// to rock this one out of the park. I'm going to be a full stack developer. I'm going to be a full stack
-// developer. I'm going to be a full stack developer. I'm going to be a full stack developer. I'm going to
-// be a full stack developer. I'm going to be a full stack developer. I'm going to be a full stack developer.
-// I'm going to be a full stack developer. I'm going to be a full stack developer. I'm going to be a full stack
+        const server = await db.server.findUnique({
+            where: {
+                id: params.serverId,
+                members: {
+                    some: {
+                        profileId: profile.id
+                    }
+                }
+            },
+            include: {
+                channels: {
+                    orderBy: {
+                        createdAt: "asc"
+                    }
+                }
+            }
+        });
+
+        if (!server) {
+            return new NextResponse("Server not found", { status: 404 });
+        }
+
+        return NextResponse.json({
+            server,
+            channels: server.channels
+        });
+
+    } catch (error) {
+        console.log("[SERVER_ID_GET]", error);
+        return new NextResponse("Internal Error", { status: 500 });
+    }
+}
 
 export async function DELETE(
     req: Request,

@@ -1,0 +1,742 @@
+[
+  {
+    "id": "021e7e27-22ee-4bf8-9294-47362564fad8",
+    "content": "https://uploadthing.com/f/b6e78898-e5f4-40c0-97ce-64c282f7ce9e_Jesus%204.png",
+    "fileUrl": "https://uploadthing.com/f/b6e78898-e5f4-40c0-97ce-64c282f7ce9e_Jesus%204.png",
+    "memberId": "3170e780-185d-4f3f-bff0-f7b464095b92",
+    "channelId": "1c395532-b43c-46f7-a8f3-06fd0733d267",
+    "deleted": false,
+    "createdAt": "2023-09-08T17:35:54.342Z",
+    "updatedAt": "2023-09-08T17:35:54.342Z"
+  },
+  {
+    "id": "0c7bd762-25cf-4f2a-b8ad-8fe09abc2609",
+    "content": "https://www.dice.com/job-detail/60da8e06-5d9d-4c67-b2c2-a81b55002e78?src=32&utm_source=appcast&utm_medium=aggregator&utm_campaign=careerbuilder&utm_term=Virtusa%20Corporation&utm_content=0support-consulting_cpc&ccuid=50958917512&_ccid=1701186174712b8rlhfhdv",
+    "fileUrl": null,
+    "memberId": "24ab355a-1b75-4398-b4e6-e6cb6a1ce25f",
+    "channelId": "719f0289-0555-47a5-a0de-a1d4f3d27804",
+    "deleted": false,
+    "createdAt": "2024-01-11T00:45:47.066Z",
+    "updatedAt": "2024-01-11T00:45:47.066Z"
+  },
+  {
+    "id": "0e2f98eb-2d02-436f-a27b-99cca3494351",
+    "content": "This is hopefully a new message... I am editing the message.",
+    "fileUrl": null,
+    "memberId": "858273a6-99cf-4c1d-8e29-4ce77e2b0f0d",
+    "channelId": "719f0289-0555-47a5-a0de-a1d4f3d27804",
+    "deleted": false,
+    "createdAt": "2023-09-06T02:07:32.533Z",
+    "updatedAt": "2023-09-06T02:07:57.760Z"
+  },
+  {
+    "id": "0f6c56b0-9f33-4d5b-aff6-e8b04b6fc4d0",
+    "content": "Tell me something funny?",
+    "fileUrl": null,
+    "memberId": "24ab355a-1b75-4398-b4e6-e6cb6a1ce25f",
+    "channelId": "719f0289-0555-47a5-a0de-a1d4f3d27804",
+    "deleted": false,
+    "createdAt": "2023-11-27T03:14:03.207Z",
+    "updatedAt": "2023-11-27T03:14:03.207Z"
+  },
+  {
+    "id": "0fb24b51-0272-4356-9d68-9c6a32438606",
+    "content": "Hello World! What is the answer to life, the universe and everything?",
+    "fileUrl": null,
+    "memberId": "858273a6-99cf-4c1d-8e29-4ce77e2b0f0d",
+    "channelId": "719f0289-0555-47a5-a0de-a1d4f3d27804",
+    "deleted": false,
+    "createdAt": "2023-09-05T04:01:08.899Z",
+    "updatedAt": "2023-09-05T04:01:08.899Z"
+  },
+  {
+    "id": "12e8b1af-4b29-4dae-964f-ba886cf3bd09",
+    "content": "This is a random message.",
+    "fileUrl": null,
+    "memberId": "24ab355a-1b75-4398-b4e6-e6cb6a1ce25f",
+    "channelId": "719f0289-0555-47a5-a0de-a1d4f3d27804",
+    "deleted": false,
+    "createdAt": "2023-09-06T02:21:07.033Z",
+    "updatedAt": "2023-09-06T02:21:07.033Z"
+  },
+  {
+    "id": "14e7faa2-6ae4-4804-acd8-cbdd1dc92956",
+    "content": "This is the first message after adding code to Chat-Input.tsx line 63...  🫣",
+    "fileUrl": null,
+    "memberId": "858273a6-99cf-4c1d-8e29-4ce77e2b0f0d",
+    "channelId": "719f0289-0555-47a5-a0de-a1d4f3d27804",
+    "deleted": false,
+    "createdAt": "2023-09-05T06:06:04.153Z",
+    "updatedAt": "2023-09-05T06:06:04.153Z"
+  },
+  {
+    "id": "1dd27919-93a8-47b4-b837-268b6d7b6a71",
+    "content": "Wassup!!!!",
+    "fileUrl": null,
+    "memberId": "4e6c3fa6-b43d-4418-b0a3-6eacdc5d329e",
+    "channelId": "db747588-5290-4231-8d71-45bd86081e5f",
+    "deleted": false,
+    "createdAt": "2023-09-05T19:38:55.127Z",
+    "updatedAt": "2023-09-05T19:38:55.127Z"
+  },
+  {
+    "id": "1e726d2a-7866-44dc-932d-874b238f4d35",
+    "content": "Third test.",
+    "fileUrl": null,
+    "memberId": "24ab355a-1b75-4398-b4e6-e6cb6a1ce25f",
+    "channelId": "719f0289-0555-47a5-a0de-a1d4f3d27804",
+    "deleted": false,
+    "createdAt": "2023-09-05T19:42:42.107Z",
+    "updatedAt": "2023-09-05T19:42:42.107Z"
+  },
+  {
+    "id": "21b26896-8e12-4015-9d79-d7df20cd8c6f",
+    "content": "Hello!",
+    "fileUrl": null,
+    "memberId": "c2a82efe-209f-4058-bec9-88882ba6bc82",
+    "channelId": "02df5fd1-77ba-45d5-8b2c-0dd6fea6c599",
+    "deleted": false,
+    "createdAt": "2023-09-06T18:32:36.034Z",
+    "updatedAt": "2023-09-06T18:32:36.034Z"
+  },
+  {
+    "id": "2f688bd3-dcd1-404e-8df5-c03797b6c5e5",
+    "content": "Hello!",
+    "fileUrl": null,
+    "memberId": "c2a82efe-209f-4058-bec9-88882ba6bc82",
+    "channelId": "55bb3482-00c9-4ba0-996a-40cb0f6eb4ec",
+    "deleted": false,
+    "createdAt": "2023-09-06T18:33:13.968Z",
+    "updatedAt": "2023-09-06T18:33:13.968Z"
+  },
+  {
+    "id": "33901f3e-ea43-4d46-ae81-d0ec0634c839",
+    "content": "This is the first message after adding the message output into the chat-messages.tsx component.",
+    "fileUrl": null,
+    "memberId": "24ab355a-1b75-4398-b4e6-e6cb6a1ce25f",
+    "channelId": "719f0289-0555-47a5-a0de-a1d4f3d27804",
+    "deleted": false,
+    "createdAt": "2023-09-05T19:38:08.492Z",
+    "updatedAt": "2023-09-05T19:38:08.492Z"
+  },
+  {
+    "id": "37b6d10e-2476-455c-acc1-c283eb736d0e",
+    "content": "Just checking in to keep the database alive",
+    "fileUrl": null,
+    "memberId": "012d7056-901b-416a-aec2-57ed1211b661",
+    "channelId": "1c395532-b43c-46f7-a8f3-06fd0733d267",
+    "deleted": false,
+    "createdAt": "2024-02-12T22:44:42.070Z",
+    "updatedAt": "2024-02-12T22:44:42.070Z"
+  },
+  {
+    "id": "38d5b731-2820-407b-936c-a1cdc649cb31",
+    "content": "Hello Crop Circles ! Let's get enlightened! Really - I mean if you can't accept crop circles are fucking crazy ...",
+    "fileUrl": null,
+    "memberId": "0204ed57-f49a-40fa-a494-cf60aa69c71e",
+    "channelId": "db747588-5290-4231-8d71-45bd86081e5f",
+    "deleted": false,
+    "createdAt": "2023-09-05T19:40:56.683Z",
+    "updatedAt": "2023-09-06T16:48:10.896Z"
+  },
+  {
+    "id": "3b639d3d-63a7-4fc1-a453-111a931c9938",
+    "content": " 😅 😜 🤪 🙂 🤣 😇 This is a test.",
+    "fileUrl": null,
+    "memberId": "858273a6-99cf-4c1d-8e29-4ce77e2b0f0d",
+    "channelId": "719f0289-0555-47a5-a0de-a1d4f3d27804",
+    "deleted": false,
+    "createdAt": "2023-09-06T00:58:59.710Z",
+    "updatedAt": "2023-09-06T00:58:59.710Z"
+  },
+  {
+    "id": "44dccd5a-bd55-4395-bccd-769f4d7c3819",
+    "content": "https://youtu.be/pN-RTBq6i3I?si=OMhfX2loSruEpK7o ",
+    "fileUrl": null,
+    "memberId": "24ab355a-1b75-4398-b4e6-e6cb6a1ce25f",
+    "channelId": "719f0289-0555-47a5-a0de-a1d4f3d27804",
+    "deleted": false,
+    "createdAt": "2023-09-12T03:32:57.563Z",
+    "updatedAt": "2023-09-12T03:32:57.563Z"
+  },
+  {
+    "id": "4d7f1b50-5cc6-47f5-827c-c1866309f011",
+    "content": "Well I just took a short cut so to speak and merged in the source for the chat-item component which was kind of a bad shortcut to take considering the fact that it does so much....",
+    "fileUrl": null,
+    "memberId": "858273a6-99cf-4c1d-8e29-4ce77e2b0f0d",
+    "channelId": "719f0289-0555-47a5-a0de-a1d4f3d27804",
+    "deleted": false,
+    "createdAt": "2023-09-05T20:50:22.408Z",
+    "updatedAt": "2023-09-05T20:50:22.408Z"
+  },
+  {
+    "id": "4f5b4836-92e4-492f-ae79-376f67772316",
+    "content": "https://uploadthing.com/f/bb22cc06-6ef5-4ec7-a5b5-714239c38441_Screenshot%202023-09-07%20160555.png",
+    "fileUrl": "https://uploadthing.com/f/bb22cc06-6ef5-4ec7-a5b5-714239c38441_Screenshot%202023-09-07%20160555.png",
+    "memberId": "27fe7ba0-482c-4e7b-894d-7ceff7e35a90",
+    "channelId": "904eb450-8c8f-4c2c-a673-94ea549840ad",
+    "deleted": false,
+    "createdAt": "2023-09-07T20:28:30.760Z",
+    "updatedAt": "2023-09-07T20:28:30.760Z"
+  },
+  {
+    "id": "540ab8b2-04ce-4412-8f83-393489f332d1",
+    "content": "https://www.reddit.com/r/aliens",
+    "fileUrl": null,
+    "memberId": "24ab355a-1b75-4398-b4e6-e6cb6a1ce25f",
+    "channelId": "eeda2f5a-c4e9-42b0-be9e-780bf2802674",
+    "deleted": false,
+    "createdAt": "2023-10-17T20:59:29.573Z",
+    "updatedAt": "2023-10-17T20:59:29.573Z"
+  },
+  {
+    "id": "579cd9b4-7b5c-48e7-ae69-1a50e3caeaf1",
+    "content": "This is a test of the emergency broadcast system. In the event of an actual emergency, this test would have been followed by important news and information. Again, this was only a test.",
+    "fileUrl": null,
+    "memberId": "24ab355a-1b75-4398-b4e6-e6cb6a1ce25f",
+    "channelId": "719f0289-0555-47a5-a0de-a1d4f3d27804",
+    "deleted": false,
+    "createdAt": "2023-10-08T00:37:32.332Z",
+    "updatedAt": "2023-10-08T00:37:32.332Z"
+  },
+  {
+    "id": "5a7e5288-ae43-4cf2-8412-4ab43adc78de",
+    "content": "https://youtu.be/r8p44wQMtNE?si=ntOpwXr1xn4GpMBu",
+    "fileUrl": null,
+    "memberId": "46337718-8901-4c05-a534-f9b7e7527856",
+    "channelId": "eeda2f5a-c4e9-42b0-be9e-780bf2802674",
+    "deleted": false,
+    "createdAt": "2023-09-08T17:51:04.948Z",
+    "updatedAt": "2023-09-08T17:51:04.948Z"
+  },
+  {
+    "id": "60b217e4-09dc-4c10-ade9-03a021abc85d",
+    "content": "Ping!",
+    "fileUrl": null,
+    "memberId": "988fae1d-6622-4dae-a8e5-fb7eaa722cf6",
+    "channelId": "719f0289-0555-47a5-a0de-a1d4f3d27804",
+    "deleted": false,
+    "createdAt": "2023-12-28T17:16:29.663Z",
+    "updatedAt": "2023-12-28T17:16:29.663Z"
+  },
+  {
+    "id": "61f0f182-22be-4223-b3ba-f0866cf02bd9",
+    "content": "Test",
+    "fileUrl": null,
+    "memberId": "27fe7ba0-482c-4e7b-894d-7ceff7e35a90",
+    "channelId": "904eb450-8c8f-4c2c-a673-94ea549840ad",
+    "deleted": false,
+    "createdAt": "2024-04-01T01:49:45.508Z",
+    "updatedAt": "2024-04-01T01:49:45.508Z"
+  },
+  {
+    "id": "6c84e121-b329-4579-96ac-bf1049ae9af7",
+    "content": "Tell me something funny",
+    "fileUrl": null,
+    "memberId": "012d7056-901b-416a-aec2-57ed1211b661",
+    "channelId": "1c395532-b43c-46f7-a8f3-06fd0733d267",
+    "deleted": false,
+    "createdAt": "2024-02-29T22:40:10.573Z",
+    "updatedAt": "2024-02-29T22:40:10.573Z"
+  },
+  {
+    "id": "745b1529-b625-498a-b92d-fab8838e48bc",
+    "content": "https://photos.google.com/share/AF1QipN73JV35Th6km81S593dpnp5jl7NaEVjmQbga2jNbgrQZNOMP-Qom4czOrHp5QwUA?key=bzJPZXFhWU9jeHVhdHJUREo0NTF1eW00SnE3dmJR",
+    "fileUrl": null,
+    "memberId": "24ab355a-1b75-4398-b4e6-e6cb6a1ce25f",
+    "channelId": "eeda2f5a-c4e9-42b0-be9e-780bf2802674",
+    "deleted": false,
+    "createdAt": "2023-10-17T21:02:58.564Z",
+    "updatedAt": "2023-10-17T21:02:58.564Z"
+  },
+  {
+    "id": "75609e47-ae7c-4694-9d4c-364cc75f6691",
+    "content": "This is another message ...",
+    "fileUrl": null,
+    "memberId": "0204ed57-f49a-40fa-a494-cf60aa69c71e",
+    "channelId": "db747588-5290-4231-8d71-45bd86081e5f",
+    "deleted": false,
+    "createdAt": "2023-09-05T19:41:32.035Z",
+    "updatedAt": "2023-09-05T19:41:32.035Z"
+  },
+  {
+    "id": "78a8a561-90fa-42ef-8cca-b1899d4a9393",
+    "content": "https://uploadthing.com/f/da6d9026-8405-45f9-87a6-2878f49fb2fe_Screenshot%202023-08-31%20170718.png",
+    "fileUrl": "https://uploadthing.com/f/da6d9026-8405-45f9-87a6-2878f49fb2fe_Screenshot%202023-08-31%20170718.png",
+    "memberId": "858273a6-99cf-4c1d-8e29-4ce77e2b0f0d",
+    "channelId": "719f0289-0555-47a5-a0de-a1d4f3d27804",
+    "deleted": false,
+    "createdAt": "2023-09-05T05:20:11.161Z",
+    "updatedAt": "2023-09-05T05:20:11.161Z"
+  },
+  {
+    "id": "7afb3288-9bb8-4bcb-acdc-1d96d11431bf",
+    "content": "This is KenDev testing.",
+    "fileUrl": null,
+    "memberId": "24ab355a-1b75-4398-b4e6-e6cb6a1ce25f",
+    "channelId": "719f0289-0555-47a5-a0de-a1d4f3d27804",
+    "deleted": false,
+    "createdAt": "2023-09-05T06:27:47.205Z",
+    "updatedAt": "2023-09-05T06:27:47.205Z"
+  },
+  {
+    "id": "7e821e9f-148c-41bd-8eca-8bfae399bb43",
+    "content": "Hello!",
+    "fileUrl": null,
+    "memberId": "858273a6-99cf-4c1d-8e29-4ce77e2b0f0d",
+    "channelId": "719f0289-0555-47a5-a0de-a1d4f3d27804",
+    "deleted": false,
+    "createdAt": "2023-09-06T16:39:38.237Z",
+    "updatedAt": "2023-09-06T16:39:38.237Z"
+  },
+  {
+    "id": "83a07787-38a2-4a35-a521-6144c2b8815a",
+    "content": "Testing!",
+    "fileUrl": null,
+    "memberId": "012d7056-901b-416a-aec2-57ed1211b661",
+    "channelId": "1c395532-b43c-46f7-a8f3-06fd0733d267",
+    "deleted": false,
+    "createdAt": "2024-01-08T21:27:21.854Z",
+    "updatedAt": "2024-01-08T21:27:21.854Z"
+  },
+  {
+    "id": "880b2b75-583e-473d-9d32-90fc409dcae5",
+    "content": "Test Socket Trigger",
+    "fileUrl": null,
+    "memberId": "858273a6-99cf-4c1d-8e29-4ce77e2b0f0d",
+    "channelId": "eeda2f5a-c4e9-42b0-be9e-780bf2802674",
+    "deleted": false,
+    "createdAt": "2023-09-06T02:50:35.984Z",
+    "updatedAt": "2023-09-06T02:50:35.984Z"
+  },
+  {
+    "id": "8b4105c4-75be-4ec8-ad95-ea1c6ecc25f4",
+    "content": "Wassup!",
+    "fileUrl": null,
+    "memberId": "988fae1d-6622-4dae-a8e5-fb7eaa722cf6",
+    "channelId": "719f0289-0555-47a5-a0de-a1d4f3d27804",
+    "deleted": false,
+    "createdAt": "2023-09-30T14:33:15.701Z",
+    "updatedAt": "2023-09-30T14:33:15.701Z"
+  },
+  {
+    "id": "8c9c0715-2f20-417d-b645-7fba2304f5c3",
+    "content": "https://uploadthing.com/f/534036d4-463f-4428-a8e4-583dfc7bc4c4-6glhpa.jpg",
+    "fileUrl": "https://uploadthing.com/f/534036d4-463f-4428-a8e4-583dfc7bc4c4-6glhpa.jpg",
+    "memberId": "24ab355a-1b75-4398-b4e6-e6cb6a1ce25f",
+    "channelId": "719f0289-0555-47a5-a0de-a1d4f3d27804",
+    "deleted": false,
+    "createdAt": "2023-12-07T14:58:19.619Z",
+    "updatedAt": "2023-12-07T14:58:19.619Z"
+  },
+  {
+    "id": "914e8ede-5c4b-4fcc-8918-252a3a463640",
+    "content": "Howdy! Nice application kid. (just kidding - we know you're not a kid but still you're a kid to me...)\n",
+    "fileUrl": null,
+    "memberId": "46337718-8901-4c05-a534-f9b7e7527856",
+    "channelId": "719f0289-0555-47a5-a0de-a1d4f3d27804",
+    "deleted": false,
+    "createdAt": "2023-09-08T17:37:18.959Z",
+    "updatedAt": "2023-09-08T17:37:53.020Z"
+  },
+  {
+    "id": "926bdee1-f6fc-46e6-a840-a6f1e61dbd62",
+    "content": "Test",
+    "fileUrl": null,
+    "memberId": "c2a82efe-209f-4058-bec9-88882ba6bc82",
+    "channelId": "02df5fd1-77ba-45d5-8b2c-0dd6fea6c599",
+    "deleted": false,
+    "createdAt": "2023-12-24T16:51:52.909Z",
+    "updatedAt": "2023-12-24T16:51:52.909Z"
+  },
+  {
+    "id": "955759ba-71f8-4410-b9c0-8e2af8c8fdb7",
+    "content": "Good day!",
+    "fileUrl": null,
+    "memberId": "c2a82efe-209f-4058-bec9-88882ba6bc82",
+    "channelId": "02df5fd1-77ba-45d5-8b2c-0dd6fea6c599",
+    "deleted": false,
+    "createdAt": "2024-03-09T16:14:08.362Z",
+    "updatedAt": "2024-03-09T16:14:08.362Z"
+  },
+  {
+    "id": "996b25cb-a2b8-454b-af7e-ee36e006dd1d",
+    "content": "Hello testing",
+    "fileUrl": null,
+    "memberId": "c2a82efe-209f-4058-bec9-88882ba6bc82",
+    "channelId": "02df5fd1-77ba-45d5-8b2c-0dd6fea6c599",
+    "deleted": false,
+    "createdAt": "2024-02-19T00:31:57.001Z",
+    "updatedAt": "2024-02-19T00:31:57.001Z"
+  },
+  {
+    "id": "9a35ee0f-0832-47b3-bccb-fdc23352e629",
+    "content": "Test",
+    "fileUrl": null,
+    "memberId": "24ab355a-1b75-4398-b4e6-e6cb6a1ce25f",
+    "channelId": "719f0289-0555-47a5-a0de-a1d4f3d27804",
+    "deleted": false,
+    "createdAt": "2023-11-30T15:22:05.327Z",
+    "updatedAt": "2023-11-30T15:22:05.327Z"
+  },
+  {
+    "id": "9a6241fb-92b1-426a-996e-de95c8f1d901",
+    "content": "Good day!",
+    "fileUrl": null,
+    "memberId": "c2a82efe-209f-4058-bec9-88882ba6bc82",
+    "channelId": "02df5fd1-77ba-45d5-8b2c-0dd6fea6c599",
+    "deleted": false,
+    "createdAt": "2023-12-24T16:51:48.432Z",
+    "updatedAt": "2023-12-24T16:51:48.432Z"
+  },
+  {
+    "id": "9b711a13-010e-4024-b255-edd9806188a5",
+    "content": "Hello",
+    "fileUrl": null,
+    "memberId": "012d7056-901b-416a-aec2-57ed1211b661",
+    "channelId": "1c395532-b43c-46f7-a8f3-06fd0733d267",
+    "deleted": false,
+    "createdAt": "2024-04-04T03:02:23.711Z",
+    "updatedAt": "2024-04-04T03:02:23.711Z"
+  },
+  {
+    "id": "9cf40f14-c0fd-42f9-9e6f-d9024698d2ce",
+    "content": "This is a test of the emergency broadcast system. In the event of an actual emergency, this test would have been followed by important news and information. Again, this was only a test.",
+    "fileUrl": null,
+    "memberId": "c2a82efe-209f-4058-bec9-88882ba6bc82",
+    "channelId": "02df5fd1-77ba-45d5-8b2c-0dd6fea6c599",
+    "deleted": false,
+    "createdAt": "2023-12-24T16:52:21.290Z",
+    "updatedAt": "2023-12-24T16:52:21.290Z"
+  },
+  {
+    "id": "9d1b7c21-40fe-47a1-9532-591759d51f4f",
+    "content": "Hi Ty!",
+    "fileUrl": null,
+    "memberId": "6aa9d525-6341-4f86-a9d1-044a036820a9",
+    "channelId": "de89b82e-db44-414a-b086-12976adc86e3",
+    "deleted": false,
+    "createdAt": "2023-09-06T18:48:12.280Z",
+    "updatedAt": "2023-09-06T18:48:12.280Z"
+  },
+  {
+    "id": "9d6b5d2e-91f5-46cc-b6dd-d663c97e4a7d",
+    "content": "Testing a new message in #Links",
+    "fileUrl": null,
+    "memberId": "858273a6-99cf-4c1d-8e29-4ce77e2b0f0d",
+    "channelId": "eeda2f5a-c4e9-42b0-be9e-780bf2802674",
+    "deleted": false,
+    "createdAt": "2023-09-06T16:27:13.385Z",
+    "updatedAt": "2023-09-06T16:27:13.385Z"
+  },
+  {
+    "id": "a62047c4-f309-4da5-8de9-85b1d3e0bed4",
+    "content": "Yo!",
+    "fileUrl": null,
+    "memberId": "24ab355a-1b75-4398-b4e6-e6cb6a1ce25f",
+    "channelId": "719f0289-0555-47a5-a0de-a1d4f3d27804",
+    "deleted": false,
+    "createdAt": "2023-11-28T22:19:21.232Z",
+    "updatedAt": "2023-11-28T22:19:21.232Z"
+  },
+  {
+    "id": "a829f8b2-8221-479a-bd02-a516d011748f",
+    "content": "npm create sanity@latest -- --template get-started --project 6nqnpst6 --dataset production --provider github",
+    "fileUrl": null,
+    "memberId": "27fe7ba0-482c-4e7b-894d-7ceff7e35a90",
+    "channelId": "904eb450-8c8f-4c2c-a673-94ea549840ad",
+    "deleted": false,
+    "createdAt": "2023-09-11T16:27:40.333Z",
+    "updatedAt": "2023-09-11T16:27:40.333Z"
+  },
+  {
+    "id": "aae3ca80-644b-4dd5-a7cf-eab91a555d92",
+    "content": "Testing",
+    "fileUrl": null,
+    "memberId": "012d7056-901b-416a-aec2-57ed1211b661",
+    "channelId": "1c395532-b43c-46f7-a8f3-06fd0733d267",
+    "deleted": false,
+    "createdAt": "2024-03-24T20:00:17.019Z",
+    "updatedAt": "2024-03-24T20:00:17.019Z"
+  },
+  {
+    "id": "ac9d093e-52c7-438a-af67-753f481a03dd",
+    "content": "This message has been deleted",
+    "fileUrl": null,
+    "memberId": "39a4d7a1-a369-43a3-90ef-8b5134f45f63",
+    "channelId": "904eb450-8c8f-4c2c-a673-94ea549840ad",
+    "deleted": true,
+    "createdAt": "2023-09-07T19:52:02.118Z",
+    "updatedAt": "2023-09-07T20:29:36.038Z"
+  },
+  {
+    "id": "af4a865b-ffb9-45ba-8de8-c11f84d27d7a",
+    "content": "Screenshot of the app running in multiple browsers and devices... yes really.",
+    "fileUrl": null,
+    "memberId": "27fe7ba0-482c-4e7b-894d-7ceff7e35a90",
+    "channelId": "904eb450-8c8f-4c2c-a673-94ea549840ad",
+    "deleted": false,
+    "createdAt": "2023-09-07T20:28:57.571Z",
+    "updatedAt": "2023-09-07T20:29:28.283Z"
+  },
+  {
+    "id": "b1a7ef55-15f4-4467-8a95-452c8e8a80de",
+    "content": "Minimum Viable Product (MVP):\nThe MVP for the SaaS platform will be an Outbound Call Manager, marketed as a versatile tool for managing VAPI.AI Virtual Call Centers. The key features of the MVP will include:\n\nRole-based Agent Configuration: The ability to create and configure different roles or avatars for VAPI.AI agents, such as Sales, Website Immediate Sales Response, Technical Support, and Outbound Appointment Setting.\nContact List Management: Comprehensive tools for importing and exporting contact lists, as well as the ability to link external calling lists to the platform.\nAgent Configuration and Testing: A user-friendly interface for configuring VAPI.AI agent settings, including functions and behaviors. Additionally, a function test interface will allow users to test and validate their configured functions before deploying them to agents.\nCall Tracking and Persistence: The platform will store call records and conversation histories, enabling agents to pick up from the last conversation and maintain persistent context across multiple interactions.\nAdditional Considerations:\n\nIntegration with Existing SaaS Project: While the SaaS Automation Builder YouTube Tutorial's SaaS project provides a solid foundation, the platform will need to be extended and customized to incorporate the VAPI.AI agent configuration and management capabilities.\nScalability and Performance: As the platform is expected to handle large volumes of call data and agent configurations, scalability and performance optimization will be critical. This may involve leveraging serverless architectures, load balancing, and caching mechanisms.\nData Security and Compliance: Ensuring the security and privacy of user data, including contact lists and call recordings, will be a top priority. The platform should adhere to relevant data protection regulations and industry best practices for data security.\nTelephony Integration: The platform may need to integrate with third-party telephony services or APIs to enable seamless call routing and management capabilities for VAPI.AI agents.\nReporting and Analytics: In addition to call tracking and persistence, the platform should provide robust reporting and analytics features, allowing users to gain insights into agent performance, call metrics, and overall campaign effectiveness.\nPricing and Monetization: The platform's pricing model should be carefully designed to align with the target market's needs and willingness to pay. Potential monetization strategies could include subscription-based plans, pay-per-use models, or a combination of both.\nPartnerships and Integrations: Establishing strategic partnerships with VAPI.AI and other relevant service providers (e.g., CRM, marketing automation, telephony) could enhance the platform's value proposition and facilitate seamless integrations.\nCompetitive Landscape Analysis: Conducting a thorough analysis of the competitive landscape, including existing call center solutions and VAPI.AI integration providers, will be crucial to identifying unique selling points and positioning the platform effectively.\nRegulatory Compliance: Depending on the target markets and industries, the platform may need to comply with specific regulations related to call recording, consumer privacy, and telemarketing practices.\nOngoing Product Development and Roadmap: Establishing a clear product roadmap and continuously incorporating user feedback will be essential for the platform's long-term success and staying ahead of evolving market demands.\nBy addressing these additional considerations and leveraging the existing SaaS project foundation, the proposed SaaS platform can position itself as a comprehensive and robust solution for businesses seeking to leverage VAPI.AI's voice AI capabilities in a virtual call center environment.\n\n",
+    "fileUrl": null,
+    "memberId": "24ab355a-1b75-4398-b4e6-e6cb6a1ce25f",
+    "channelId": "719f0289-0555-47a5-a0de-a1d4f3d27804",
+    "deleted": false,
+    "createdAt": "2024-04-04T03:03:02.115Z",
+    "updatedAt": "2024-04-04T03:03:02.115Z"
+  },
+  {
+    "id": "b2653e27-c1c5-4516-9c63-8d494c9da014",
+    "content": "Howdy #general!",
+    "fileUrl": null,
+    "memberId": "bf81b485-1f86-4c86-96db-eca0b275cc53",
+    "channelId": "02df5fd1-77ba-45d5-8b2c-0dd6fea6c599",
+    "deleted": false,
+    "createdAt": "2023-09-06T16:45:24.391Z",
+    "updatedAt": "2023-09-06T16:45:24.391Z"
+  },
+  {
+    "id": "b4395145-d806-46d1-8b78-2ff2a6cac4cd",
+    "content": "This is another message.",
+    "fileUrl": null,
+    "memberId": "858273a6-99cf-4c1d-8e29-4ce77e2b0f0d",
+    "channelId": "719f0289-0555-47a5-a0de-a1d4f3d27804",
+    "deleted": false,
+    "createdAt": "2023-09-06T02:45:54.246Z",
+    "updatedAt": "2023-09-06T02:45:54.246Z"
+  },
+  {
+    "id": "bd04ba66-5c3b-4653-b097-c28617cf5689",
+    "content": "Sup yo!",
+    "fileUrl": null,
+    "memberId": "24ab355a-1b75-4398-b4e6-e6cb6a1ce25f",
+    "channelId": "719f0289-0555-47a5-a0de-a1d4f3d27804",
+    "deleted": false,
+    "createdAt": "2023-10-02T03:03:26.504Z",
+    "updatedAt": "2023-10-02T03:03:26.504Z"
+  },
+  {
+    "id": "c37f4865-aaf6-42bd-bf19-7c6aeb87ce17",
+    "content": "https://uploadthing.com/f/59acdc16-2d13-4608-9101-477f51952326_Screenshot%202023-09-04%20221114.png",
+    "fileUrl": "https://uploadthing.com/f/59acdc16-2d13-4608-9101-477f51952326_Screenshot%202023-09-04%20221114.png",
+    "memberId": "858273a6-99cf-4c1d-8e29-4ce77e2b0f0d",
+    "channelId": "7c5fcfd4-823e-4a1d-b645-d85be49f85dc",
+    "deleted": false,
+    "createdAt": "2023-09-05T05:11:22.594Z",
+    "updatedAt": "2023-09-05T05:11:22.594Z"
+  },
+  {
+    "id": "c5df976a-13d6-42dd-809d-3d6217afc679",
+    "content": "https://uploadthing.com/f/b15101e9-3497-4a1e-a775-18e1cbe60022-6vqrxu.png",
+    "fileUrl": "https://uploadthing.com/f/b15101e9-3497-4a1e-a775-18e1cbe60022-6vqrxu.png",
+    "memberId": "988fae1d-6622-4dae-a8e5-fb7eaa722cf6",
+    "channelId": "719f0289-0555-47a5-a0de-a1d4f3d27804",
+    "deleted": false,
+    "createdAt": "2023-12-13T18:39:52.663Z",
+    "updatedAt": "2023-12-13T18:39:52.663Z"
+  },
+  {
+    "id": "c6d79ea2-0659-416e-8846-73b141fc4f47",
+    "content": "This is a test.",
+    "fileUrl": null,
+    "memberId": "24ab355a-1b75-4398-b4e6-e6cb6a1ce25f",
+    "channelId": "719f0289-0555-47a5-a0de-a1d4f3d27804",
+    "deleted": false,
+    "createdAt": "2023-09-06T02:35:42.119Z",
+    "updatedAt": "2023-09-06T02:35:42.119Z"
+  },
+  {
+    "id": "c785f950-6e18-4268-bc50-1c64ee0710fa",
+    "content": "This is the links channel",
+    "fileUrl": null,
+    "memberId": "858273a6-99cf-4c1d-8e29-4ce77e2b0f0d",
+    "channelId": "eeda2f5a-c4e9-42b0-be9e-780bf2802674",
+    "deleted": false,
+    "createdAt": "2023-09-05T19:44:24.412Z",
+    "updatedAt": "2023-09-05T19:44:24.412Z"
+  },
+  {
+    "id": "ce9f4517-bc14-4698-8f29-7e6a1f933a71",
+    "content": "https://uploadthing.com/f/1790fe1f-8358-4869-95a9-77dd6a963bc0_36258531-Battelledoc.pdf",
+    "fileUrl": "https://uploadthing.com/f/1790fe1f-8358-4869-95a9-77dd6a963bc0_36258531-Battelledoc.pdf",
+    "memberId": "858273a6-99cf-4c1d-8e29-4ce77e2b0f0d",
+    "channelId": "719f0289-0555-47a5-a0de-a1d4f3d27804",
+    "deleted": false,
+    "createdAt": "2023-09-05T05:22:26.836Z",
+    "updatedAt": "2023-09-05T05:22:26.836Z"
+  },
+  {
+    "id": "cfb95a71-eda8-4302-93ec-ac093a4a6801",
+    "content": "Systems check complete",
+    "fileUrl": null,
+    "memberId": "24ab355a-1b75-4398-b4e6-e6cb6a1ce25f",
+    "channelId": "719f0289-0555-47a5-a0de-a1d4f3d27804",
+    "deleted": false,
+    "createdAt": "2023-12-05T19:29:29.662Z",
+    "updatedAt": "2023-12-05T19:29:29.662Z"
+  },
+  {
+    "id": "d2b65cfa-ffaf-4371-9a34-21cba3c90817",
+    "content": "Test",
+    "fileUrl": null,
+    "memberId": "c2a82efe-209f-4058-bec9-88882ba6bc82",
+    "channelId": "02df5fd1-77ba-45d5-8b2c-0dd6fea6c599",
+    "deleted": false,
+    "createdAt": "2024-01-10T18:51:41.031Z",
+    "updatedAt": "2024-01-10T18:51:41.031Z"
+  },
+  {
+    "id": "d2da9698-74a0-4ea5-ab46-9178fc4dbf85",
+    "content": "This message has been deleted",
+    "fileUrl": null,
+    "memberId": "24ab355a-1b75-4398-b4e6-e6cb6a1ce25f",
+    "channelId": "719f0289-0555-47a5-a0de-a1d4f3d27804",
+    "deleted": true,
+    "createdAt": "2023-12-07T14:56:16.480Z",
+    "updatedAt": "2024-02-19T00:32:12.457Z"
+  },
+  {
+    "id": "d36aed1f-ceca-4cb5-bb77-1a838055a16c",
+    "content": "This is a test message...",
+    "fileUrl": null,
+    "memberId": "858273a6-99cf-4c1d-8e29-4ce77e2b0f0d",
+    "channelId": "719f0289-0555-47a5-a0de-a1d4f3d27804",
+    "deleted": false,
+    "createdAt": "2023-09-06T02:45:44.536Z",
+    "updatedAt": "2023-09-06T02:45:44.536Z"
+  },
+  {
+    "id": "d4165f92-fd88-4e8e-b31c-1fe8c90b9337",
+    "content": "Ping!",
+    "fileUrl": null,
+    "memberId": "012d7056-901b-416a-aec2-57ed1211b661",
+    "channelId": "1c395532-b43c-46f7-a8f3-06fd0733d267",
+    "deleted": false,
+    "createdAt": "2024-03-04T18:20:20.426Z",
+    "updatedAt": "2024-03-04T18:20:20.426Z"
+  },
+  {
+    "id": "d5e07dde-7500-441d-a8ea-5eb0e25faab5",
+    "content": "Ping",
+    "fileUrl": null,
+    "memberId": "24ab355a-1b75-4398-b4e6-e6cb6a1ce25f",
+    "channelId": "719f0289-0555-47a5-a0de-a1d4f3d27804",
+    "deleted": false,
+    "createdAt": "2023-12-05T19:29:12.593Z",
+    "updatedAt": "2023-12-05T19:29:12.593Z"
+  },
+  {
+    "id": "d7474cda-92ff-4b46-af6b-a9a43caa7b1b",
+    "content": "hello",
+    "fileUrl": null,
+    "memberId": "012d7056-901b-416a-aec2-57ed1211b661",
+    "channelId": "1c395532-b43c-46f7-a8f3-06fd0733d267",
+    "deleted": false,
+    "createdAt": "2024-02-19T17:03:00.243Z",
+    "updatedAt": "2024-02-19T17:03:14.898Z"
+  },
+  {
+    "id": "e12557d5-261b-4d3a-9a0e-0da6fc08689e",
+    "content": "85",
+    "fileUrl": null,
+    "memberId": "24ab355a-1b75-4398-b4e6-e6cb6a1ce25f",
+    "channelId": "719f0289-0555-47a5-a0de-a1d4f3d27804",
+    "deleted": false,
+    "createdAt": "2024-03-12T05:04:09.689Z",
+    "updatedAt": "2024-03-12T05:04:09.689Z"
+  },
+  {
+    "id": "e17090dc-a59a-48b8-ba72-3a6c5607f8f7",
+    "content": "Test",
+    "fileUrl": null,
+    "memberId": "24ab355a-1b75-4398-b4e6-e6cb6a1ce25f",
+    "channelId": "719f0289-0555-47a5-a0de-a1d4f3d27804",
+    "deleted": false,
+    "createdAt": "2024-03-18T23:49:06.047Z",
+    "updatedAt": "2024-03-18T23:49:06.047Z"
+  },
+  {
+    "id": "e387e908-dd65-4bae-8426-e1b5957d2a3a",
+    "content": "Welcome to the general channel! ",
+    "fileUrl": null,
+    "memberId": "39a4d7a1-a369-43a3-90ef-8b5134f45f63",
+    "channelId": "904eb450-8c8f-4c2c-a673-94ea549840ad",
+    "deleted": false,
+    "createdAt": "2023-09-07T19:47:17.086Z",
+    "updatedAt": "2023-09-07T19:47:17.086Z"
+  },
+  {
+    "id": "e5fc9f9e-e22d-4fbd-938c-ee1039e8b6d3",
+    "content": "https://youtu.be/kRO5jOa06Qw?si=XsuIEy8hNuSRurJQ two and a half hour interview with UFO whistleblower David grush very comprehensive and very well researched documentary movie released yesterday highly recommend",
+    "fileUrl": null,
+    "memberId": "24ab355a-1b75-4398-b4e6-e6cb6a1ce25f",
+    "channelId": "719f0289-0555-47a5-a0de-a1d4f3d27804",
+    "deleted": false,
+    "createdAt": "2023-09-11T16:36:38.600Z",
+    "updatedAt": "2023-09-11T16:36:38.600Z"
+  },
+  {
+    "id": "ee1e47eb-d2f2-437f-b21c-d54200ef2b12",
+    "content": "Just doing a ping to keep the database from sleeping",
+    "fileUrl": null,
+    "memberId": "012d7056-901b-416a-aec2-57ed1211b661",
+    "channelId": "1c395532-b43c-46f7-a8f3-06fd0733d267",
+    "deleted": false,
+    "createdAt": "2024-02-29T22:40:29.195Z",
+    "updatedAt": "2024-02-29T22:40:29.195Z"
+  },
+  {
+    "id": "efab3b73-e79f-47c2-8518-b0347061933d",
+    "content": "This is yet another test of the Code with KenDev channel",
+    "fileUrl": null,
+    "memberId": "24ab355a-1b75-4398-b4e6-e6cb6a1ce25f",
+    "channelId": "719f0289-0555-47a5-a0de-a1d4f3d27804",
+    "deleted": false,
+    "createdAt": "2023-09-05T19:42:15.579Z",
+    "updatedAt": "2023-09-05T19:42:15.579Z"
+  },
+  {
+    "id": "efe37f20-bff3-42a6-900c-e7d97deb452b",
+    "content": "This is a new message.",
+    "fileUrl": null,
+    "memberId": "24ab355a-1b75-4398-b4e6-e6cb6a1ce25f",
+    "channelId": "719f0289-0555-47a5-a0de-a1d4f3d27804",
+    "deleted": false,
+    "createdAt": "2023-09-06T02:22:46.213Z",
+    "updatedAt": "2023-09-06T02:22:46.213Z"
+  },
+  {
+    "id": "f1e9a1db-bddd-48f2-8eec-d738954124cf",
+    "content": "Hello",
+    "fileUrl": null,
+    "memberId": "e3c87242-68a1-4d95-8d10-bac9a4a9afe9",
+    "channelId": "27cddcc3-8f8f-4735-aa55-f609aac676c5",
+    "deleted": false,
+    "createdAt": "2023-12-14T05:07:33.988Z",
+    "updatedAt": "2023-12-14T05:07:33.988Z"
+  },
+  {
+    "id": "f576df0b-f476-4382-82ac-e0ea6bf15cd4",
+    "content": "This is the first message after adding code to Chat-Input.tsx line 63...",
+    "fileUrl": null,
+    "memberId": "858273a6-99cf-4c1d-8e29-4ce77e2b0f0d",
+    "channelId": "719f0289-0555-47a5-a0de-a1d4f3d27804",
+    "deleted": false,
+    "createdAt": "2023-09-05T06:00:27.277Z",
+    "updatedAt": "2023-09-05T06:00:27.277Z"
+  },
+  {
+    "id": "fc973ebd-68d4-4223-a752-bcbddc176059",
+    "content": "https://uploadthing.com/f/26b415b4-b557-451e-aa51-adbb2f36d986_Screenshot_20230911_122626_Chrome.jpg",
+    "fileUrl": "https://uploadthing.com/f/26b415b4-b557-451e-aa51-adbb2f36d986_Screenshot_20230911_122626_Chrome.jpg",
+    "memberId": "27fe7ba0-482c-4e7b-894d-7ceff7e35a90",
+    "channelId": "904eb450-8c8f-4c2c-a673-94ea549840ad",
+    "deleted": false,
+    "createdAt": "2023-09-11T16:28:15.712Z",
+    "updatedAt": "2023-09-11T16:28:15.712Z"
+  }
+]

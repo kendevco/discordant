@@ -1,0 +1,211 @@
+# Discord Clone Project Rules
+# This file defines the rules and processes for our Discord-like chat application
+
+# Template Preservation Guidelines
+template_preservation:
+  holy_files:
+    - payload.config.ts:
+        rules:
+          - "Maintain original import structure and order"
+          - "Keep original comments and placeholders"
+          - "Use defaultLexical from fields directory"
+          - "Preserve getServerSideURL utility"
+          - "No type annotations in this file"
+          - "No plugin configurations (move to plugins.ts)"
+          - "No direct editor configurations"
+          - "Minimal comments, only from original template"
+          - "Use standard Node.js imports (no node: prefix)"
+          - "Keep file-type imports compatible with Payload version"
+
+    - plugins.ts:
+        rules:
+          - "Keep all plugin configurations here"
+          - "Maintain original plugin order"
+          - "Keep type annotations for plugin configs"
+          - "Preserve SEO title/URL generation"
+
+# Technology Stack
+technologies:
+  frontend:
+    framework: "Next.js@15.0.0"
+    ui:
+      - "shadcn-ui@latest"
+      - "tailwindcss@latest"
+      - "lucide-react@latest"
+    state:
+      - "@tanstack/react-query"
+      - "zustand"
+    forms:
+      - "react-hook-form"
+      - "zod"
+    realtime:
+      - "socket.io-client"
+      - "livekit-client"
+
+  backend:
+    core:
+      - "schema.prisma"
+      - "mysql"
+    realtime:
+      - "socket.io"
+      - "livekit-server-sdk"
+    uploads:
+      - "@uploadthing/react"
+      - "@payloadcms/plugin-cloud-storage"
+
+# Collections Structure
+collections:
+  core:
+    - Users
+    - Servers
+    - Channels
+    - Messages
+    - Members
+    - Conversations
+    - DirectMessages
+
+  media:
+    - Attachments
+    - ServerMedia
+    - UserMedia
+
+  settings:
+    - ServerSettings
+    - UserSettings
+    - ChannelSettings
+
+# Feature Requirements
+features:
+  messaging:
+    - "Real-time messaging using Socket.io"
+    - "Message attachments with UploadThing"
+    - "Edit and delete messages in real-time"
+    - "Infinite message loading (10 per batch)"
+    - "Message reactions and emoji support"
+    - "Typing indicators"
+    - "Read receipts"
+
+  channels:
+    - "Text channels with rich text support"
+    - "Voice channels with real-time audio"
+    - "Video channels with WebRTC support"
+    - "Channel permissions and roles"
+    - "Channel categories and organization"
+
+  servers:
+    - "Server creation and customization"
+    - "Invite system with unique links"
+    - "Member management and roles"
+    - "Server settings and permissions"
+    - "Server discovery and search"
+
+  direct_messaging:
+    - "1:1 conversations between members"
+    - "Real-time video calls"
+    - "Audio calls with screen sharing"
+    - "Group DM support"
+    - "Message search and history"
+
+# State Management
+state:
+  server:
+    - "Server-side rendering with RSC"
+    - "React Query for data fetching"
+    - "Socket.io for real-time updates"
+
+  client:
+    - "Zustand for UI state"
+    - "React Context for theme/auth"
+    - "Local storage for preferences"
+
+# UI Components
+components:
+  layout:
+    - "Server sidebar"
+    - "Channel list"
+    - "Member list"
+    - "Chat area"
+    - "Modal system"
+
+  chat:
+    - "Message component"
+    - "Message input"
+    - "Attachment preview"
+    - "Emoji picker"
+    - "Message actions"
+
+  media:
+    - "Video call interface"
+    - "Audio call controls"
+    - "Screen sharing UI"
+    - "Media player"
+
+# Error Handling
+errors:
+  websocket:
+    - "Automatic reconnection"
+    - "Fallback to polling"
+    - "Connection status indicators"
+    - "Offline message queue"
+
+  api:
+    - "Error boundaries"
+    - "Loading states"
+    - "Retry mechanisms"
+    - "User feedback"
+
+# Performance
+performance:
+  optimization:
+    - "Code splitting"
+    - "Image optimization"
+    - "Lazy loading"
+    - "Debounced actions"
+
+  caching:
+    - "React Query caching"
+    - "Static generation"
+    - "Service worker"
+
+# Security
+security:
+  authentication:
+    - "Clerk authentication"
+    - "Role-based access"
+    - "JWT validation"
+    - "CSRF protection"
+
+  data:
+    - "Input sanitization"
+    - "Rate limiting"
+    - "Encryption"
+    - "Audit logging"
+
+# Development Workflow
+workflow:
+  setup:
+    - "Environment configuration"
+    - "Database setup"
+    - "Development server"
+    - "TypeScript configuration"
+
+  commands:
+    dev: "npm run dev"
+    build: "npm run build"
+    start: "npm run start"
+    lint: "npm run lint"
+
+# Environment Variables
+environment:
+  required:
+    - "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY"
+    - "CLERK_SECRET_KEY"
+    - "DATABASE_URI"
+    - "PAYLOAD_SECRET"
+    - "UPLOADTHING_SECRET"
+    - "LIVEKIT_API_KEY"
+
+  optional:
+    - "NEXT_PUBLIC_SITE_URL"
+    - "NEXT_PUBLIC_APP_URL"
+    - "NEXT_PUBLIC_SOCKET_URL"

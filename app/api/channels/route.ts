@@ -2,6 +2,7 @@ import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
 import { MemberRole } from "@prisma/client";
 import { NextResponse } from "next/server";
+import { randomUUID } from "crypto";
 
 export async function POST(
     req: Request
@@ -40,9 +41,11 @@ export async function POST(
                 data: {
                     channels:  {
                         create: {
+                            id: randomUUID(),
                             profileId: profile.id,
                             name,
-                            type
+                            type,
+                            updatedAt: new Date()
                         }
                     }
                 }

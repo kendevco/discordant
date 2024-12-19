@@ -1,12 +1,40 @@
-import { authMiddleware } from "@clerk/nextjs";
- 
-// This example protects all routes including api/trpc routes
-// Please edit this to allow other routes to be public as needed.
-// See https://clerk.com/docs/references/nextjs/auth-middleware for more information about configuring your middleware
-export default authMiddleware({
-  publicRoutes: ["/api/uploadthing"]
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
+
+// Define route matchers
+const isProtectedRoute = createRouteMatcher([
+  "/servers/(.*)",
+  "/channels/(.*)",
+  "/conversations/(.*)",
+  "/me/(.*)",
+]);
+
+const isPublicRoute = createRouteMatcher([
+  "/",
+  "/sign-in(.*)",
+  "/sign-up(.*)",
+  "/api/webhook(.*)",
+  "/api/uploadthing(.*)",
+  "/invite/(.*)",
+]);
+
+export default clerkMiddleware(async (auth, req) => {
+  // Check if it's a public route first
+  if (isPublicRoute(req)) {
+    return NextResponse.next();
+  }
+
+  // For all other routes (including protected and root), ensure user is authenticated
+  try {
+    await auth.protect();
+    return NextResponse.next();
+  } catch (error) {
+    const signInUrl = new URL("/sign-in", req.url);
+    signInUrl.searchParams.set("redirect_url", req.url);
+    return NextResponse.redirect(signInUrl);
+  }
 });
- 
+
 export const config = {
-  matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)", "/api/:path*"],
 };

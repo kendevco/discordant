@@ -1,0 +1,49 @@
+.unifiedSidebar {
+  display: flex;
+  width: 320px;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.sidebarContent {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.channelSection {
+  display: flex;
+  flex-direction: column;
+  width: 248px;
+  background-color: var(--secondary-bg);
+}
+
+.darkMode {
+  --primary-bg: #0a0b0d;
+  --secondary-bg: #1a1b1e;
+  --accent-color: #00f5ff;
+  --text-color: #f2f3f5;
+  --online-color: #00ff8c;
+  --idle-color: #ffb800;
+  --offline-color: #404040;
+}
+
+.lightMode {
+  --primary-bg: #f8f9fa;
+  --secondary-bg: #e5e7eb;
+  --accent-color: #008b94;
+  --text-color: #1a1b1e;
+  --online-color: #00cc70;
+  --idle-color: #ffa000;
+  --offline-color: #9e9e9e;
+}
+
+@media (max-width: 768px) {
+  .unifiedSidebar {
+    width: 100%;
+    height: 100%;
+  }
+}

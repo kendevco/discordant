@@ -4,7 +4,8 @@ import * as z from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import axios from "axios";
-
+import { useRouter } from "next/navigation";
+import { useCustomToast } from "@/hooks/use-custom-toast";
 
 import { 
     Dialog, 
@@ -27,7 +28,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FileUpload } from "../file-upload";
-import { useRouter } from "next/navigation";
 import { useModal } from "@/hooks/use-modal-store";
 
 const formSchema = z.object({
@@ -43,6 +43,7 @@ export const CreateServerModal = () => {
 
     const {isOpen, onClose, type} = useModal();
     const router = useRouter();
+    const toast = useCustomToast();
 
     const isModalOpen = isOpen && type === "createServer";
 
@@ -58,14 +59,13 @@ export const CreateServerModal = () => {
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
-            await axios.post("/api/servers", values)         
-            
+            await axios.post("/api/servers", values);
             form.reset();
             router.refresh();
             onClose();
-
-        } catch (error) {   
-            console.log(error);
+            toast.success("Server created successfully!");
+        } catch (error) {
+            toast.error("Failed to create server. Please try again.");
         }
     }
 
@@ -103,7 +103,6 @@ export const CreateServerModal = () => {
                                         </FormItem>
                                     )}
                                 />
-
                             </div>
                         </div>
 
@@ -113,16 +112,16 @@ export const CreateServerModal = () => {
                             render={({field}) => (
                                 <FormItem>
                                     <FormLabel
-                                        className="uppercase text-xs font-bold text-#797979 dark:text-secondary/20"
+                                        className="uppercase text-xs font-bold text-zinc-500 dark:text-secondary/70"
                                     >
-                                        Server Name
+                                        Server name
                                     </FormLabel>
                                     <FormControl>
                                         <Input
                                             { ...field }
                                             disabled={isLoading}
                                             className="bg-zinc-300/50 border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0"
-                                            placeholder="Enter a server name"
+                                            placeholder="Enter server name"
                                         />
                                     </FormControl>
                                     <FormMessage/>

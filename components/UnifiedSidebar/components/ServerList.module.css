@@ -1,0 +1,69 @@
+.serverList {
+  width: 72px;
+  height: 100%;
+  background-color: var(--primary-bg);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  overflow-y: auto;
+}
+
+.serverIcons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.serverIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: var(--secondary-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  transition: all 0.3s ease;
+}
+
+.serverIcon:hover {
+  border-radius: 30%;
+  background-color: var(--accent-color);
+}
+
+.serverIcon.active {
+  border-radius: 30%;
+  background-color: var(--accent-color);
+  box-shadow: 0 0 10px var(--accent-color);
+}
+
+.bottomIcons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.iconButton {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: var(--secondary-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.iconButton:hover {
+  background-color: var(--accent-color);
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+  color: var(--text-color);
+}
+
