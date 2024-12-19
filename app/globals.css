@@ -5,161 +5,82 @@
 @tailwind utilities;
 
 :root {
-  --primary-bg: #0a0b0d;
-  --secondary-bg: #1a1b1e;
-  --accent-color: #00f5ff;
-  --text-color: #f2f3f5;
-  --online-color: #00ff8c;
-  --idle-color: #ffb800;
-  --offline-color: #404040;
-
-  --primary-bg-rgb: 10, 11, 13;
-  --secondary-bg-rgb: 26, 27, 30;
-  --accent-color-rgb: 0, 245, 255;
-  --online-color-rgb: 0, 255, 140;
-  --idle-color-rgb: 255, 184, 0;
-  --offline-color-rgb: 64, 64, 64;
-
-  --background: #f8f9fa;
-  --foreground: #1a1b1e;
-  
-  --card: 0 0% 100%;
-  --card-foreground: 20 14.3% 4.1%;
- 
-  --popover: 0 0% 100%;
-  --popover-foreground: 20 14.3% 4.1%;
-  --primary: 24 9.8% 10%;
-  --primary-foreground: 60 9.1% 97.8%;
- 
-  --secondary: 60 4.8% 95.9%;
-  --secondary-foreground: 24 9.8% 10%;
- 
-  --muted: 60 4.8% 95.9%;
-  --muted-foreground: 25 5.3% 44.7%;
-  --accent: 60 4.8% 95.9%;
-  --accent-foreground: 24 9.8% 10%;
- 
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 60 9.1% 97.8%;
-
-  --border: 20 5.9% 90%;
-  --input: 20 5.9% 90%;
-  --ring: 20 14.3% 4.1%;
- 
-  --radius: 0.5rem;
+  --gradient-start: #2B2D31;
+  --gradient-end: #1E1F22;
+  --gradient-light-start: #E3E5E8;
+  --gradient-light-end: #C7C8CA;
 }
 
-[data-theme="dark"] {
-  --background: #1e1f22;
-  --foreground: #f2f3f5;
-}
+@layer base {
+  :root {
+    --background: linear-gradient(to bottom right, var(--gradient-light-start), var(--gradient-light-end));
+    --foreground: #1E1F22;
 
-body {
-  font-family: "Geist", sans-serif;
-  background: linear-gradient(to bottom right, #2B2D31, #1E1F22);
-  color: var(--foreground);
-  transition: background-color 0.3s ease, color 0.3s ease;
-  min-height: 100vh;
-}
+    --card: #ffffff;
+    --card-foreground: #1E1F22;
+ 
+    --popover: #ffffff;
+    --popover-foreground: #1E1F22;
+ 
+    --primary: #2B2D31;
+    --primary-foreground: #ffffff;
+ 
+    --secondary: #C7C8CA;
+    --secondary-foreground: #1E1F22;
+ 
+    --muted: #E3E5E8;
+    --muted-foreground: #6C6F78;
+ 
+    --accent: #E3E5E8;
+    --accent-foreground: #1E1F22;
+ 
+    --destructive: #ff0000;
+    --destructive-foreground: #ffffff;
 
-.dark {
-  color-scheme: dark;
-  --card: 20 14.3% 4.1%;
-  --card-foreground: 60 9.1% 97.8%;
+    --border: #E3E5E8;
+    --input: #E3E5E8;
+    --ring: #1E1F22;
  
-  --popover: 20 14.3% 4.1%;
-  --popover-foreground: 60 9.1% 97.8%;
+    --radius: 0.5rem;
+  }
  
-  --primary: 60 9.1% 97.8%;
-  --primary-foreground: 24 9.8% 10%;
+  .dark {
+    --background: linear-gradient(to bottom right, var(--gradient-start), var(--gradient-end));
+    --foreground: #ffffff;
  
-  --secondary: 12 6.5% 15.1%;
-  --secondary-foreground: 60 9.1% 97.8%;
+    --card: #1E1F22;
+    --card-foreground: #ffffff;
  
-  --muted: 12 6.5% 15.1%;
-  --muted-foreground: 24 5.4% 63.9%;
+    --popover: #2B2D31;
+    --popover-foreground: #ffffff;
  
-  --accent: 12 6.5% 15.1%;
-  --accent-foreground: 60 9.1% 97.8%;
+    --primary: #ffffff;
+    --primary-foreground: #1E1F22;
  
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 60 9.1% 97.8%;
+    --secondary: #2B2D31;
+    --secondary-foreground: #ffffff;
  
-  --border: 12 6.5% 15.1%;
-  --input: 12 6.5% 15.1%;
-  --ring: 24 5.7% 82.9%;
-}
-
-.dark body {
-  background: linear-gradient(to bottom right, #1E1F22, #2B2D31);
-}
-
-@media (max-width: 768px) {
-  body {
-    @apply overflow-x-hidden;
+    --muted: #2B2D31;
+    --muted-foreground: #989AA2;
+ 
+    --accent: #2B2D31;
+    --accent-foreground: #ffffff;
+ 
+    --destructive: #ff0000;
+    --destructive-foreground: #ffffff;
+ 
+    --border: #2B2D31;
+    --input: #2B2D31;
+    --ring: #989AA2;
   }
 }
 
-/* Cyber Noir Theme Animations */
-@keyframes statusPulse {
-  0% {
-    opacity: 0.6;
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0.6;
-  }
-}
-
-@keyframes glowExpand {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-@keyframes mobileSlide {
-  from {
-    transform: translateX(-100%);
-  }
-  to {
-    transform: translateX(0);
-  }
-}
-
-/* Cyber Noir Theme Utilities */
-.cyber-grid {
-  background-size: 50px 50px;
-  background-image: linear-gradient(
-      to right,
-      var(--grid-color) 1px,
-      transparent 1px
-    ),
-    linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
-}
-
-.cyber-glow {
-  box-shadow: 0 0 5px var(--glow-color), 0 0 10px var(--glow-color),
-    0 0 15px var(--glow-color);
-}
-
-.cyber-text-glow {
-  text-shadow: 0 0 5px var(--glow-color), 0 0 10px var(--glow-color);
-}
-
-/* General styles */
 @layer base {
   * {
     @apply border-border;
   }
   body {
-    @apply text-foreground;
+    @apply bg-background text-foreground;
+    background-image: var(--background);
   }
 }

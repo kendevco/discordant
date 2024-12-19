@@ -1,18 +1,11 @@
 import { createUploadthing } from "uploadthing/next";
 
-const token = process.env.UPLOADTHING_TOKEN;
+const token = process.env.NEXT_PUBLIC_UPLOAD_THING_TOKEN;
+
 if (!token) {
-  throw new Error("Missing UPLOADTHING_TOKEN environment variable");
+  throw new Error(
+    "Missing NEXT_PUBLIC_UPLOAD_THING_TOKEN environment variable"
+  );
 }
 
-// Validate token format
-try {
-  const decoded = JSON.parse(atob(token.split('.')[1]));
-  if (!decoded.apiKey || !decoded.appId || !decoded.regions) {
-    throw new Error("Invalid token format");
-  }
-} catch (error) {
-  console.error("Error validating UPLOADTHING_TOKEN:", error);
-  throw new Error("Invalid UPLOADTHING_TOKEN format");
-}
 export const uploadthing = createUploadthing();

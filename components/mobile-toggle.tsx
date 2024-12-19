@@ -51,7 +51,9 @@ export const MobileToggle = ({
       >
         <div className="flex items-center justify-between h-16 px-4 border-b border-neutral-800">
           <div className="flex items-center">
-            <span className="text-lg font-semibold text-zinc-200 dark:text-white">Discord</span>
+            <span className="text-lg font-semibold text-zinc-200 dark:text-white">
+              Discordant
+            </span>
           </div>
           <button
             onClick={onClose}

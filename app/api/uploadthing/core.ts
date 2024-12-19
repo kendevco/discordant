@@ -1,27 +1,24 @@
 import { createUploadthing, type FileRouter } from "uploadthing/next";
+import { UploadThingError } from "uploadthing/server";
 import { auth, currentUser } from "@clerk/nextjs/server";
 
 const f = createUploadthing();
 
-const handleAuth = async () => {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
-  return { userId };
-};
-
 export const ourFileRouter = {
-  serverImage: f(
-    { image: { maxFileSize: "4MB", maxFileCount: 1 } },
-    { awaitServerData: false }
-  )
-    .middleware(async () => {
+  serverImage: f({
+    image: {
+      maxFileSize: "4MB",
+      maxFileCount: 1,
+    },
+  })
+    .middleware(async ({ req }) => {
       try {
         const user = await currentUser();
-        if (!user) throw new Error("Unauthorized");
+        if (!user) throw new UploadThingError("Unauthorized");
         return { userId: user.id };
       } catch (error) {
         console.error("serverImage middleware error:", error);
-        throw error;
+        throw new UploadThingError("Unauthorized");
       }
     })
     .onUploadComplete(async ({ metadata, file }) => {
@@ -30,15 +27,18 @@ export const ourFileRouter = {
       return { url: file.url };
     }),
 
-  messageFile: f(["image", "pdf"], { awaitServerData: false })
-    .middleware(async () => {
+  messageFile: f({
+    image: { maxFileSize: "4MB" },
+    pdf: { maxFileSize: "4MB" },
+  })
+    .middleware(async ({ req }) => {
       try {
         const user = await currentUser();
-        if (!user) throw new Error("Unauthorized");
+        if (!user) throw new UploadThingError("Unauthorized");
         return { userId: user.id };
       } catch (error) {
         console.error("messageFile middleware error:", error);
-        throw error;
+        throw new UploadThingError("Unauthorized");
       }
     })
     .onUploadComplete(async ({ metadata, file }) => {

@@ -4,6 +4,7 @@ import React from 'react';
 import { ChannelList } from "@/components/UnifiedSidebar/components/sidebar/channel-list";
 import { ServerList } from "@/components/UnifiedSidebar/components/sidebar/server-list";
 import { Channel, Member, Profile, Server } from "@prisma/client";
+import { useParams } from "next/navigation";
 
 interface ServerWithMembersAndChannels extends Server {
   channels: Channel[];
@@ -18,18 +19,19 @@ interface UnifiedSidebarClientProps {
 }
 
 export function UnifiedSidebarClient({ servers, initialProfile }: UnifiedSidebarClientProps) {
-  const currentServer = servers[0]; // Just for testing, replace with actual logic
+  const params = useParams();
+  const currentServer = servers.find(server => server.id === params?.serverId) || servers[0];
 
   return (
-    <div className="hidden h-screen text-gray-100 md:flex bg-gradient-to-b from-gray-900 to-gray-800">
-      <div className="flex flex-col items-center py-4 border-r border-gray-700 w-[72px]">
+    <nav className="hidden md:flex fixed left-0 top-0 h-full">
+      <div className="flex flex-col w-[72px] h-full bg-[#1E1F22]">
         <ServerList servers={servers} />
       </div>
-      <div className="flex flex-col bg-gray-800 w-60">
-        {currentServer && (
+      {currentServer && (
+        <div className="flex flex-col w-60 h-full bg-[#2B2D31]">
           <ChannelList server={currentServer} />
-        )}
-      </div>
-    </div>
+        </div>
+      )}
+    </nav>
   );
 } 

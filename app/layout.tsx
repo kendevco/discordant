@@ -5,7 +5,6 @@ import { ClerkProvider } from '@clerk/nextjs'
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
 import { ourFileRouter } from "./api/uploadthing/core";
-import { Suspense } from "react";
 
 import { cn } from '@/lib/utils'
 import { ThemeProvider } from '@/components/providers/theme-provider'
@@ -30,9 +29,7 @@ export default function RootLayout({
           GeistSans.className,
           "bg-white dark:bg-[#313338]"
         )}>
-          <Suspense>
-            <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
-          </Suspense>
+          <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
           <ThemeProvider
             attribute="class"
             defaultTheme='dark'

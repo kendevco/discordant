@@ -7,7 +7,6 @@ import { MobileToggle } from "@/components/mobile-toggle";
 import { Profile } from "@prisma/client";
 import { ServerWithMembersWithProfiles } from "@/types/server";
 import { cn } from "@/lib/utils";
-import { useEffect } from "react";
 
 interface ServerLayoutClientProps {
   server: ServerWithMembersWithProfiles;
@@ -24,33 +23,23 @@ export const ServerLayoutClient = ({
 }: ServerLayoutClientProps) => {
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
-  useEffect(() => {
-    console.log("Window width:", window.innerWidth);
-    console.log("Media query state:", isDesktop);
-  }, [isDesktop]);
-
   return (
     <div className="h-full">
-      {/* Desktop Navigation */}
-      {isDesktop && (
-        <>
-          <nav className="md:flex h-full w-[72px] z-30 flex-col fixed inset-y-0 bg-[#1E1F22]">
+      {isDesktop ? (
+        <div className="fixed top-0 left-0 flex h-full">
+          <div className="flex flex-col w-[72px] h-full bg-[#1E1F22]">
             <ServerList servers={servers} />
-          </nav>
-          <aside className="md:flex h-full w-60 z-20 flex-col fixed inset-y-0 left-[72px] bg-[#2B2D31]">
+          </div>
+          <div className="flex flex-col w-60 h-full bg-[#2B2D31]">
             <ChannelList server={server} />
-          </aside>
-        </>
-      )}
-
-      {/* Mobile Navigation */}
-      {!isDesktop && (
+          </div>
+        </div>
+      ) : (
         <nav className="md:hidden flex items-center p-4 h-[64px] fixed top-0 w-full z-30 bg-[#2B2D31]">
           <MobileToggle server={server} servers={servers} profile={profile} />
         </nav>
       )}
 
-      {/* Main Content */}
       <main className={cn(
         "h-full",
         isDesktop ? "pl-[332px]" : "pt-[64px]"
