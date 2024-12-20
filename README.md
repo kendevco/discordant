@@ -118,6 +118,8 @@ Feel free to suggest any changes or share your thoughts!
 
 Check out our detailed overview video to get a comprehensive understanding of the NextJS Discord Clone project. This video covers all the key features and functionalities, providing a visual guide to help you navigate and utilize the platform effectively.
 
-[![Watch the video](public/demo/Discordant_Chat_Overview_480p.mp4)](public/demo/Discordant_Chat_Overview_480p.mp4)
+# Video Demo
 
-You can also download the video directly [here](public/demo/Discordant_Chat_Overview_480p.mp4).
+https://github.com/kendevco/discordant/raw/main/public/demo/Discordant_Chat_Overview_480p.mp4
+
+You can also download the video directly [here](https://github.com/kendevco/discordant/raw/main/public/demo/Discordant_Chat_Overview_480p.mp4).
