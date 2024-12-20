@@ -4,7 +4,6 @@ import { v4 as uuidv4 } from "uuid";
 
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
-import { analyzeImage } from "@/lib/image-analysis";
 import { createSystemMessage } from "@/lib/create-system-message";
 
 const MESSAGES_BATCH = 10;
@@ -104,14 +103,13 @@ export async function POST(req: Request) {
 
     // Check for existing message
     const existingMessage = await db.message.findUnique({
-      where: { id: messageId }
+      where: { id: messageId },
     });
 
     if (existingMessage) {
       return NextResponse.json(existingMessage);
     }
-    
-  
+
     const member = await db.member.findFirst({
       where: {
         profileId: profile.id,
@@ -151,15 +149,10 @@ export async function POST(req: Request) {
       },
     });
 
-    // Handle image analysis and system message asynchronously
-    if (fileUrl) {
-      analyzeImage(fileUrl, content || "Describe the image")
-        .then(analyzedContent => {
-          createSystemMessage(channelId, analyzedContent)
-            .catch(error => console.error("Error creating system message:", error));
-        })
-        .catch(error => console.error("Image analysis failed:", error));
-    }
+    // Create a system message for every chat message
+    createSystemMessage(channelId, content, fileUrl).catch((error) =>
+      console.error("Error creating system message:", error)
+    );
 
     return NextResponse.json(message);
   } catch (error) {
