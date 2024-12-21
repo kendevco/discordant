@@ -93,7 +93,7 @@ export const ChatMessages = ({
         <p className="text-xs text-zinc-500 dark:text-zinc-400">
           Something went wrong!
         </p>
-        <button 
+        <button
           onClick={() => window.location.reload()}
           className="mt-4 text-xs text-indigo-500 hover:text-indigo-600 dark:text-indigo-400 dark:hover:text-indigo-300"
         >
@@ -110,7 +110,11 @@ export const ChatMessages = ({
   const isEmpty = !hasNextPage && data.pages[0].items.length === 0;
 
   return (
-    <div ref={chatRef} className="flex flex-col flex-1 py-4 overflow-y-auto">
+    <div
+      ref={chatRef}
+      className="flex flex-col flex-1 py-4 overflow-y-auto"
+      data-chat-messages
+    >
       {!hasNextPage && <div className="flex-1" />}
       {isEmpty && (
         <ChatWelcome

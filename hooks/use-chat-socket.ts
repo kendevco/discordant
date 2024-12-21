@@ -13,7 +13,7 @@ interface ChatSocketProps {
 export const useChatSocket = ({
   addKey,
   updateKey,
-  queryKey
+  queryKey,
 }: ChatSocketProps) => {
   const { subscribe } = useMessages();
   const queryClient = useQueryClient();
@@ -25,14 +25,24 @@ export const useChatSocket = ({
         queryClient.setQueryData([queryKey], (oldData: any) => {
           if (!oldData || !oldData.pages || oldData.pages.length === 0) {
             return {
-              pages: [{
-                items: [message],
-              }]
-            }
+              pages: [
+                {
+                  items: [message],
+                },
+              ],
+            };
           }
 
-          const newData = {...oldData};
+          const newData = { ...oldData };
           newData.pages[0].items.unshift(message);
+
+          setTimeout(() => {
+            const chatDiv = document.querySelector("[data-chat-messages]");
+            if (chatDiv) {
+              chatDiv.scrollTop = chatDiv.scrollHeight;
+            }
+          }, 0);
+
           return newData;
         });
       }
@@ -44,10 +54,12 @@ export const useChatSocket = ({
             return oldData;
           }
 
-          const newData = {...oldData};
+          const newData = { ...oldData };
           for (let i = 0; i < newData.pages.length; i++) {
             const page = newData.pages[i];
-            const messageIndex = page.items.findIndex((item: MessageWithMemberWithProfile) => item.id === message.id);
+            const messageIndex = page.items.findIndex(
+              (item: MessageWithMemberWithProfile) => item.id === message.id
+            );
             if (messageIndex !== -1) {
               page.items[messageIndex] = message;
               break;
@@ -64,4 +76,4 @@ export const useChatSocket = ({
   }, [queryKey, addKey, updateKey, subscribe, queryClient]);
 
   return {};
-}
+};

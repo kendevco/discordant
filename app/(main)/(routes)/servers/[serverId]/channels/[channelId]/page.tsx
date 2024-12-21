@@ -57,7 +57,7 @@ const ChannelIdPage = async ({ params }: ChannelIdPageProps) => {
         }
     });
 
-    const server = servers.find(s => s.id === params.serverId);
+    const server = await servers.find(s => s.id === params.serverId);
 
     return (
         <div className="flex flex-col h-full">

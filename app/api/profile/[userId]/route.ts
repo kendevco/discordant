@@ -8,8 +8,8 @@ export async function GET(
   try {
     const profile = await db.profile.findUnique({
       where: {
-        userId: params.userId
-      }
+        userId: params.userId,
+      },
     });
 
     if (!profile) {
@@ -21,4 +21,4 @@ export async function GET(
     console.log("[PROFILE_GET]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
-} 
+}

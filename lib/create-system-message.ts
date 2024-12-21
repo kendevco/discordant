@@ -4,9 +4,149 @@ import { Message } from "@prisma/client";
 import { analyzeImage } from "./image-analysis";
 import { track } from "@vercel/analytics/server";
 import { v4 as uuidv4 } from "uuid";
+import { format } from "date-fns";
 
-// Use environment variable for system user ID
 const SYSTEM_USER_ID = process.env.SYSTEM_USER_ID || "system-user-9000";
+const SYSTEM_USER_NAME = process.env.SYSTEM_USER_NAME || "System User";
+const SYSTEM_USER_IMAGE =
+  process.env.SYSTEM_USER_IMAGE || "/SystemAvatarNuke.png";
+const SYSTEM_USER_EMAIL = process.env.SYSTEM_USER_EMAIL || "ai@example.com";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+const SYSTEM_OWNERS = ["Kenneth Courtney", "Tyler Suzanne"];
+
+interface MessageContext {
+  content: string;
+  timestamp: string;
+  channelName?: string;
+  author: string;
+  isCurrentThread: boolean;
+}
+
+async function fetchSystemUser() {
+  return db.profile.upsert({
+    where: { id: SYSTEM_USER_ID },
+    update: {},
+    create: {
+      id: SYSTEM_USER_ID,
+      userId: SYSTEM_USER_ID,
+      name: SYSTEM_USER_NAME,
+      imageUrl: SYSTEM_USER_IMAGE,
+      email: SYSTEM_USER_EMAIL,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+  });
+}
+
+async function fetchOrCreateSystemMember(
+  systemUserId: string,
+  serverId: string
+) {
+  const member = await db.member.findFirst({
+    where: { profileId: systemUserId, serverId },
+  });
+
+  if (member) return member;
+
+  return db.member.create({
+    data: {
+      id: uuidv4(),
+      profileId: systemUserId,
+      serverId,
+      role: "GUEST",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+  });
+}
+
+async function fetchPreviousMessages(channelId: string) {
+  try {
+    const currentChannel = await db.channel.findUnique({
+      where: { id: channelId },
+      select: { name: true },
+    });
+
+    // Reduce the number of messages fetched to prevent context overflow
+    const otherChannelsMessages = await db.message.findMany({
+      where: {
+        channelId: { not: channelId },
+        NOT: { content: { startsWith: "/noask" } },
+      },
+      orderBy: { createdAt: "desc" },
+      take: 5, // Reduced from 10
+      include: {
+        member: {
+          include: { profile: true },
+        },
+        channel: {
+          select: { name: true },
+        },
+      },
+    });
+
+    const currentChannelMessages = await db.message.findMany({
+      where: {
+        channelId,
+        NOT: { content: { startsWith: "/noask" } },
+      },
+      orderBy: { createdAt: "desc" },
+      take: 10, // Reduced from 20
+      include: {
+        member: {
+          include: { profile: true },
+        },
+      },
+    });
+
+    // Format messages with context and limit content size
+    const formatMessage = (
+      msg: any,
+      isCurrentThread: boolean,
+      channelName?: string
+    ): MessageContext => ({
+      content: msg.content.slice(0, 500), // Limit content size
+      timestamp: format(new Date(msg.createdAt), "PPpp"),
+      channelName: channelName || currentChannel?.name,
+      author: msg.member.profile.name,
+      isCurrentThread,
+    });
+
+    const otherChannelsFormatted = otherChannelsMessages
+      .map((msg) => formatMessage(msg, false, msg.channel.name))
+      .reverse();
+
+    const currentChannelFormatted = currentChannelMessages
+      .map((msg) => formatMessage(msg, true))
+      .reverse();
+
+    return {
+      allMessages: [...otherChannelsFormatted, ...currentChannelFormatted],
+      currentThreadMessages: currentChannelFormatted,
+      systemOwners: SYSTEM_OWNERS,
+    };
+  } catch (error) {
+    console.error("Error fetching previous messages:", error);
+    return {
+      allMessages: [],
+      currentThreadMessages: [],
+      systemOwners: SYSTEM_OWNERS,
+    };
+  }
+}
+
+async function broadcastSystemMessage(channelId: string, message: any) {
+  try {
+    await fetch(`${SITE_URL}/api/messages/broadcast`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ channelId, message, type: "system" }),
+    });
+  } catch (error) {
+    console.error("Error broadcasting system message:", error);
+    // Don't throw - broadcasting failure shouldn't fail the whole operation
+  }
+}
 
 export async function createSystemMessage(
   channelId: string,
@@ -18,105 +158,56 @@ export async function createSystemMessage(
   console.log("File URL provided:", fileUrl);
 
   try {
-    let analyzedContent = content;
-    let shouldAnalyze = true;
+    const analyzedContent = content.startsWith("/ask")
+      ? content.slice(5).trim()
+      : content;
 
-    // Check for /ask and /noask commands
-    if (content.startsWith("/ask")) {
-      analyzedContent = content.slice(5).trim();
-      shouldAnalyze = true;
-      console.log("Command /ask detected. Analyzing content:", analyzedContent);
-    } else if (content.startsWith("/noask")) {
-      analyzedContent = content.slice(7).trim();
-      shouldAnalyze = false;
-      console.log(
-        "Command /noask detected. Skipping analysis for content:",
-        analyzedContent
-      );
-    }
+    // Limit content size
+    const truncatedContent = analyzedContent.slice(0, 2000);
+    const shouldAnalyze = !content.startsWith("/noask");
 
-    // Get System User by ID
-    const systemUser = await db.profile.upsert({
-      where: { id: SYSTEM_USER_ID },
-      update: {},
-      create: {
-        id: SYSTEM_USER_ID,
-        userId: SYSTEM_USER_ID,
-        name: process.env.SYSTEM_USER_NAME || "System User",
-        imageUrl: process.env.SYSTEM_USER_IMAGE || "/SystemAvatarNuke.png",
-        email: process.env.SYSTEM_USER_EMAIL || "ai@example.com",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    });
-
+    // Fetch system user and related data
+    const systemUser = await fetchSystemUser();
     console.log("System user retrieved or created:", systemUser);
 
-    if (!systemUser) {
-      throw new Error("System user not found");
-    }
-
-    // Get the server ID from the channel ID
     const channel = await db.channel.findUnique({
       where: { id: channelId },
-      select: { serverId: true },
+      select: { serverId: true, name: true },
     });
-
-    console.log("Channel retrieved:", channel);
 
     if (!channel) {
       throw new Error("Channel not found");
     }
+    console.log("Channel retrieved:", channel);
 
-    // Find existing system member or create a new one
-    let systemMember = await db.member.findFirst({
-      where: {
-        profileId: systemUser.id,
-        serverId: channel.serverId,
-      },
-    });
+    const systemMember = await fetchOrCreateSystemMember(
+      systemUser.id,
+      channel.serverId
+    );
+    console.log("System member:", systemMember);
 
-    if (!systemMember) {
-      systemMember = await db.member.create({
-        data: {
-          id: uuidv4(),
-          profileId: systemUser.id,
-          serverId: channel.serverId,
-          role: "GUEST",
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      });
-      console.log("System member created:", systemMember);
-    } else {
-      console.log("System member found:", systemMember);
-    }
-
-    // Analyze the message and create a system message if needed
+    // Analyze and create system message
     if (shouldAnalyze) {
-      // Fetch the last 10 messages for context
-      const previousMessages = await db.message.findMany({
-        where: { channelId },
-        orderBy: { createdAt: "desc" },
-        take: 10,
-        include: { member: { include: { profile: true } } },
-      });
-
-      console.log("Previous messages fetched for context:", previousMessages);
-
-      let analysisResult: string;
+      let analysisResult = truncatedContent;
 
       if (fileUrl) {
-        // If there's a file URL, analyze the image
-        const instructions =
-          "Describe the image in detail if possible include relevant tags for later retrieval";
-        analysisResult = await analyzeImage(fileUrl, instructions);
+        console.log("Analyzing image:", fileUrl);
+        analysisResult = await analyzeImage(
+          fileUrl,
+          "Describe the image in detail with relevant tags."
+        );
         console.log("Image analysis result:", analysisResult);
       } else {
-        // Otherwise, analyze the text message
+        console.log("Analyzing text message");
+        const messageContext = await fetchPreviousMessages(channelId);
+        console.log("Message context fetched:", {
+          totalMessages: messageContext.allMessages.length,
+          currentThreadMessages: messageContext.currentThreadMessages.length,
+        });
+
         const currentMessage: Message = {
-          id: "temp-id",
-          content: analyzedContent,
+          id: uuidv4(),
+          content: truncatedContent,
           fileUrl: null,
           memberId: systemUser.id,
           channelId,
@@ -126,15 +217,43 @@ export async function createSystemMessage(
           role: "system",
         };
 
-        analysisResult = await analyzeMessage(currentMessage, previousMessages);
+        // Limit context size
+        const contextMessages = messageContext.allMessages
+          .map(
+            (msg) =>
+              `[${msg.isCurrentThread ? "Current Thread" : msg.channelName}] ${
+                msg.timestamp
+              } - ${msg.author}: ${msg.content}`
+          )
+          .slice(0, 10) // Only take last 10 messages for context
+          .join("\n");
+
+        const contextualPrompt = `
+          System Owners: ${SYSTEM_OWNERS.join(", ")}
+          Current Channel: ${channel.name}
+          Current Time: ${format(new Date(), "PPpp")}
+          
+          Question/Request: ${truncatedContent}
+          
+          Context from other channels and current thread:
+          ${contextMessages}
+        `.slice(0, 4000); // Limit total context size
+
+        analysisResult = await analyzeMessage(
+          currentMessage,
+          messageContext.allMessages,
+          contextualPrompt
+        );
         console.log("Message analysis result:", analysisResult);
       }
 
-      // Create the system message
+      // Ensure the final message content is not too large
+      const finalContent = analysisResult.slice(0, 2000);
+
       const systemMessage = await db.message.create({
         data: {
           id: uuidv4(),
-          content: analysisResult,
+          content: finalContent,
           channelId,
           memberId: systemMember.id,
           role: "system",
@@ -142,52 +261,28 @@ export async function createSystemMessage(
           updatedAt: new Date(),
           deleted: false,
         },
-        include: {
-          member: {
-            include: {
-              profile: true,
-            },
-          },
-        },
+        include: { member: { include: { profile: true } } },
       });
-
       console.log("System message created:", systemMessage);
 
-      // Broadcast the system message to all connected clients
-      try {
-        await fetch(
-          `${process.env.NEXT_PUBLIC_SITE_URL}/api/messages/broadcast`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              channelId,
-              message: systemMessage,
-              type: "system",
-            }),
-          }
-        );
-        console.log("System message broadcasted successfully.");
-      } catch (error) {
-        console.error("Error broadcasting system message:", error);
-      }
+      await broadcastSystemMessage(channelId, systemMessage);
+      console.log("System message broadcasted");
 
       return systemMessage;
     }
 
-    // If not analyzing, track the system message creation without analysis
+    // Track un-analyzed message creation
     await track("System Message Created", {
       channelId,
       contentLength: analyzedContent.length,
       isAnalyzed: false,
     });
-    console.log("System message creation tracked without analysis.");
+    console.log("System message creation tracked without analysis");
   } catch (error) {
     console.error("Error creating system message:", error);
     if (error instanceof Error) {
       console.error("Error details:", error.message);
+      console.error("Error stack:", error.stack);
     }
     throw error;
   }
