@@ -108,7 +108,8 @@ async function getSystemContext(channelId: string) {
 
 export async function createSystemMessage(
   channelId: string,
-  message: MessageWithMember
+  message: MessageWithMember,
+  socketIo?: any
 ) {
   try {
     const systemMember = await fetchSystemMember(message.channelId);
@@ -147,7 +148,9 @@ export async function createSystemMessage(
         },
       });
 
-      socketHelper.sendMessage(channelId, systemMessage);
+      const channelKey = `chat:${channelId}:messages`;
+      socketIo?.emit(channelKey, systemMessage);
+      console.log("System message created and emitted", systemMessage);
       return systemMessage;
     }
 
@@ -173,7 +176,9 @@ export async function createSystemMessage(
       },
     });
 
-    socketHelper.sendMessage(channelId, systemMessage);
+    const channelKey = `chat:${channelId}:messages`;
+    socketIo?.emit(channelKey, systemMessage);
+
     return systemMessage;
   } catch (error) {
     console.error("[SYSTEM_MESSAGE_ERROR]", error);

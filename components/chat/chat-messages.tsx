@@ -8,12 +8,15 @@ import { ChatItem } from "./chat-item";
 import { format } from "date-fns";
 import { useChatSocket } from "@/hooks/use-chat-socket";
 import { useChatScroll } from "@/hooks/use-chat-scroll";
+
 type MessageWithMemberWithProfile = Message & {
   member: Member & {
     profile: Profile;
   };
 };
+
 const DATE_FORMAT = "d MMM yyyy, HH:mm";
+
 interface ChatMessagesProps {
   name: string;
   member: Member;
@@ -25,6 +28,7 @@ interface ChatMessagesProps {
   paramValue: string;
   type: "channel" | "conversation";
 }
+
 export const ChatMessages = ({
   name,
   member,
@@ -39,51 +43,52 @@ export const ChatMessages = ({
   const queryKey = `chat:${chatId}`;
   const addKey = `chat:${chatId}:messages`;
   const updateKey = `chat:${chatId}:messages:update`;
+
   const chatRef = useRef<ElementRef<"div">>(null);
   const bottomRef = useRef<ElementRef<"div">>(null);
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
-    useChatQuery({
-      queryKey,
-      apiUrl,
-      paramKey,
-      paramValue,
-    });
-  useChatSocket({
+
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    status,
+  } = useChatQuery({
     queryKey,
-    addKey,
-    updateKey,
+    apiUrl,
+    paramKey,
+    paramValue,
   });
+
+  useChatSocket({ queryKey, addKey, updateKey });
   useChatScroll({
     chatRef,
     bottomRef,
     loadMore: fetchNextPage,
     shouldLoadMore: !isFetchingNextPage && !!hasNextPage,
-    count: data?.pages.flatMap((page) => page.items).length ?? 0,
+    count: data?.pages?.reduce((acc, page) => acc + page.items.length, 0) ?? 0,
   });
 
   if (status === "pending") {
     return (
       <div className="flex flex-col flex-1 justify-center items-center bg-gradient-to-br from-[#7364c0] to-[#02264a] dark:from-[#000C2F] dark:to-[#003666]">
         <Loader2 className="h-7 w-7 text-zinc-500 animate-spin my-4" />
-        <p className="text-xs dark:text-zinc-400 text-zinc-500">
-          Loading messages...
-        </p>
+        <p className="text-xs text-zinc-400">Loading messages...</p>
       </div>
     );
   }
+
   if (status === "error") {
     return (
       <div className="flex flex-col flex-1 justify-center items-center bg-gradient-to-br from-[#7364c0] to-[#02264a] dark:from-[#000C2F] dark:to-[#003666]">
         <ServerCrash className="h-7 w-7 text-zinc-500 my-4" />
-        <p className="text-xs dark:text-zinc-400 text-zinc-500">
-          Something went wrong!
-        </p>
+        <p className="text-xs text-zinc-400">Something went wrong!</p>
       </div>
     );
   }
-  console.log("Messages", data);
+
   return (
-    <div className="flex-1 flex flex-col h-full bg-gradient-to-br from-[#7364c0] to-[#02264a] dark:from-[#000C2F] dark:to-[#003666] py-4 overflow-y-auto" ref={chatRef}>
+    <div ref={chatRef} className="flex-1 flex flex-col py-4 overflow-y-auto bg-gradient-to-br from-[#7364c0] to-[#02264a] dark:from-[#000C2F] dark:to-[#003666]">
       {!hasNextPage && <div className="flex-1" />}
       {!hasNextPage && <ChatWelcome type={type} name={name} />}
       {hasNextPage && (
@@ -103,19 +108,20 @@ export const ChatMessages = ({
       <div className="flex flex-col-reverse mt-auto">
         {data?.pages?.map((group, i) => (
           <Fragment key={i}>
-            {group.items.map((message: MessageWithMemberWithProfile) => (
+            {group.items.map((message: MessageWithMemberWithProfile, index: number) => (
               <ChatItem
-                currentMember={member}
-                member={message.member}
                 key={message.id}
                 id={message.id}
+                currentMember={member}
+                member={message.member}
                 content={message.content}
-                fileUrl={message.fileUrl ?? ""}
+                fileUrl={message.fileUrl}
                 deleted={message.deleted}
                 timestamp={format(new Date(message.createdAt), DATE_FORMAT)}
-                isUpdated={format(new Date(message.updatedAt), "yyyy-MM-dd HH:mm") !== format(new Date(message.createdAt), "yyyy-MM-dd HH:mm")}
-                socketQuery={socketQuery}
+                isUpdated={format(new Date(message.updatedAt), 'yyyyMMddHHmm') !== format(new Date(message.createdAt), 'yyyyMMddHHmm')}
                 socketUrl={socketUrl}
+                socketQuery={socketQuery}
+                isLast={i === 0 && index === 0}
               />
             ))}
           </Fragment>

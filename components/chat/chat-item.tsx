@@ -19,6 +19,7 @@ import { useModal } from "@/hooks/use-modal-store";
 import { useRouter, useParams } from "next/navigation";
 import { useSocket } from "@/hooks/use-socket";
 import { MessageStatus } from "@/lib/system/types/messagestatus";
+import { ImageDialog } from "./image-dialog";
 
 const roleIconMap = {
   GUEST: null,
@@ -92,6 +93,8 @@ export const ChatItem = ({
   const { onOpen } = useModal();
   const router = useRouter();
   const params = useParams();
+  const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
+
   const onMemberClick = () => {
     if (member.id === currentMember.id) {
       return;
@@ -199,9 +202,24 @@ export const ChatItem = ({
             </span>
           </div>
           {isImage && (
-            <a href={fileUrl} target="_blank" rel="noopener noreferrer" className="relative aspect-square rounded-md mt-2 overflow-hidden border flex items-center bg-secondary h-48 w-48">
-              <Image src={fileUrl} alt="Content" fill className="object-cover" />
-            </a>
+            <>
+              <div
+                onClick={() => setIsImageDialogOpen(true)}
+                className="relative aspect-square rounded-md mt-2 overflow-hidden border flex items-center bg-secondary h-48 w-48 cursor-pointer hover:opacity-90 transition"
+              >
+                <Image
+                  src={fileUrl}
+                  alt={content}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <ImageDialog
+                isOpen={isImageDialogOpen}
+                onClose={() => setIsImageDialogOpen(false)}
+                imageUrl={fileUrl}
+              />
+            </>
           )}
           {isPDF && (
             <div className="relative flex items-center p-2 mt-2 rounded-md bg-background/10">
