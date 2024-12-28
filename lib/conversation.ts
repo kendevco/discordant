@@ -1,49 +1,86 @@
 import { db } from "@/lib/db";
+import { Prisma } from "@prisma/client";
 import { randomUUID } from "crypto";
 
-export const getOrCreateConversation = async (memberOneId: string, memberTwoId: string) => {
-  let conversation = await findConversation(memberOneId, memberTwoId) || await findConversation(memberTwoId, memberOneId);
+/** Default include configuration for conversation queries */
+const defaultIncludes = {
+  memberOne: {
+    include: {
+      profile: true,
+    },
+  },
+  memberTwo: {
+    include: {
+      profile: true,
+    },
+  },
+  directMessages: true,
+  _count: true,
+} satisfies Prisma.ConversationInclude;
+
+/**
+ * Get an existing conversation between two members or create a new one
+ * @param memberOneId - ID of the first member
+ * @param memberTwoId - ID of the second member
+ * @param options - Optional include configuration
+ * @returns The conversation with included relations, or null if creation fails
+ */
+export const getOrCreateConversation = async (
+  memberOneId: string,
+  memberTwoId: string,
+  options: Prisma.ConversationInclude = defaultIncludes
+) => {
+  let conversation =
+    (await findConversation(memberOneId, memberTwoId, options)) ||
+    (await findConversation(memberTwoId, memberOneId, options));
 
   if (!conversation) {
-    const newConversation = await createNewConversation(memberOneId, memberTwoId);
-    if (newConversation) {
-      conversation = newConversation;
-    } else {
-      throw new Error('Failed to create conversation');
-    }
+    conversation = await createNewConversation(
+      memberOneId,
+      memberTwoId,
+      options
+    );
   }
 
   return conversation;
-}
+};
 
-const findConversation = async (memberOneId: string, memberTwoId: string) => {
+/**
+ * Find an existing conversation between two members
+ * @param memberOneId - ID of the first member
+ * @param memberTwoId - ID of the second member
+ * @param options - Optional include configuration
+ * @returns The conversation if found, null otherwise
+ */
+const findConversation = async (
+  memberOneId: string,
+  memberTwoId: string,
+  options: Prisma.ConversationInclude = defaultIncludes
+) => {
   try {
     return await db.conversation.findFirst({
       where: {
-        AND: [
-          { memberOneId: memberOneId },
-          { memberTwoId: memberTwoId },
-        ]
+        AND: [{ memberOneId }, { memberTwoId }],
       },
-      include: {
-        memberOne: {
-          include: {
-            profile: true,
-          }
-        },
-        memberTwo: {
-          include: {
-            profile: true,
-          }
-        }
-      }
+      include: options,
     });
   } catch {
     return null;
   }
-}
+};
 
-const createNewConversation = async (memberOneId: string, memberTwoId: string) => {
+/**
+ * Create a new conversation between two members
+ * @param memberOneId - ID of the first member
+ * @param memberTwoId - ID of the second member
+ * @param options - Optional include configuration
+ * @returns The created conversation, or null if creation fails
+ */
+const createNewConversation = async (
+  memberOneId: string,
+  memberTwoId: string,
+  options: Prisma.ConversationInclude = defaultIncludes
+) => {
   try {
     return await db.conversation.create({
       data: {
@@ -51,21 +88,9 @@ const createNewConversation = async (memberOneId: string, memberTwoId: string) =
         memberOneId,
         memberTwoId,
       },
-      include: {
-        memberOne: {
-          include: {
-            profile: true,
-          }
-        },
-        memberTwo: {
-          include: {
-            profile: true,
-          }
-        }
-      }
+      include: defaultIncludes,
     });
-  } catch (error) {
-    console.error("Error creating conversation:", error);
+  } catch {
     return null;
   }
-}
+};

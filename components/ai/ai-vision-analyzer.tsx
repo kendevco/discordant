@@ -13,7 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useTheme } from 'next-themes';
 import Image from 'next/image';
 import imageCompression from 'browser-image-compression';
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 export default function AiVisionAnalyzer() {
   const [image, setImage] = useState<string | null>(null);

@@ -1,82 +1,28 @@
-// path: app/(main)/(routes)/servers/[serverId]/layout.tsx
-
-import { redirect } from "next/navigation";
+import { ServerSidebar } from "@/components/server/server-sidebar";
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
-import { ServerLayoutClient } from "@/app/(main)/(routes)/servers/[serverId]/server-layout-client";
-
-interface ServerIdLayoutProps {
-  children: React.ReactNode;
-  params: { serverId: string };
-}
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 
 const ServerIdLayout = async ({
   children,
-  params
-}: ServerIdLayoutProps) => {
-  const profile = await currentProfile();
-
-  if (!profile) {
-    return redirect("/");
-  }
-
-  const server = await db.server.findUnique({
-    where: {
-      id: params.serverId,
-      members: {
-        some: {
-          profileId: profile.id
-        }
-      }
-    },
-    include: {
-      channels: {
-        orderBy: {
-          createdAt: "asc",
-        },
-      },
-      members: {
-        include: {
-          profile: true,
-        },
-        orderBy: {
-          role: "asc",
-        },
-      },
-    }
-  });
-
-  if (!server) {
-    return redirect("/");
-  }
-
-  const servers = await db.server.findMany({
-    where: {
-      members: {
-        some: {
-          profileId: profile.id
-        }
-      }
-    },
-    include: {
-      channels: true,
-      members: {
-        include: {
-          profile: true
-        }
-      }
-    }
-  });
+  params,
+}: {
+  children: React.ReactNode;
+  params: { serverId: string };
+}) => {
+  const { serverId } = await params;
 
   return (
-    <ServerLayoutClient
-      server={server}
-      servers={servers}
-      profile={profile}
-    >
-      {children}
-    </ServerLayoutClient>
+    <div className="h-full">
+      <div className="sidebar md:flex h-full w-60 z-20 flex-col fixed inset-y-0">
+        <ServerSidebar serverId={serverId} />
+      </div>
+      <main className="h-full md:pl-60 bg-gradient-to-br from-[#7364c0] to-[#02264a] dark:from-[#000C2F] dark:to-[#003666]">
+        {children}
+      </main>
+    </div>
   );
-}
+};
 
 export default ServerIdLayout;

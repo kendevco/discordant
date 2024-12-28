@@ -1,9 +1,9 @@
 "use client";
 
-import { FileIcon, X } from "lucide-react";
-import Image from "next/image";
 import { UploadDropzone } from "@/lib/uploadthing";
 import "@uploadthing/react/styles.css";
+import { FileIcon, X } from "lucide-react";
+import Image from "next/image";
 
 interface FileUploadProps {
   onChange: (url?: string) => void;
@@ -11,10 +11,12 @@ interface FileUploadProps {
   endpoint: "messageFile" | "serverImage";
 }
 
-export const FileUpload = ({ onChange, value, endpoint }: FileUploadProps) => {
+export const FileUpload = ({ endpoint, onChange, value }: FileUploadProps) => {
   const fileType = value?.split(".").pop();
 
-  if (value && fileType !== "pdf") {
+  const isPdf = fileType === "pdf";
+
+  if (value && !isPdf) {
     return (
       <div className="relative w-80 h-80">
         <Image
@@ -22,9 +24,12 @@ export const FileUpload = ({ onChange, value, endpoint }: FileUploadProps) => {
           src={value}
           alt="Upload"
           className="rounded-lg object-cover"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
         <button
-          onClick={() => onChange("")}
+          onClick={() => {
+            onChange("");
+          }}
           className="bg-rose-500 text-white p-1 rounded-full absolute top-0 right-0 shadow-sm"
           type="button"
         >
@@ -34,7 +39,7 @@ export const FileUpload = ({ onChange, value, endpoint }: FileUploadProps) => {
     );
   }
 
-  if (value && fileType === "pdf") {
+  if (value && isPdf) {
     return (
       <div className="relative flex items-center p-2 mt-2 rounded-md bg-background/10">
         <FileIcon className="h-10 w-10 fill-indigo-200 stroke-indigo-400" />
@@ -42,12 +47,14 @@ export const FileUpload = ({ onChange, value, endpoint }: FileUploadProps) => {
           href={value}
           target="_blank"
           rel="noopener noreferrer"
-          className="ml-2 text-sm text-indigo-500 dark:text-indigo-400 hover:underline"
+          className="text-sm ml-2 text-indigo-500 dark:text-indigo-400 hover:underline"
         >
           {value}
         </a>
         <button
-          onClick={() => onChange("")}
+          onClick={() => {
+            onChange("");
+          }}
           className="bg-rose-500 text-white p-1 rounded-full absolute -top-2 -right-2 shadow-sm"
           type="button"
         >
@@ -61,15 +68,10 @@ export const FileUpload = ({ onChange, value, endpoint }: FileUploadProps) => {
     <UploadDropzone
       endpoint={endpoint}
       onClientUploadComplete={(res) => {
-        if (res?.[0]) {
-          onChange(res[0].url);
-        }
+        onChange(res?.[0].url);
       }}
       onUploadError={(error: Error) => {
-        console.error("Upload error:", error);
-      }}
-      onUploadBegin={() => {
-        console.log("Upload starting...");
+        console.error(error);
       }}
     />
   );

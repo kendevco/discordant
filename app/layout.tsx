@@ -1,51 +1,57 @@
-import './globals.css'
-import type { Metadata } from 'next'
-import { GeistSans } from 'geist/font/sans'
-import { ClerkProvider } from '@clerk/nextjs'
-import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
-import { extractRouterConfig } from "uploadthing/server";
-import { ourFileRouter } from "./api/uploadthing/core";
+import type { Metadata } from "next";
+import { ThemeProvider } from "@/components/providers/theme-provider";
+import "./globals.css";
+import { ClerkProvider } from "@clerk/nextjs";
+import { cn } from "@/lib/utils";
+import { ModalProvider } from "@/components/providers/modal-provider";
+import { SocketProvider } from "@/components/providers/socket-provider";
+import { QueryProvider } from "@/components/providers/query-provider";
+import { Poppins } from "next/font/google"; // Import Google Font
+import { Analytics } from '@vercel/analytics/react';
+import { Toaster } from "@/components/ui/toaster";
 
-import { cn } from '@/lib/utils'
-import { ThemeProvider } from '@/components/providers/theme-provider'
-import { ModalProvider } from '@/components/providers/modal-provider'
-import { SocketProvider } from '@/components/providers/socket-provider'
-import { QueryProvider } from '@/components/providers/query-provider'
+// Load Poppins font with specific weights
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  display: "swap",
+});
 
 export const metadata: Metadata = {
-  title: 'Discordant Chat - Unleash the Chaos',
-  description: 'The Ultimate Edgy Chat Experience',
-}
+  title: "Discord Clone",
+  description: "Discord Clone written in TypeScript with Next.js 15",
+};
 
 export default function RootLayout({
   children,
-}: {
-  children: React.ReactNode
-}) {
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
-        <body className={cn(
-          GeistSans.className,
-          "bg-white dark:bg-[#313338]"
-        )}>
-          <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
+        <body
+          className={cn(
+            "antialiased",
+            "dark:bg-[#313338] bg-white",
+            poppins.className
+          )}
+        >
           <ThemeProvider
             attribute="class"
-            defaultTheme='dark'
-            enableSystem={false}
-            storageKey='discord-theme'
+            defaultTheme="dark"
+            disableTransitionOnChange
+            storageKey="discord-theme"
           >
-            <QueryProvider>
-              <SocketProvider>
-                <ModalProvider>
-                  {children}
-                </ModalProvider>
-              </SocketProvider>
-            </QueryProvider>
+            <SocketProvider>
+              <ModalProvider />
+              <QueryProvider>{children}</QueryProvider>
+            </SocketProvider>
           </ThemeProvider>
+          <Analytics />
+          <Toaster />
         </body>
       </html>
     </ClerkProvider>
-  )
+  );
 }

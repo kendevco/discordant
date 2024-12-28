@@ -1,1 +1,0 @@
-1|git push origin --force --all 

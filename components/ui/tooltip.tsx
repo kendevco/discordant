@@ -9,21 +9,7 @@ const TooltipProvider = TooltipPrimitive.Provider
 
 const Tooltip = TooltipPrimitive.Root
 
-const TooltipTrigger = React.forwardRef<
-  React.ElementRef<typeof TooltipPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Trigger>
->(({ className, children, ...props }, ref) => (
-  <TooltipPrimitive.Trigger
-    ref={ref}
-    className={cn("", className)}
-    {...props}
-  >
-    <div className="flex items-center">
-      {children}
-    </div>
-  </TooltipPrimitive.Trigger>
-))
-TooltipTrigger.displayName = TooltipPrimitive.Trigger.displayName
+const TooltipTrigger = TooltipPrimitive.Trigger
 
 const TooltipContent = React.forwardRef<
   React.ElementRef<typeof TooltipPrimitive.Content>,

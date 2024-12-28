@@ -1,45 +1,68 @@
-'use client';
-
-import { createContext, useContext, useEffect, useState } from "react";
+"use client";
+import { createContext, useState, useEffect, useContext } from "react";
+import { io as ClientIO } from "socket.io-client";
 
 type SocketContextType = {
+  socket: any | null;
   isConnected: boolean;
-  sendMessage: (message: any) => void;
 };
 
 const SocketContext = createContext<SocketContextType>({
+  socket: null,
   isConnected: false,
-  sendMessage: () => { },
 });
 
 export const useSocket = () => {
   return useContext(SocketContext);
 };
 
-export function SocketProvider({
-  children
-}: {
-  children: React.ReactNode;
-}) {
+export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
+  const [socket, setSocket] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    // Initialize connection
-    setIsConnected(true);
+    const socketInstance = new (ClientIO as any)(
+      process.env.NEXT_PUBLIC_SITE_URL!,
+      {
+        path: "/api/socket/io",
+        addTrailingSlash: false,
+        transports: ["websocket", "polling"],
+        reconnection: true,
+        reconnectionAttempts: Infinity,
+        reconnectionDelay: 1000,
+        reconnectionDelayMax: 5000,
+        timeout: 20000,
+        autoConnect: true,
+        forceNew: false,
+        multiplex: true
+      }
+    );
+
+    socketInstance.on("connect", () => {
+      console.log("Socket connected", socketInstance.id);
+      setIsConnected(true);
+    });
+
+    socketInstance.on("disconnect", (reason: any) => {
+      console.log("Socket disconnected:", reason);
+      setIsConnected(false);
+    });
+
+    socketInstance.on("connect_error", (error: any) => {
+      console.log("Socket connection error:", error);
+      setIsConnected(false);
+    });
+
+    setSocket(socketInstance);
 
     return () => {
-      setIsConnected(false);
+      socketInstance.disconnect();
     };
   }, []);
 
-  const sendMessage = (message: any) => {
-    // Implement message sending logic
-    console.log("Sending message:", message);
-  };
-
   return (
-    <SocketContext.Provider value={{ isConnected, sendMessage }}>
+    <SocketContext.Provider value={{ socket, isConnected }}>
       {children}
     </SocketContext.Provider>
   );
-} 
+};

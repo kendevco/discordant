@@ -7,30 +7,6 @@ datasource db {
   url          = env("DATABASE_URL")
   relationMode = "prisma"
 }
-
-model UserSubscription {
-  id                     String    @id
-  userId                 String    @unique
-  stripeCustomerId       String?   @unique @map(name: "stripe_customer_id")
-  stripeSubscriptionId   String?   @unique @map(name: "stripe_subscription_id")
-  stripePriceId         String?    @map(name: "stripe_price_id")
-  stripeCurrentPeriodEnd DateTime? @map(name: "stripe_current_period_end")
-  createdAt             DateTime   @default(now())
-  updatedAt             DateTime   @updatedAt
-
-  @@map("user_subscription")
-}
-
-model UserApiLimit {
-  id        String   @id
-  userId    String   @unique
-  count     Int      @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("user_api_limit")
-}
-
 model Profile {
   id        String   @id
   userId    String   @unique(map: "Profile_userId_key")
@@ -71,18 +47,19 @@ enum MemberRole {
 }
 
 model Member {
-  id        String    @id
-  role      MemberRole @default(GUEST)
-  profileId String
-  profile   Profile    @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  serverId  String
-  server    Server     @relation(fields: [serverId], references: [id], onDelete: Cascade)
-  messages  Message[]
-  directMessages DirectMessage[]
-  conversationsInitiated Conversation[] @relation("MemberOne")
-  conversationsReceived Conversation[] @relation("MemberTwo")
-  createdAt DateTime  @default(now())
-  updatedAt DateTime
+  id                     String          @id @default(uuid())
+  role                   MemberRole      @default(GUEST)
+  profileId              String
+  profile                Profile         @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  serverId               String
+  server                 Server          @relation(fields: [serverId], references: [id], onDelete: Cascade)
+
+  messages               Message[]
+  conversationsInitiated Conversation[]  @relation("MemberOne")
+  conversationsReceived  Conversation[]  @relation("MemberTwo")
+  directMessages         DirectMessage[]
+  createdAt              DateTime        @default(now())
+  updatedAt              DateTime        @updatedAt
 
   @@index([profileId], map: "Member_profileId_idx")
   @@index([serverId], map: "Member_serverId_idx")
@@ -117,7 +94,6 @@ model Channel {
 enum MessageRole {
   user
   system
-
   @@map("message_role")
 }
 

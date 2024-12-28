@@ -6,7 +6,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Input } from "@/components/ui/input"
 import { Progress } from "@/components/ui/progress"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { useToast } from "@/components/ui/use-toast"
+import { useToast } from "@/hooks/use-toast"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Loader2, Mic, FileAudio, Save, Upload, Sun, Moon, X } from "lucide-react"
 import { Textarea } from "@/components/ui/textarea"
@@ -67,7 +67,7 @@ export default function AudioTranscriptionInput({ onTranscriptionComplete }: { o
     try {
       const formData = new FormData()
       formData.append('audio', audioBlob, 'audio.webm')
-      
+
       const response = await fetch('/api/transcribe-whisper', {
         method: 'POST',
         body: formData,
@@ -138,7 +138,7 @@ export default function AudioTranscriptionInput({ onTranscriptionComplete }: { o
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         mediaRecorderRef.current = new MediaRecorder(stream);
-        
+
         mediaRecorderRef.current.ondataavailable = (event) => {
           if (event.data.size > 0) {
             chunksRef.current.push(event.data);
@@ -321,42 +321,28 @@ export default function AudioTranscriptionInput({ onTranscriptionComplete }: { o
       />
       {isDesktop ? (
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button size="icon">
-              <Mic className="w-4 h-4" />
-            </Button>
-          </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
-              <DialogTitle>Audio Transcriber</DialogTitle>
+              <DialogTitle>Audio Transcription</DialogTitle>
               <DialogDescription>
-                Record or upload audio to transcribe.
+                Record or upload audio to transcribe
               </DialogDescription>
             </DialogHeader>
             <TranscriptionContent />
-            <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-              <X className="w-4 h-4" />
-              <span className="sr-only">Close</span>
-            </DialogClose>
           </DialogContent>
         </Dialog>
       ) : (
         <Drawer open={open} onOpenChange={setOpen}>
-          <DrawerTrigger asChild>
-            <Button size="icon">
-              <Mic className="w-4 h-4" />
-            </Button>
-          </DrawerTrigger>
           <DrawerContent>
-            <DrawerHeader className="text-left">
-              <DrawerTitle>Audio Transcriber</DrawerTitle>
+            <DrawerHeader>
+              <DrawerTitle>Audio Transcription</DrawerTitle>
               <DrawerDescription>
-                Record or upload audio to transcribe.
+                Record or upload audio to transcribe
               </DrawerDescription>
             </DrawerHeader>
             <TranscriptionContent />
-            <DrawerFooter className="pt-2">
-              <DrawerClose asChild>
+            <DrawerFooter>
+              <DrawerClose>
                 <Button variant="outline">Close</Button>
               </DrawerClose>
             </DrawerFooter>

@@ -1,79 +1,77 @@
+import { useSocket } from "@/components/providers/socket-provider";
+import { Member, Message, Profile } from "@prisma/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 
-import { useMessages } from "@/components/providers/message-provider";
-import { MessageWithMemberWithProfile } from "@/types";
-
-interface ChatSocketProps {
+type ChatSocketProps = {
   addKey: string;
   updateKey: string;
   queryKey: string;
-}
+};
+type MessageWithMemberWithProfile = Message & {
+  member: Member & {
+    profile: Profile;
+  };
+};
 
 export const useChatSocket = ({
   addKey,
   updateKey,
   queryKey,
 }: ChatSocketProps) => {
-  const { subscribe } = useMessages();
+  const { socket } = useSocket();
   const queryClient = useQueryClient();
-
   useEffect(() => {
-    const unsubscribe = subscribe((event) => {
-      if (event.type === addKey) {
-        const message = event.data as MessageWithMemberWithProfile;
-        queryClient.setQueryData([queryKey], (oldData: any) => {
-          if (!oldData || !oldData.pages || oldData.pages.length === 0) {
-            return {
-              pages: [
-                {
-                  items: [message],
-                },
-              ],
-            };
-          }
-
-          const newData = { ...oldData };
-          newData.pages[0].items.unshift(message);
-
-          setTimeout(() => {
-            const chatDiv = document.querySelector("[data-chat-messages]");
-            if (chatDiv) {
-              chatDiv.scrollTop = chatDiv.scrollHeight;
-            }
-          }, 0);
-
-          return newData;
+    if (!socket) {
+      return;
+    }
+    socket.on(updateKey, (message: MessageWithMemberWithProfile) => {
+      queryClient.setQueryData([queryKey], (oldData: any) => {
+        if (!oldData || !oldData.pages || oldData.pages.length === 0) {
+          return oldData;
+        }
+        const newData = oldData.pages.map((page: any) => {
+          return {
+            ...page,
+            items: page.items.map((item: MessageWithMemberWithProfile) => {
+              if (item.id === message.id) {
+                return message;
+              }
+              return item;
+            }),
+          };
         });
-      }
-
-      if (event.type === updateKey) {
-        const message = event.data as MessageWithMemberWithProfile;
-        queryClient.setQueryData([queryKey], (oldData: any) => {
-          if (!oldData || !oldData.pages || oldData.pages.length === 0) {
-            return oldData;
-          }
-
-          const newData = { ...oldData };
-          for (let i = 0; i < newData.pages.length; i++) {
-            const page = newData.pages[i];
-            const messageIndex = page.items.findIndex(
-              (item: MessageWithMemberWithProfile) => item.id === message.id
-            );
-            if (messageIndex !== -1) {
-              page.items[messageIndex] = message;
-              break;
-            }
-          }
-          return newData;
-        });
-      }
+        return {
+          ...oldData,
+          pages: newData,
+        };
+      });
     });
-
+    socket.on(addKey, (message: MessageWithMemberWithProfile) => {
+      queryClient.setQueryData([queryKey], (oldData: any) => {
+        if (!oldData || oldData.pages.lenght === 0 || !oldData.pages) {
+          return {
+            pages: [
+              {
+                items: [message],
+              },
+            ],
+          };
+        }
+        const newData = [...oldData.pages];
+        newData[0] = {
+          ...newData[0],
+          items: [message, ...newData[0].items],
+        };
+        return {
+          ...oldData,
+          pages: newData,
+        };
+      });
+    });
     return () => {
-      unsubscribe();
+      socket.off(addKey);
+      socket.off(updateKey);
     };
-  }, [queryKey, addKey, updateKey, subscribe, queryClient]);
-
-  return {};
+  }, [queryClient, addKey, queryKey, socket, updateKey]);
 };

@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
-import { useToast } from "@/components/ui/use-toast"
+import { useToast } from "@/hooks/use-toast"
 import { Mic, Loader2 } from "lucide-react"
 
 interface AudioInputProps {
@@ -12,7 +12,7 @@ interface AudioInputProps {
   textInputRef: React.RefObject<HTMLTextAreaElement | HTMLDivElement>;
 }
 
-export default function AudioInput({ 
+export default function AudioInput({
   onTranscriptionComplete,
   disabled = false,
   textInputRef
@@ -30,7 +30,7 @@ export default function AudioInput({
     try {
       const formData = new FormData()
       formData.append('audio', audioBlob, 'audio.webm')
-      
+
       const response = await fetch('/api/transcribe-whisper', {
         method: 'POST',
         body: formData,
@@ -95,7 +95,7 @@ export default function AudioInput({
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         mediaRecorderRef.current = new MediaRecorder(stream);
-        
+
         mediaRecorderRef.current.ondataavailable = (event) => {
           if (event.data.size > 0) {
             chunksRef.current.push(event.data);

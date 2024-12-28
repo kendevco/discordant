@@ -1,0 +1,17 @@
+export type SentimentType =
+  | "workflow_trigger"
+  | "workflow_command"
+  | "workflow_config"
+  | "workflow_status"
+  | "workflow_test"
+  | "workflow_result"
+  | "workflow_channel"
+  | "command"
+  | "mention"
+  | "system_query"
+  | "urgent"
+  | "question"
+  | "issue"
+  | "feedback"
+  | "request"
+  | "general";

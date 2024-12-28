@@ -29,10 +29,9 @@ const toastVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-[#37393f] border-none text-white",
+        default: "border bg-background text-foreground",
         destructive:
-          "destructive group border-none bg-[#da373c] text-white",
-        success: "border-none bg-[#2d7d46] text-white",
+          "destructive group border-destructive bg-destructive text-destructive-foreground",
       },
     },
     defaultVariants: {
@@ -113,11 +112,7 @@ const ToastDescription = React.forwardRef<
 ))
 ToastDescription.displayName = ToastPrimitives.Description.displayName
 
-type ToastProps = React.ComponentPropsWithoutRef<typeof Toast> & {
-  title?: string;
-  description?: string;
-  action?: ToastActionElement;
-}
+type ToastProps = React.ComponentPropsWithoutRef<typeof Toast>
 
 type ToastActionElement = React.ReactElement<typeof ToastAction>
 
@@ -131,25 +126,4 @@ export {
   ToastDescription,
   ToastClose,
   ToastAction,
-}
-
-export function useToast() {
-  const [toasts, setToasts] = React.useState<ToastProps[]>([])
-
-  function toast({ title, description, action, ...props }: ToastProps) {
-    setToasts((prevToasts) => [
-      ...prevToasts,
-      { title, description, action, ...props },
-    ])
-  }
-
-  function dismissToast(id: string) {
-    setToasts((prevToasts) => prevToasts.filter((toast) => toast.id !== id))
-  }
-
-  return {
-    toast,
-    dismissToast,
-    toasts,
-  }
 }

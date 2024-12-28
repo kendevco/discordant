@@ -1,6 +1,26 @@
 # Discord Clone Project Rules
 # This file defines the rules and processes for our Discord-like chat application
 
+# Theme Rules
+theme:
+  gradients:
+    light:
+      - "from-[#7364c0] to-[#02264a]"
+    dark:
+      - "from-[#000C2F] to-[#003666]"
+  rules:
+    - "NEVER remove gradient themes from components"
+    - "ALWAYS maintain dark mode support"
+    - "ALWAYS use bg-gradient-to-br for main backgrounds"
+    - "Preserve exact color codes for consistency"
+    - "Keep light/dark mode transitions smooth"
+  required_classes:
+    - "bg-gradient-to-br"
+    - "dark:from-[#000C2F]"
+    - "dark:to-[#003666]"
+    - "from-[#7364c0]"
+    - "to-[#02264a]"
+
 # Component Boundaries
 component_boundaries:
   server_components:
@@ -26,6 +46,52 @@ component_boundaries:
       - "components/**/*-client.tsx - Named explicitly"
       - "components/**/interactive/*.tsx - All interactive components"
       - "hooks/*.ts - All custom hooks"
+
+# Media Room Rules
+media_room:
+  rules:
+    - "NEVER remove or modify media room functionality"
+    - "NEVER remove video/audio controls from chat headers"
+    - "ALWAYS maintain LiveKit integration"
+    - "ALWAYS preserve media room component structure"
+    - "Media controls MUST be present in both DM and channel headers"
+    - "Video/audio state must persist during navigation"
+  required_components:
+    - "components/media-room.tsx - Core media functionality"
+    - "components/chat/chat-header.tsx - Media controls"
+    - "components/chat/direct-message-header.tsx - DM media controls"
+    - "components/chat/chat-video-button.tsx - Video controls"
+  required_features:
+    - "Video calls with LiveKit"
+    - "Audio calls with LiveKit"
+    - "Screen sharing"
+    - "Media control buttons"
+    - "Connection state handling"
+    - "Error handling and recovery"
+    - "Participant management"
+    - "Device selection"
+    - "Room state persistence"
+  required_controls:
+    chat_header:
+      - "Video call button"
+      - "Call status indicator"
+      - "Participant list"
+      - "Device settings"
+    direct_message_header:
+      - "Video call button"
+      - "Call status indicator"
+      - "Participant list"
+      - "Device settings"
+  state_management:
+    - "Must persist call state during navigation"
+    - "Must handle browser refresh"
+    - "Must sync between participants"
+    - "Must maintain device selections"
+  error_recovery:
+    - "Must handle connection drops"
+    - "Must attempt reconnection"
+    - "Must preserve call state"
+    - "Must notify participants"
 
 # Template Preservation Guidelines
 template_preservation:
@@ -152,6 +218,12 @@ components:
     - "Member list"
     - "Chat area"
     - "Modal system"
+    rules:
+      - "All UI components must support real-time updates"
+      - "Components must preserve state during navigation"
+      - "Components must handle reconnection gracefully"
+      - "Never remove video/audio controls from channel headers"
+      - "System clock and status indicators must always be visible"
 
   chat:
     - "Message component"
@@ -159,12 +231,51 @@ components:
     - "Attachment preview"
     - "Emoji picker"
     - "Message actions"
+    rules:
+      - "Messages must update in real-time without page refresh"
+      - "Message list must maintain scroll position on updates"
+      - "System messages must be visually distinct"
+      - "Message timestamps must sync with system clock"
+      - "Message status indicators must update in real-time"
 
   media:
     - "Video call interface"
     - "Audio call controls"
     - "Screen sharing UI"
     - "Media player"
+    rules:
+      - "Video/audio controls must be present in channel headers"
+      - "Media controls must persist during navigation"
+      - "Screen sharing UI must be accessible from channel header"
+      - "Video call interface must include participant grid"
+      - "Audio indicators must show speaking status"
+
+  channel_header:
+    required_controls:
+      - "Channel name and topic"
+      - "Video call button"
+      - "Audio call button"
+      - "Screen share button"
+      - "Channel settings"
+      - "Member list toggle"
+    rules:
+      - "All media controls must be visible and accessible"
+      - "Controls must maintain state during navigation"
+      - "Never remove or hide video/audio functionality"
+      - "Status indicators must update in real-time"
+
+  status_indicators:
+    required:
+      - "System clock"
+      - "Connection status"
+      - "Message delivery status"
+      - "Typing indicators"
+      - "Presence indicators"
+    rules:
+      - "System clock must be visible and accurate"
+      - "Status updates must be real-time"
+      - "Indicators must persist during navigation"
+      - "Connection status must be clearly visible"
 
 # Error Handling
 errors:
@@ -235,3 +346,285 @@ environment:
     - "NEXT_PUBLIC_SITE_URL"
     - "NEXT_PUBLIC_APP_URL"
     - "NEXT_PUBLIC_SOCKET_URL"
+
+# Real-time Updates
+realtime:
+  message_updates:
+    rules:
+      - "Messages must appear instantly on send"
+      - "UI must update without page refresh"
+      - "Message list must maintain scroll position"
+      - "System messages must integrate seamlessly"
+      - "Status indicators must update in real-time"
+
+  connection_handling:
+    rules:
+      - "Must handle disconnects gracefully"
+      - "Must show reconnection attempts"
+      - "Must preserve message queue during disconnects"
+      - "Must sync messages after reconnection"
+      - "Must maintain UI state during reconnection"
+
+# LiveKit Integration Rules
+livekit_integration:
+  rules:
+    - "NEVER remove LiveKit integration code"
+    - "NEVER modify LiveKit room configuration"
+    - "NEVER change LiveKit token generation"
+    - "NEVER remove LiveKit environment variables"
+    - "NEVER modify WebRTC connection handling"
+    - "ALWAYS maintain LiveKit server configuration"
+  required_files:
+    - "app/api/livekit/route.ts - Token generation and room management"
+    - "components/media-room.tsx - LiveKit room component"
+    - "components/chat/chat-header.tsx - Media controls"
+    - "components/chat/chat-channel-media.tsx - Channel media controls"
+    - "components/chat/chat-video-button.tsx - Video controls"
+  required_env_vars:
+    - "LIVEKIT_API_KEY - Required for token generation"
+    - "LIVEKIT_API_SECRET - Required for token generation"
+    - "NEXT_PUBLIC_LIVEKIT_URL - Required for WebSocket connection"
+  required_features:
+    - "Token generation with proper room and participant info"
+    - "WebRTC connection handling with fallback"
+    - "Room state management and error recovery"
+    - "Participant tracking and media controls"
+    - "Screen sharing functionality"
+    - "Audio level monitoring"
+    - "Connection quality indicators"
+  required_dependencies:
+    - "@livekit/components-react"
+    - "@livekit/components-styles"
+    - "livekit-server-sdk"
+    - "livekit-client"
+  implementation:
+    token_generation:
+      - "Must use LiveKit's AccessToken"
+      - "Must include room name and participant identity"
+      - "Must set proper token TTL"
+      - "Must include appropriate permissions"
+    room_configuration:
+      - "Must enable both video and audio"
+      - "Must handle reconnection"
+      - "Must manage participant state"
+      - "Must handle media device changes"
+    error_handling:
+      - "Must handle token generation errors"
+      - "Must handle connection failures"
+      - "Must provide user feedback"
+      - "Must attempt reconnection"
+    security:
+      - "Must validate room access"
+      - "Must check user permissions"
+      - "Must secure token generation"
+      - "Must protect API endpoints"
+
+# Socket Message Flow Rules
+socket_message_flow:
+  rules:
+    - "NEVER modify established message flow paths"
+    - "ALWAYS maintain message order and delivery guarantees"
+    - "ALWAYS handle reconnection and message redelivery"
+    - "NEVER modify socket event names once established"
+    - "ALWAYS emit acknowledgments for received messages"
+    - "NEVER drop messages without explicit error handling"
+
+  message_types:
+    text_message:
+      flow:
+        - "Client emits 'message' event with {content, channelId, memberId}"
+        - "Server validates message and member permissions"
+        - "Server stores message in database"
+        - "Server broadcasts to channel room"
+        - "Server emits acknowledgment to sender"
+        - "All room clients receive and render message"
+      required_events:
+        - "message"
+        - "message:ack" 
+        - "message:error"
+
+    file_message:
+      flow:
+        - "Client uploads file to UploadThing"
+        - "Client emits 'message' with {fileUrl, channelId, memberId}"
+        - "Server validates file type and permissions"
+        - "Server stores message with file reference"
+        - "Server broadcasts to channel room"
+        - "Server emits upload confirmation"
+        - "All room clients receive and render file preview"
+      required_events:
+        - "message"
+        - "file:upload:start"
+        - "file:upload:complete"
+        - "file:upload:error"
+
+    direct_message:
+      flow:
+        - "Client emits 'direct_message' with {content, conversationId, memberId}"
+        - "Server validates conversation access"
+        - "Server stores in direct messages table"
+        - "Server broadcasts to conversation room"
+        - "Server emits delivery confirmation"
+        - "Recipients receive and render message"
+      required_events:
+        - "direct_message"
+        - "direct_message:ack"
+        - "direct_message:error"
+
+    direct_file:
+      flow:
+        - "Client uploads file to UploadThing"
+        - "Client emits 'direct_message' with {fileUrl, conversationId, memberId}"
+        - "Server validates file and conversation access"
+        - "Server stores message with file reference"
+        - "Server broadcasts to conversation room"
+        - "Server emits upload confirmation"
+        - "Recipients receive and render file preview"
+      required_events:
+        - "direct_message"
+        - "file:upload:start"
+        - "file:upload:complete" 
+        - "file:upload:error"
+
+  socket_rooms:
+    channel_room:
+      - "Format: chat:{channelId}:messages"
+      - "All channel members must join on connection"
+      - "Leave room on channel leave/disconnect"
+      - "Rejoin room on reconnection"
+    
+    conversation_room:
+      - "Format: conversation:{conversationId}:messages"
+      - "Only conversation participants can join"
+      - "Leave room on conversation end/disconnect"
+      - "Rejoin room on reconnection"
+
+  error_handling:
+    - "Must handle and log all socket errors"
+    - "Must notify client of delivery failures"
+    - "Must attempt message redelivery on reconnect"
+    - "Must maintain message order on redelivery"
+    - "Must handle duplicate messages"
+
+  reconnection:
+    - "Must restore all room subscriptions"
+    - "Must resync missed messages"
+    - "Must maintain message order"
+    - "Must reestablish user presence"
+    - "Must notify UI of reconnection status"
+
+# Chat Routes Critical Components
+chat_routes_critical_components:
+  rules:
+    - "NEVER remove or modify core chat components from main routes"
+    - "ALWAYS maintain component hierarchy in chat routes"
+    - "NEVER remove socket or real-time functionality"
+    - "ALWAYS preserve message loading and pagination"
+    - "NEVER remove media controls from headers"
+    - "ALWAYS maintain error states and loading indicators"
+    - "NEVER modify established component props structure"
+
+  required_components:
+    chat_header:
+      file: "components/chat/chat-header.tsx"
+      required_elements:
+        - "Socket connection indicator"
+        - "Video call button when not in call"
+        - "Channel/conversation name display"
+        - "Mobile toggle for responsive design"
+        - "User avatar for conversations"
+        - "Hash icon for channels"
+
+    chat_messages:
+      file: "components/chat/chat-messages.tsx"
+      required_elements:
+        - "Message loading states"
+        - "Error handling states"
+        - "Infinite scroll functionality"
+        - "Real-time message updates"
+        - "Message grouping and formatting"
+        - "Scroll position management"
+        - "Socket integration"
+        - "Edit indicators"
+        - "Timestamp display"
+
+    chat_input:
+      file: "components/chat/chat-input.tsx"
+      required_elements:
+        - "Message composition area"
+        - "File upload functionality"
+        - "Form validation"
+        - "Socket emission"
+        - "Loading states"
+
+    chat_welcome:
+      file: "components/chat/chat-welcome.tsx"
+      required_elements:
+        - "Channel/conversation welcome message"
+        - "Type-specific icons"
+        - "Name display"
+        - "Descriptive text"
+
+  route_structure:
+    channel_route:
+      file: "app/(main)/(routes)/servers/[serverId]/channels/[channelId]/page.tsx"
+      required_components:
+        - "ChatHeader"
+        - "ChatMessages"
+        - "ChatInput"
+        - "MediaRoom (for video/audio channels)"
+        - "MobileToggle"
+      required_features:
+        - "Real-time message updates"
+        - "Video call integration"
+        - "Member presence"
+        - "Socket connection"
+        - "Message persistence"
+
+    conversation_route:
+      file: "app/(main)/(routes)/servers/[serverId]/conversations/[memberId]/page.tsx"
+      required_components:
+        - "ChatHeader"
+        - "ChatMessages"
+        - "ChatInput"
+        - "MediaRoom (for calls)"
+      required_features:
+        - "Direct message support"
+        - "Real-time updates"
+        - "Video call integration"
+        - "User presence"
+        - "Message persistence"
+
+  providers:
+    message_provider:
+      file: "components/providers/message-provider.tsx"
+      required_features:
+        - "SSE connection management"
+        - "Channel-specific streams"
+        - "Connection state tracking"
+        - "Error handling"
+        - "Reconnection logic"
+
+  state_management:
+    required_stores:
+      - "Message store for local state"
+      - "Socket state management"
+      - "Pagination tracking"
+      - "Loading states"
+      - "Error states"
+
+  error_handling:
+    required_states:
+      - "Loading indicators"
+      - "Connection error displays"
+      - "Message send failures"
+      - "Socket disconnection handling"
+      - "Retry mechanisms"
+
+  performance:
+    required_optimizations:
+      - "Message batching"
+      - "Infinite scroll with virtualization"
+      - "Socket connection pooling"
+      - "Message caching"
+      - "Lazy loading of media"

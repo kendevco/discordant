@@ -1,94 +1,56 @@
 "use client";
-
-import * as z from "zod";
-import axios from "axios";
-import qs from "query-string";
 import { useForm } from "react-hook-form";
+import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { track } from '@vercel/analytics';
-
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Plus } from "lucide-react";
+import qs from "query-string";
+import axios from "axios";
 import { useModal } from "@/hooks/use-modal-store";
 import { EmojiPicker } from "@/components/emoji-picker";
-
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 interface ChatInputProps {
   apiUrl: string;
   query: Record<string, any>;
   name: string;
   type: "conversation" | "channel";
 }
-
 const formSchema = z.object({
   content: z.string().min(1),
 });
-
-export const ChatInput = ({
-  apiUrl,
-  query,
-  name,
-  type,
-}: ChatInputProps) => {
+export const ChatInput = ({ apiUrl, query, name, type }: ChatInputProps) => {
   const { onOpen } = useModal();
   const router = useRouter();
-
+  const [fileUrl, setFileUrl] = useState("");
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       content: "",
-    }
+    },
   });
-
   const isLoading = form.formState.isSubmitting;
-
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
       const url = qs.stringifyUrl({
         url: apiUrl,
-        query,
+        query: query,
       });
 
-      const payload = {
-        content: values.content,
-        channelId: query.channelId,
-      };
-
-      console.log('Submitting message:', {
-        url,
-        payload,
-        query
+      await axios.post(url, {
+        content: data.content,
+        fileUrl: fileUrl || undefined,
+        serverId: query?.serverId,
+        channelId: query?.channelId,
       });
-
-      await axios.post(url, payload);
 
       form.reset();
-      router.refresh();
+      setFileUrl("");
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.log('Error details:', {
-          status: error.response?.status,
-          data: error.response?.data,
-          config: error.config
-        });
-      }
-      console.log('Error submitting message:', error);
-    }
-  }
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey && !isLoading) {
-      e.preventDefault();
-      form.handleSubmit(onSubmit)();
+      console.error("[CHAT_INPUT_SUBMIT]", error);
     }
   };
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -98,7 +60,7 @@ export const ChatInput = ({
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <div className="relative p-4 pb-6">
+                <div className="relative p-4 pb-6 bg-gradient-to-br from-[#7364c0] to-[#02264a] dark:from-[#000C2F] dark:to-[#003666]">
                   <button
                     type="button"
                     onClick={() => onOpen("messageFile", { apiUrl, query })}
@@ -107,15 +69,17 @@ export const ChatInput = ({
                     <Plus className="text-white dark:text-[#313338]" />
                   </button>
                   <Input
+                    placeholder={`Message ${type === "conversation" ? name : "#" + name
+                      }`}
                     disabled={isLoading}
                     className="px-14 py-6 bg-zinc-200/90 dark:bg-zinc-700/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-200"
-                    placeholder={`Message ${type === "conversation" ? name : "#" + name}`}
                     {...field}
-                    onKeyDown={handleKeyDown}
                   />
                   <div className="absolute top-7 right-8">
                     <EmojiPicker
-                      onChange={(emoji: string) => field.onChange(`${field.value} ${emoji}`)}
+                      onChange={(emoji: string) =>
+                        field.onChange(`${field.value}${emoji}`)
+                      }
                     />
                   </div>
                 </div>
@@ -125,5 +89,5 @@ export const ChatInput = ({
         />
       </form>
     </Form>
-  )
-}
+  );
+};

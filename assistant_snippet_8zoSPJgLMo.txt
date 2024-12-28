@@ -1,2 +1,0 @@
-1|git add .env.example
-2|git commit -m "Added clean .env.example with placeholders only" 

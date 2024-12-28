@@ -1,21 +1,14 @@
-import { Server as NetServer } from 'http';
-import { NextApiResponse } from "next";
 import { Member, Profile, Server } from "@prisma/client";
-
+import { Server as NetServer, Socket } from "net";
+import { NextApiResponse } from "next";
+import { Server as SocketIOServer } from "socket.io";
 export type ServerWithMembersWithProfiles = Server & {
   members: (Member & { profile: Profile })[];
 };
-
-export type MessageWithMemberWithProfile = {
-  id: string;
-  content: string;
-  fileUrl: string | null;
-  memberId: string;
-  channelId: string;
-  deleted: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  member: Member & {
-    profile: Profile;
+export type NextApiResponseServerIo = NextApiResponse & {
+  socket: Socket & {
+    server: NetServer & {
+      io: SocketIOServer;
+    };
   };
 };

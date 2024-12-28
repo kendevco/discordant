@@ -1,0 +1,1551 @@
+
+
+
+Skip navigation
+Search
+
+
+
+Create
+
+9+
+
+Avatar image
+
+
+
+1:00:28 / 1:05:07
+
+
+Build Real-Time Chat App in NEXT JS 15 using Socket.io for Dev and Prod Environments
+
+Programming with Umair
+9.55K subscribers
+
+Subscribed
+
+81
+
+
+Share
+
+Download
+
+2,202 views  Dec 4, 2024  #chatapp #realtimechat
+Build a chat app for both dev and production environment is always a challenging task. In this tutorial, I will show you how to configure next.js 15 project with socket.io and build a real time live chat application in which user can create rooms and with other users who ever join that room. It includes best practice of configurations for typescript and more.
+
+00:30 Demo of ChatApp in Next.js 15
+03:55 Create new Next.js 15 project
+05:10 More Next.js Tutorials
+08:00 UI/UX of Chat App
+23:50 Handle States of Chat App
+28:40 Install socket packages and add script
+31:15 Build socket.io server
+37:50 Configure typescript for dev and prod
+46:30 Socket on client components
+59:20 Configure Chat app for production
+
+#chatapp #nextjschatapp #nextjssocketio #realtimechat
+
+Follow Whatsapp Channel:
+https://whatsapp.com/channel/0029Va7y...
+
+React tutorials:
+   • React.js Tutorials  
+
+JavaScript Tutorials and Projects:
+   • JavaScript Tutorial and Projects  
+
+Angular Tutorials:
+   • Angular 16 Life Cycle Hooks - Explain...  
+
+Docker Tutorials & CI/CD:
+   • Docker Tutorials & CI/CD  
+
+Angular 16 Crash Course For Beginners:
+   • Angular 16 Crash Course  
+
+Tech Tutorials - Random:
+   • Postman Tutorial - Testing APIs and B...  
+
+Complete Next.js 13 Tutorials:    • Next.js 13 Tutorials - App Directory  
+
+Next.js 14 Tutorials:
+   • Next.js 14 Tutorials - App Directory  
+
+Next.js Tutorials:
+   • Next.js Tutorials  
+
+Node Express MongoDB Bootcamp:    • Build REST API with Node Express MongoDB  
+
+ChatGPT Tutorials:    • ChatGPT  
+
+Join our facebook group:
+  / 996305460498149  
+
+Contact us for development services:
+  / umair-jameel-24aa5368  
+Key moments
+
+View all
+Transcript
+Follow along using the transcript.
+
+
+Show transcript
+
+Programming with Umair
+9.55K subscribers
+Videos
+About
+
+LinkedIn
+
+Join Facebook Group
+
+15
+Next.js Tutorials
+by Programming with Umair
+
+25:08
+Next.js 15 Live Chat and User Feedback System with Intercom
+by Programming with Umair
+
+1:00:26
+The FASTEST Way to Build AI Chatbot in Next.js with OpenAI and Gemini
+by Programming with Umair
+
+39:26
+Build A Video Calling App in Next.js 15 with Zegocloud | Zoom Clone
+by Programming with Umair
+13 Comments
+Kenneth Courtney
+Add a comment...
+
+@alexdin1565
+2 weeks ago
+I watch many youtubers talking about NextJs and Socket and all take 5,6 7 and 10 hours to do it but you are the only one who make it in less time 
+
+thanks man for your efforts 
+
+please can you make video about Nextjs and payload cms?
+
+3
+
+
+Reply
+
+
+@CodeWithAimee84
+2 weeks ago
+Awesome video thanks for making this. never done anything with web sockets before so was interesting to watch and follow along. Thanks
+
+
+
+Reply
+
+
+@mateenqureshii
+2 weeks ago (edited)
+Subscribed to support Pakistani content creators, keep up the good work Umair ❤️
+
+
+
+Reply
+
+
+1 reply
+
+@purvik1548
+2 weeks ago
+source code?
+
+4
+
+
+Reply
+
+
+@sssrikanthhh
+2 weeks ago
+Great project 
+
+
+
+Reply
+
+
+@incipiensibus9631
+13 days ago
+Exceptional Video!. i followed this to the end and it works perfectly. Have you tried adding attachments like photos or documents to a realtime chat? how would you do that?
+
+
+
+Reply
+
+
+@k303k
+2 weeks ago (edited)
+Hi sir Can you make 1 video about performance Optimisation video with useMemo and useCallback hooks with real world usecase?
+
+
+
+Reply
+
+@CarlosTello-m8h
+2 weeks ago
+good
+
+
+
+Reply
+
+@saimanu1997
+2 weeks ago (edited)
+The project is great, but  it would be better if You  improve your teaching skills.
+
+2
+
+
+Reply
+
+@mrstrangeUser
+2 weeks ago
+React Js Mein Banao... Next Ab NextJs Nhi rha 
+
+
+
+Reply
+
+Transcript
+
+
+Search in video
+0:00
+hi guys welcome back to another video in nextjs 15 in this particular video I'm going to talk about how to build a
+0:06
+simple but a fully featured chat application in nextjs 15 using an awesome package called socket.io so I'm
+0:13
+not going to be using any backend technology like node Express I'm only going to be stick in nextjs and I'm
+0:20
+going to be building backend server and also link that server with my front and
+0:25
+nextjs application to build an awesome chat app So currently I have opened up the three tabs so that I can show you
+0:31
+the demo of the application currently if no rooms exist we have to create over
+0:37
+room so joining a room we have to write our username and then we can enter any
+0:42
+name uh the new name which does not exist or any existing room name so I'm going to be giving 1 2 3 4 5 which is
+0:49
+the name of room I'm going to be joining it okay so I'm inside this particular room and this is a particular chat
+0:55
+application now I can write message high so all other users who are in this
+1:02
+particular room will get the notification So currently I've opened up three tabs so let me show you how does
+1:07
+it work now I'm going to open up the same application and I'm going to be
+1:13
+writing John and I'm going to be entering within the same room which exists on the left side okay so I'm
+1:19
+going to be enter now all other users who were already joining this room have been this getting this notification that
+1:26
+this particular user have joined this room awesome now I'm going to write hi
+1:33
+John and send now you can see that I'm sending the message to all the users
+1:38
+which are in this particular room and uh this is the message I have got and here
+1:43
+I can write hi umir and this is now I'm sending the message so both the users are communicating with each other and uh
+1:51
+this is how it is going to work now if I try to open up a third Tab and I'm going
+1:56
+to write like Elliot and I'm going to enter some room okay 1 2 3 now you can see that the these users are not getting
+2:03
+notification because this user is not existing uh in this particular room now
+2:09
+let me enter in the same room so I'm going to write 1 2 3 4 5 the ID of this
+2:16
+room now join now you can see that on the left side both of these users uh
+2:21
+have got notification that Elliot have joined this particular room now hi guys
+2:28
+you can see that now all these three users are communicating within this room so in this particular application uh
+2:35
+everybody can create a room and ask other users to join that room so that they can communicate with each other
+2:42
+okay so now hello Elliott um so this
+2:47
+particular uh both of these users have got this message because we are in this
+2:52
+particular room all right how cool is that now I'm going to show you how to
+2:58
+configure your application for both development and production environment and for that I have uh actually
+3:04
+configured my package.json file with different uh commands scripts because
+3:09
+socket.io require a server that needs to be running so in order to run the next ja application I wanted to set up a one
+3:17
+command that runs the server as well as the client side nextjs application so that the chat server also running and my
+3:25
+nextjs front end app should also be running with a single command and this is for Dev velopment I have set up the
+3:31
+configuration for the build uh building the socket project as well as starting the project and this configuration is
+3:37
+for the production environment and for that I have created the different files server. MTS this is to run uh separate
+3:46
+socket.io server and then TS config server Json file socket client server.
+3:52
+MGS files so all these configuration files are added so I'm going to be creating a new nexs 15 project and I'm
+3:58
+going to be explaining each in every line of code which I'm going to write so both the beginners who don't have any idea about the socket uh they should
+4:05
+understand as well as those people who have some idea uh writing sockets uh in node Express on backend server both the
+4:12
+guys should understand how to configure nexj 15 for chat application using sockets socket client and how to link it
+4:19
+with the client side nextjs application with the UI components okay so in vs code I've opened up a new uh folder
+4:26
+which is empty right now in the terminal I'm going to be creating a new project so npx create next app at latest dot dot
+4:35
+means I don't want to create any other folder a new folder within this folder okay just choose the name of the folder
+4:41
+which is already opened all right so right now I'm going to go with the typescript eslint yes Tailwind CSS yes
+4:50
+and uh Source directory no app router obviously yes uh turbo pack for this
+4:56
+particular application I don't need that um and no for import alas so it's going to download all the dependencies
+5:02
+required to run over nextjs application okay so meanwhile it is getting downloaded let me quickly show you the
+5:08
+history of my channel so if you go to my channel uh there are a lot of playlists
+5:13
+okay starting off with the JavaScript tutorials for uh and then the next J 13 building a full fledged rest apis using
+5:21
+node Express mongod TB but the main point is uh if you go to the next year tutorial and next year 14 tutorials I
+5:27
+have pretty much covered every topic of nextjs using multiple uh cloud services
+5:34
+backend services to guide you guys how to build an awesome good performance nextjs application using AI using
+5:42
+authentications using backend server using SEO um e-commerce app blog application chat application I've
+5:49
+already created different application like nexs 15 live chat app with user feedback system with intercom but that
+5:55
+is using an intercom a third party Service uh in this particular video video in this video I'm going to U you
+6:02
+know using the socket.io to build a custom chat application and then I in the last uh 10 days ago I created this
+6:09
+video having a chat bot using a Gemini and open a you can check that out U so
+6:15
+check out my channel and learn everything about nextjs become perfect become uh Pro uh professional in nextjs
+6:22
+if you want to build any kind of application on this technology you can see that here it contains 46 videos
+6:28
+starting off with building UI authentication blog application SEO uh configuring cicd Docker building weather
+6:36
+app and all these different application so you can see I'm putting a lot of effort building these videos for you guys so do subscribe my channel it will
+6:43
+really encourage me to make more videos for you guys and also if you need any development services you want to have
+6:49
+live on live sessions from me then you can contact me on LinkedIn I've given the link of my LinkedIn profile in the
+6:55
+description of this particular video so the project is created it is success and
+7:00
+let me clear the terminal out let me run the project to see if everything working fine so it's running currently on Local
+7:08
+Host column 3000 so let's refresh the page so it should show the default UI provided by nextjs 15 awesome first of
+7:15
+all I'm going to go into the app directory open up the global. CSS file
+7:20
+and I'm going to remove everything that we have here except the tailin CSS because I need tailin CSS to design the
+7:26
+UI okay so now you can see that all the color schemes is gone inside the page
+7:33
+I'm going to remove so in nextjs if you are new to nextjs this page. TSX file already referring to the Home Route okay
+7:40
+so whatever the content you are seeing over here it's because of this particular page and the content inside
+7:45
+it so I'm going to remove everything and I'm going to write another div and I'm
+7:51
+going to write home okay uh let's go over here you can see there's a home visible in the top left corner of the
+7:58
+page okay now let's go to the layout. TSX file this file is used to uh layout
+8:04
+our page uh sidebar navbar footer and also bring in all the content coming in
+8:09
+from the child components it behaves like a high order component if in simple word if you know in react okay so
+8:16
+currently the children is the content of all the routes uh which are coming in currently we only have one route so the
+8:22
+home text which is over here is going to be received in this children and here if you want to add a Navar which is going
+8:29
+to be ible in all the pages we can do over here but first of all I want to align all the content of my pages to the
+8:36
+center of the page okay so this children should be in the center or whatever the content I will be adding here so I will
+8:42
+be wrapping this particular children within uh another Dev and let's do that
+8:49
+and I'm going to be adding the tailin CSS class name so MX Auto Max with uh 7
+8:58
+XEL and let's do pedding X4 okay so let's save it um and now you
+9:06
+can see that um I'm here in the home so currently I've designed this page if we
+9:11
+want to add a Navar it should have uh it should be centered align so no matter if
+9:17
+I just zoom in zoom out U it is going to be visible in the page okay so on the
+9:23
+smaller screens obviously uh it will be a Mobile screen so it will have a less margin on the left and right
+9:30
+okay so let's move to the 100% uh just ignore it because I in the page. TSX file I'll be centering all the
+9:36
+chat UI so that's it for this particular file and uh in this particular page. TSX
+9:43
+file uh let's design this page first of all okay so now uh this particular Dev
+9:51
+I'm going to be adding a class so I'm going to be adding the flex margin top 24
+9:57
+justify uh enter and width full all right so let's see now you can see that
+10:04
+it is centered align uh and it's looking good now I'm going to be removing this home instead I will be adding uh that UI
+10:13
+which I showed you at the start of the video so I'm going to be adding another Dev and this will be having an H1 and
+10:21
+this should show the room um currently let's give it one I will be making it
+10:27
+Dynamic let's give the class name to this div with full uh Max uh with
+10:34
+3XL um and MX Auto all right so let's save it let's go
+10:41
+now you can see that room one is visible uh which is aligned on the left side and this is where our chat uh application is
+10:48
+going to be shown the UI now uh for this room let's increase the size of it a bit
+10:53
+so margin bottom for text to XEL font bold
+11:00
+all right so it's bold now now below this H1 I'm going to be adding another
+11:05
+Dev and this is going to take all the chat messages okay so let's do that
+11:11
+let's write to do add chat room so let's save it uh and below this I'm going to
+11:17
+be creating a new component which is going to be the form uh the text box and the button to send the messages okay so
+11:24
+for that I'm going to be creating a new folder components and in inside these
+11:29
+components I'm going to be creating a new component so let's name it chat form. TSX okay RFC I'm using an
+11:38
+extension of vs code uh that if you write RFC and hit enter it is going to
+11:44
+generate this particular start of the component code so let me quickly show you if you don't know if you are new to
+11:50
+it so it should have it should be this one es7 react Redux graphql so uh you
+11:57
+can just install this extension all right so now uh let's uh chat form here uh
+12:05
+let's bring that in here so chat
+12:13
+form all right so now you can see that this is the to-do this is the chat form
+12:18
+um and uh rather than adding this text I will be adding another component that is going to render all the messages from
+12:25
+here okay so let's quickly do that uh let's first of all add the UI for this
+12:30
+chat form U so here I'm going to be removing this Dev instead I'm going to
+12:36
+be starting off with the form it is going to be a child component of that parent component the page. TSX so uh I'm
+12:44
+using a super M extension which is an awesome and this is why I'm getting
+12:49
+these suggestions that this is something you want to write okay I can hit tab um and I can modify it if it is not
+12:55
+according to my requirements so uh now uh let's add the on
+13:01
+submit event uh and I yet need to add handle submit over here and also let's
+13:09
+add the class name so Flex Gap 2 margin top four okay uh So currently uh let's
+13:18
+quickly add the handle submit event okay um this is how it should work so react.
+13:27
+form event um we don't need to add HTML form element that is fine uh so for now
+13:34
+it is just logging that out so now inside this input uh it should be of
+13:40
+type text that is fine uh placeholder type your message here which is fine uh
+13:47
+class name Flex one pedding
+13:52
+X4 border two padding Y 2 rounded large
+13:58
+for Focus outline should be none okay so
+14:04
+this is how it's looking like and uh lastly um I need to add the own change
+14:10
+and uh let's let's print this thing um but I can add a state so let's bring up
+14:18
+the state I'm assuming you already know react okay if you don't know react you need to First learn react okay so now
+14:24
+this is the set message and rather than console log I can add uh set message and
+14:30
+e. target. value all right and here uh console log
+14:38
+I can add prevent default if message do TR
+14:45
+uh not equals to empty string then I'm going to add on uh let's let's see set
+14:54
+message okay and inside this if condition I will be calling a function
+14:59
+uh which is going to be coming from the parent component which is the page. TSX Bel but for now that is fine let's save
+15:05
+it let's go over here so you can see that uh it is showing some kind of error the reason is that um I actually need to
+15:13
+convert my component into a client side component because whenever the user interaction require uh it cannot be
+15:20
+rendered on the server side by default all the components in nextjs are rendered from the server side so let's
+15:26
+save it now there is no error you can see that it is looking great uh and uh
+15:32
+we need to add the button as well after this so after input let's add the button
+15:37
+so button um type submit class name like this send
+15:45
+and then button I'm just using whatever the super m is providing so that is fine
+15:50
+I think yeah send here uh rather than uh black text I'm going to add text
+15:56
+white all right so this is looking great uh we have set that up and we have this
+16:02
+chat box I will come back here uh so uh
+16:07
+before uh moving back to the page. TSX let me show you
+16:13
+on send message and uh this is going to be of
+16:20
+type vo the message is going to be visible so this is just like an interface currently this is uh declared
+16:27
+but its value is not being used so I can write uh on send message and then the
+16:34
+message all right uh I don't think we need to do anything uh further inside
+16:40
+this particular component uh so let's go back this is the page and we have this
+16:45
+chat form and it is showing the error because we are not passing anything like
+16:51
+uh uh that uh uh message which we have added so let me show you this thing on
+16:58
+send message should be passed to this okay so let's go to the page. TSX and on
+17:05
+send message uh message uh console log so the error should be gone actually um
+17:12
+it should be a function so function needs to be created so let's
+17:20
+add uh con
+17:26
+handle send message message message console log and this should be passed
+17:32
+over here all right so now the error should go all right so currently uh I think the
+17:41
+error it is showing is because we have this function and we need
+17:49
+to um make it client side okay use client let's save it now the
+17:58
+error is gone on uh since we are have loading the form inside this component so this is the reason we have to convert
+18:05
+this particular component into the client site okay so any component which uh require only data rendering uh
+18:13
+fetching the data from the backend server using apis and just show it we
+18:18
+don't need to convert that component into the client site okay so this is how
+18:23
+we have a return now I'm going to build up the UI for the message so let's
+18:29
+quickly do that so I want to finish the UI before I can move towards the socket.io and all of its configuration
+18:35
+logic and the technical stuff okay so now uh let's create another component
+18:41
+inside the components folder and I'm going to write uh chat message. TSX RFC so it's going to
+18:50
+generate that and uh here I'm I need to actually pass few things so this is
+18:58
+going to would be uh a style for uh you can call it a single message okay uh so
+19:07
+let's do that so first of all U I'm going to add a class name and this is
+19:13
+going to be uh this is going to be like this because I need to modify the
+19:19
+message based upon if it is a message from sender if it is a message from if it is our message or if it is a
+19:26
+notification when when someone joins okay flex and I'm going to add this thing and
+19:34
+is system message uh let's select what the super
+19:41
+mavan is suggesting okay let's do that all right so first of all um is system
+19:46
+message does not exist that is fine for now um and if it is system message then
+19:52
+I'm going to be centered Aline system message means the notification then when someone's joined okay and after that um
+20:02
+I can add another stuff uh rather than just uh justify start if it is not
+20:08
+system message now I need to Define if it is my own message or not if it is
+20:14
+from sender or from my own message or not okay so let's save it now justify
+20:20
+end and the justify start all right uh item Center we don't
+20:28
+need to do that so margin bottom three so there should be a gap between the
+20:33
+messages and uh below this div we have another Dev and uh let's let's change it
+20:40
+a bit so um let's write the same notation which I've added above and Max
+20:50
+width extra small padding x 4 ping Y 2
+20:55
+uh like this rounded this is going to be the large let me
+21:02
+remove this div and uh this particular div is going
+21:08
+to take a few things so um first of all we need to show the name of the sender
+21:14
+okay uh but let's write the message first of all let's do
+21:20
+that and above this message we have to show the name so it is going to be
+21:26
+concatenated okay so is
+21:33
+system message like it and if it is a not a
+21:39
+system message then I need to actually show the name okay so ping class name
+21:44
+text small font bold and then I need to render the sender which which are all
+21:50
+the props which I need to pass over here in this particular component okay but before that let me add the colors of
+21:57
+that message box so let's write it like
+22:05
+it okay so this notation is system message uh let's do that is on message
+22:13
+blue gray so super m is uh awesome so now I need to modify it so if it is a
+22:18
+system message I'm going to change BG gray to 800 text is going to
+22:26
+be the white and text is going to be the center and
+22:32
+then the text access if it is on message then BG
+22:40
+blue uh 500 and the text white and for
+22:45
+if it is not a system message and not my own message then I'm going to write BG
+22:50
+white and text is going to be the black all right so I don't think we need
+22:57
+to do anything else except uh let me add uh one interface above it so interface
+23:05
+chat message props sender message is on message let's
+23:11
+select it so sender message is on message okay uh now we don't need a
+23:19
+system message I will be doing it using another condition okay so now let's select this
+23:27
+out so super m is automatically suggesting and now let's hit tab so all
+23:32
+the errors are gone I will be passing this data from the parent component page. TSX file and is system message if
+23:39
+the sender is equals to system then is system message is going to be true this is simple uh variable okay now let's
+23:48
+close it let's close it we have this page. TSX so uh first of all let's do
+23:56
+messages set messages this use State and
+24:01
+the system so use State let's bring that in from the client and this is going to
+24:07
+be off type sender is going to be string and message is going to be the string so
+24:13
+this is how it is going to work and I need to remove the uh parentheses
+24:21
+actually all right so I've added that I will be needing U few more States so a
+24:27
+room uh set room state is equals to this is
+24:33
+going to be a string so let's give an empty string now const
+24:39
+join set join use State equals to F initially no user is going to be joining
+24:45
+uh another state variable that I will be needing is the username and set username state is going
+24:52
+to be the empty okay um so now I can use these messages uh uh to actually iterate
+25:00
+through it so let iterate inside this particular
+25:07
+div I can come over here and I can write the messages do map and message
+25:16
+index Arrow function and let's bring that chat messages the component which I
+25:23
+have created so key is going to be let's give it an index uh um and then I need
+25:29
+to pass the sender so the sender is going to be the message. sender um and
+25:36
+the message. message uh it is it's an error so is on
+25:42
+message if the sender is going to be the username so this is how it is being
+25:47
+passed so let me see what is the error maybe I need to add the parentheses over here so this is the error okay so let's
+25:54
+add these parentheses all right uh and now there is no message because uh
+26:01
+it uh the messages array is empty but I need to add some classes to IT
+26:07
+background gray so that we have some so height is going to be the pixels
+26:12
+overflow y Auto okay it will show the scroll so the maximum height is going to be the 500
+26:19
+pixels uh and then the padding is going to be the four margin bottom four BG
+26:27
+Gray is going to take the value 200
+26:32
+border um border two okay so let's give the Border two rounded is going to be
+26:38
+the large okay so let's see you can see that it is showing over here it is showing
+26:44
+nothing and the messages are not being visible over here all right uh I will be
+26:50
+adding U another uh State uh this is going to be uh above here so if the user
+26:59
+is joined or not then based upon that I'm going to load the UI okay so let's
+27:06
+let's do that above this particular div I can actually check if not joined then
+27:14
+question mark then parenthesis and this is going to be uh like let's do that all
+27:21
+right so now this this parentheses is going to
+27:27
+take this D which I have already written so let's cut it from here let's paste it over here all right so currently you can
+27:34
+see that it is showing the UI because the user is not joined by default by default it is going to be false so every
+27:41
+user who is going to be opening this URL he will see this text obviously uh I
+27:46
+need to add the form here for the username and the room ID okay so I'm not going to be wasting too much time to
+27:52
+explain you how to design it a bit so I'm just going to be copy pasting the snippet which I have inside this
+27:59
+particular joint okay so let's do that let's remove it and let's paste it over
+28:05
+here okay so let's save it um handle join room does not exist so I can
+28:11
+actually quickly come over here and let's create the function so handle join room uh set join U equals to True uh I
+28:20
+need to add an if condition but for now that is fine now you can see that it is looking good and uh after I'll be f
+28:28
+filling this form and I will be clicking on this uh join room um I will be um
+28:34
+actually updating this particular State and when this state is going to be updated uh this UI is going to be
+28:40
+visible awesome now it's time to configure socket so in the terminal I
+28:46
+need to install few packages um it was an old error okay so just ignore it so
+28:53
+clear and if I open up package.json file uh it include these dependencies for
+29:00
+react nextjs Dev dependencies so I'm going to be installing npm I and first one is the
+29:09
+socket.io and the second one is The socket.io Hyphen client and for so in XJ
+29:18
+15 we have to write it for now later on uh maybe uh it gets resolved so this is
+29:24
+going to get installed so you can see that these are added so. when we use the separate Technologies like M Stack uh we
+29:31
+use socket.io on the backend server in node Express server and then we use the socket IO client on the frontend
+29:38
+application whether built in angular react uh to actually connect uh the
+29:43
+server and the client uh for the messages or for the notifications okay
+29:49
+um and for the dev I don't think we need to do anything and here we have this Dev
+29:55
+command which we uh just uh used to run our application locally for the development server but this is not going
+30:03
+to run our socket we have to uh uh modify this particular command so that
+30:09
+our front and next St also works and also the server of the socket AIO also
+30:15
+works so rather than modifying it let's keep it like it and I'm going to add another Dev uh
+30:22
+socket okay so now this is going to be a long value uh let me add that so I can
+30:31
+explain you after it so these are the simple configuration you can just pause the video and you can just put it here
+30:37
+so we have the node options this is this will avoid you with a lot of Errors um
+30:43
+now TS node is something that we can uh have to run over uh nodejs server TS
+30:50
+node is used to uh run node when it is written using the typescript if we were
+30:57
+using the the JavaScript we didn't need that okay server. MTS file is something
+31:02
+we need to create that I did I need to actually uh create server. MTS file okay
+31:10
+and this is where I will be actually creating a server for the socket so
+31:15
+while I'm writing it I will be explaining you step by step so first of all I'm going to create server using
+31:21
+HTTP uh it is going to be the node HTTP okay now let's bring in next from
+31:30
+next so I'm going to be using it uh to run our next app as well okay so let's
+31:36
+save it now let's bring in the server from the socket.io okay so now uh so let me
+31:42
+quickly explain you how these things work so the thing is that you might know that in HTTP server uh like the uh when
+31:51
+we request something we get the response but uh in HTTP uh uh server we when we
+31:59
+don't request something we don't get a response so the request should be must okay when we call an API we get the
+32:06
+response from the server if we don't call that API we will not get the response but this is not in the case of
+32:12
+the socket socket uh if I give you an example in multiple application we get
+32:17
+the notification at the top of different websites okay the notifications we don't request to get the notification but we
+32:24
+still get the notification because of U some new message we they want it it we
+32:29
+to receive um or we have to we have sent the message and the server is going to
+32:36
+send the response so the request we can get the response on the request as well as we can get the uh response without
+32:44
+requesting the response okay so it is a two-way communication without request okay so now inside this first of all let
+32:51
+me detect whether we are in production or the dev so the process. env. no it is
+32:56
+not production then we are in the dev environment now let's bring in the host
+33:02
+name host name equals to the process. host name Local Host now let's create a
+33:09
+EnV file and inside it I'm going to add uh host name equals to uh Local
+33:19
+Host and Port is going to be
+33:25
+3,000 all right so uh we don't need it in the form of
+33:32
+string let's remove it let's remove it now we have the host uh so let's use the
+33:41
+port as well so Port is going to be the par in process. env. 3000 and then the
+33:49
+10 okay par in uh we are just converting that if this is the case P does not
+33:55
+exist in EnV then I'm just using Local Host column 3,000 so these are just the validations okay
+34:00
+now let's create an app using this next function okay uh this is going to help
+34:06
+us run the next JS application along with the socket.io so app equals to next Dev so
+34:14
+along with Dev I need to pass the host name and then the port as well okay
+34:21
+so uh what I'm going to do is I can actually uh let's add the handle for the
+34:30
+get request Handler okay and this is going to help us uh create a server okay
+34:38
+so we actually we are going to pass this handle to this particular function create server now
+34:46
+app. prepare. then uh I'm not going to select
+34:52
+everything that it is suggesting because I want to explain you guys step by step
+34:58
+so here we have done this now let's add the HTTP Server create server and I'm
+35:05
+going to pass this Handler which I have already created above okay so we have this uh HTTP
+35:14
+server and uh let's add the io new server HTTP server and we don't need to
+35:21
+pass any inside it right now okay so the io is whole room okay just consider IO
+35:28
+is a whole circuit or a whole room in which we can have multiple sockets so there can be multiple chats happening in
+35:35
+our application multiple rooms and multiple users coming in so whenever new user comes in we we uh we are combining
+35:44
+it and we are calling it uh as a whole server or a room or a whole circuit that
+35:49
+contains multiple sockets okay means multiple connections can be made based
+35:55
+upon the room numbers and multiple users okay so uh now I'm can actually add the
+36:02
+io do so these are the built-in function provided by socket okay so you have to go through its
+36:09
+documentation now uh first of all whenever user is going to be opening up
+36:15
+uh this particular application we want to detect whether the connection is made or not so on is a one uh uh trigger on
+36:25
+gets triggered whenever it it gets detected okay so whenever the
+36:31
+connection gets uh added so for now let's remove it so I'm just logging that
+36:37
+out that a user connected but let's add a meaningful message over here
+36:43
+user connected and uh we can have it
+36:48
+like socket. ID like this and like it okay uh uh now
+36:58
+I will come back to this but outside it I need to actually listen the server on
+37:05
+the port so the server is running on
+37:10
+uh here I can write rather than Port I can write uh HTTP slash and then
+37:20
+the dollar sign this host name and colon
+37:27
+port all right so this is enough for running the server okay um so rather than
+37:36
+actually running over application using the dev command I'm going to be using the dev socket all right so let's see if
+37:43
+I run it what happens so npm run Dev
+37:49
+socket so hit enter now so it is showing this error that uh can't find package TS
+37:55
+node okay so I'm not going to be installing that TS node directly over here as a dependencies or the dev
+38:01
+dependencies instead I need to configure few things so let's go to the es L first of all um and here I'm going to set the
+38:09
+rules so rules and this is going to be an object
+38:17
+now I'm going to write at typescript es Lent
+38:27
+and this is going to be the no requir Imports and this is going to be
+38:34
+equals to the off okay so that's it for this file now let's open up this uh TS
+38:41
+config so inside the TS config file you can see that it has this module resolution equals to bundler I'm going
+38:48
+to change it to node okay and then I'm going to add uh we have this include
+38:56
+over here okay so we have this next EnV uh then we have this TS
+39:02
+TSX uh and lastly I will be adding server. MTS file as well which I have
+39:10
+just created okay so this is
+39:16
+added and uh let's let's close that and let's open up uh this Tailwind config I
+39:23
+don't need to do that and I'm going to create a new file so this is going to be for configuring uh this error so we for
+39:31
+the server side as well for production as well so I'm going to write the TS
+39:36
+config dos server. Json okay and inside this particular
+39:45
+file I'm going to just adding the code you can pause the video so this is how
+39:50
+I'm actually configuring the node uh required module so because node
+39:55
+application uh we we use the socket IO within the node application so this this
+40:00
+configuration actually necessary you can see that it will be using the same server. MTS file uh which we have just
+40:08
+created okay so let's save it and let's close it let's close it now let's try to
+40:14
+running our server and see what happens well not yet uh let's install this TS
+40:20
+node package so I'm going to write npmi TS node Force so this is going to get
+40:26
+installed after that I'm going to try that out but the configuration I've done were necessary so it's good that we have
+40:32
+already done so now TS node package is added now let's try to run that Dev
+40:39
+socket I hope that yeah it's fine so let's hit enter and now uh I hope that
+40:46
+it is not showing that particular error which was showing above okay so you can see that the
+40:53
+Priority Access server is running on Local Host which we have written over here this is awesome and uh this is
+41:02
+where the message is printing from here now let's try to refresh the
+41:09
+page and it should print the same UI all right so over socket is running our
+41:15
+server is running and along with that our next GS app is also running you can see that this UI is coming in from the
+41:22
+nextjs uh routers the page. TSX file and we have actually configured that
+41:29
+particular command uh to actually run both the next app as well as the socket
+41:35
+IO server okay so this is cool now I'm going to come back over here server. MTS
+41:45
+and this is a predefined strings you can go to the documentation of the socket IO and you can just check these out so now
+41:53
+in the server. MTS we have to configure few more things so in the socket iio
+41:59
+there are few terminologies like the emitting a message when someone requests a message we have to emit the message
+42:06
+from the socket uh we can broadcast the message broadcast means that we want to
+42:11
+send the message to all the users maybe within the uh room within a circuit uh
+42:17
+so but U users can send the message to each other as well okay so now uh first
+42:25
+of all uh let's add the disconnect so someone leaves the uh server leaves the
+42:30
+browser so we have to we are just logging that out right now we are not going to show in on the UI uh so I'm
+42:37
+just logging this out we can modify it rather than logging it out we can store it in some kind of DB for record purpose
+42:43
+for analytics purpose okay so i.on if it is disconnected then we are just logging
+42:49
+that out uh before that we want to uh detect when someone
+42:54
+joins a room okay so this is something uh we can do over here so so actually
+43:04
+not uh using this thing over here let's let's remove it instead I need to add it
+43:10
+inside it and rather than IO I need to use the socket all right so make sure
+43:16
+you update that and uh socket. ID um it
+43:21
+is showing some kind of error let's see so property ID does not exist on the dis
+43:27
+connect reason I'll come back to this why it is showing this part so uh okay
+43:33
+we don't need to receive it this was the error it should be coming in from this IO
+43:38
+connection all right now let's detect that whether someone joins a room or not
+43:44
+so I'm going to write the socket Doon and join room is also a string
+43:49
+predefined string provided by the uh socket so socket.io package now we have
+43:54
+this room so rather than this room and we can actually trigger this particular hook uh with the help of uh from the
+44:02
+client side as well so when I will detect when someone uh opening a page.
+44:07
+TSX file within the use effect maybe I can trigger this particular hook or an
+44:14
+event and whenever this is going to receive that someone's open up that page uh then I can receive the room number or
+44:21
+whatever the message I want to send from that client side Okay so
+44:27
+this is going to take it like it and inside it I can actually use the socket.
+44:32
+join room these are the predefined functions okay um and uh then I can
+44:38
+actually uh write let's add the console log so we know in the terminal that the
+44:45
+this particular user have joined this room and once the socket uh configure
+44:51
+that it is joined a room then I want to return the response back to the client side that this particular user have
+44:58
+joined the room so that the other users should know uh that uh on the UI they
+45:05
+should see the message that this particular user with this name have joined this room and to do that we can
+45:11
+send it to a room number and with an emitting message so what do I mean by
+45:18
+that socket do2 and inside it we can give it a room number and after that we
+45:23
+can send the message so who should receive the message message uh what what kind of message we can actually uh add
+45:31
+the user join and this is something custom and we have to use the same kind
+45:37
+of strings on the client side and it will help us to detect that uh this
+45:43
+particular message with this label we have received from the server of the socket okay so now I can
+45:52
+actually after that I can write uh user join so let's add it within this and hit
+46:00
+tab so user joined and this is the message which I'm going to return back
+46:06
+uh to the UI so we don't need to give the room back to the UI because the UI
+46:12
+is all going to be V uh showing the room number okay uh join
+46:19
+room all right so now this is something we have done now we have already installed the client side socket iio
+46:26
+package okay okay so I'm going to be creating a new folder lib and inside
+46:31
+this lib folder I'm going to be creating socket client. DS file okay and inside
+46:38
+it I'm going to be using the use client import IO socket client and
+46:48
+Export cost socket and then the io
+46:58
+so this is something like it IO socket IO and then inside the page. TSX file I
+47:07
+can actually import this socket to actually trigger the functions and these
+47:12
+hooks which I have written over here okay so let's open up the page. TSX file
+47:18
+and uh let's import that uh we don't need image import
+47:25
+socket from uh that lib which we have created so socket from lib socket client
+47:34
+okay so now we have to create a use effect below this so use effect which is
+47:41
+going to be coming in from the react Arrow function and inside this use
+47:48
+effect uh I can actually add user joint so super m is
+47:55
+suggesting me something so let's hit enter so this is the data and hit enter
+48:01
+um so the data is uh over here let's add uh this message let's
+48:11
+update the name like the message and the center is going to be the system previous we don't
+48:17
+need to log that out okay so whenever user try to uh trigger this particular
+48:23
+Home Route uh this use effect is going to be working so I need to add it an empty array over here okay and also when
+48:31
+someone leaves this particular page uh let's add return and socket. off uh user
+48:39
+joined and we will also be needing the socket dot off message which I have yet
+48:44
+to create because both of these things um I will be adding over here I've already added join room and I will be
+48:52
+adding the message when someone sends a message as well so inside the page. TSX file we have written this return this is
+48:58
+in case unmounting of this component okay so let me rerun the server in the
+49:04
+terminal let's rerun it so let's see all right so in the
+49:10
+server in the terminal we should see so this particular message that the user uh
+49:16
+is uh joined okay so user connected all
+49:21
+right so when I when I run it if I refresh it so the user connected got
+49:28
+printed in the terminal you can see over here so this is the user connected and
+49:35
+this is showing over here now when I will be writing my username so Omare and
+49:42
+1 2 34 5 let's click on that I hope that it's going to work join room uh user connected so it is not
+49:51
+printing that out actually what I need to do is uh
+49:57
+inside the page. TSX file when I clicked on that join room uh this is going to be
+50:04
+triggered actually okay so here I can first actually detect if someone uh have
+50:11
+entered the room number and the username or not otherwise I don't want it to navigate to uh the new UI okay and
+50:18
+inside it now um I can actually select and emit that join room and then I can
+50:25
+actually write set join over here right and emitting join room is the same thing
+50:31
+uh join room I have added over here and now uh this should be printed in the
+50:36
+terminal all right so I hope that it is going to work and let's
+50:42
+uh rerun the server so npm run Dev
+50:48
+socket so I'm going to refresh it I think it's still processing compiling
+50:55
+the server is running on local Local Host 3000 let's refresh it Local Host
+51:00
+colon 3000 all right so now we can see user connected and because the connection is being made in the server.
+51:08
+MTS and we have the socket dot uh this is where it is getting printed now let's
+51:14
+write a user username om 1 2 3 4 5 join room so we have navigated to that and
+51:22
+user joined room user Omare joined Room 1 2 3 4 five all right this is cool uh
+51:29
+this is the reason I added over here so the the triggering message we add over
+51:34
+here we can trigger with this particular label from anywhere of application that we want so emitting we are emitting the
+51:42
+message from here we are passing this message and this is going to be received
+51:47
+over here and then this is going to print U and emitting back to our UI so
+51:54
+now on the UI uh we need to actually detect this user joined or not okay so
+52:03
+uh how we are going to do it is in the page. TSX so join is made now uh we can
+52:12
+actually write the socket do
+52:19
+on user join and then the message uh and then we can actually
+52:26
+select cect these all these messages okay actually we should not write uh it
+52:31
+for the user joint we should have written it for the message which I have yet to create and then the data and then
+52:38
+this is going to take as a whole data over here all right I will create its
+52:44
+hook uh in our server so user joined when the user is going to be joined uh
+52:51
+this is going to be received this message so that this messages are going to be visible in the form of array okay
+52:58
+so before moving further let me write this messages hook as well in the server
+53:04
+so let's do that here I can write the socket
+53:09
+Doon message uh let's see uh so we have this
+53:15
+message room and uh so how we are passing it from here
+53:22
+let me see okay uh uh so this is being passed
+53:28
+over here in the form of data from the
+53:33
+page okay um but inside the server we have to rearrange that first of all
+53:40
+let's do with the room and then the message and then the sender
+53:46
+okay and let's add uh the message as well for logging purpose console log
+53:52
+message from sender uh in in
+53:59
+room in room and then the room ID this is just to print that out and
+54:07
+then the socket. room emit message and from this is where we are emitting it
+54:12
+and it is going to be received over here that we have added over here so in the data we have to send this message who is
+54:21
+the sender uh we don't need to add the system we just need to return the
+54:27
+sender and then we need to return this particular message all right so let's do
+54:35
+that let's come over here let me see handle send message uh
+54:41
+we have to Amit that out from here just to when someone sends a message and hit enter or click on that send button uh
+54:49
+this is going to be triggered and from here we have to trigger uh this this
+54:55
+thing as well from here so let's do that we have this message coming in and let's
+55:03
+process that out so data equals to room no not in the in the object form so
+55:11
+room message sender equals to the username
+55:17
+and uh set messages is going to be the previous and then the data rather than
+55:24
+data we only have to to add the sender
+55:30
+username and then the message okay so after that once the array is set let's
+55:37
+send the data to the messages let's remove the console log so uh this is a two-way
+55:46
+communication happening actually when someone joins the room uh this gets triggered and this is going to Amit join
+55:53
+room join room is going to work and this is going to let the user to join the room log the uh this string and this is
+56:01
+going to emit this particular message to this particular room number that user is joined and it is going to become come
+56:08
+over here and then it is going to trigger this socket Doon from the server
+56:13
+so the this is going to be triggered and this is going to set the message with the sender type system so this is for
+56:19
+the notification that's a new user is joined to let already existing users in
+56:25
+this so once the user joins the room uh and user can send the message so user
+56:31
+will send the message by clicking on it this is going to set the message inside the array and this is going to emit it
+56:38
+to the message along with this data and this is going to be received over here in the message along with this Printing
+56:44
+and this is going to emit back to this particular room number with this message
+56:49
+uh and this is Amit message means that this is going to be received over here
+56:56
+all right inside the messages and this is going to be setting the messages along with it so the same array uh is
+57:03
+being used to actually uh uh set the messages uh over here and over here as
+57:13
+well okay I hope that it is going to work let me rerun the server just for safe
+57:20
+side and it is still compiling so the configuration I've done over here is only for the Dev mod the development
+57:28
+server I will be adding few more things for making it uh visible and making it
+57:36
+working for the production environment as well so but first let's test that out for the development mod so I'm going to
+57:43
+add Omare and then I'm going to add 1 2 3 4 this is the room number join
+57:50
+room hi guys all right so it is visible now um let's add another tab so let's do
+57:59
+that Local Host 3,000 all right so room number is one
+58:05
+two room number is one actually okay uh all right so John one join
+58:14
+room I think um I've done some mistake so let's see
+58:21
+John 2 3 4 all right all right so so John joined
+58:27
+the room the reason it is showing one because I'm going I didn't updated that
+58:34
+so room should be room all right now you can see that it
+58:40
+is showing 1 2 3 4 and it is showing 1 2 3 4 hi
+58:46
+Omare all right and now it is receiving a message from John uh hi
+58:54
+John all right so now you can see that it is sending the message to John and it should receive it over here so our
+59:01
+messaging is working so the complete chat in the development environment is working user can join the room user can
+59:07
+chat with each other user can have multiple rooms so all the functionality is working but this is for the
+59:13
+development environment we have configured the development environment over here with these servers and this is
+59:19
+the file I created this is for the production environment in nextjs as you guys already know if you don't know even
+59:25
+what happens is when we deploy our application whether on versal whether on any other hosting platform it first run
+59:32
+this command to build the project and then it run this start command to run that build form of that project so let
+59:39
+me show you if I build this and then try to start it it is going to start the app
+59:45
+but only the frontend application it is not going to run the socket server along with that so let's test that out so I'm
+59:52
+going to write npm run build okay I hope that is is not going to throw any error
+59:58
+um and then I'm going to start this project on the production using the start command so it is currently
+1:00:03
+creating compiling linting generating the static pages and now I'm going to run the start command so now you can see
+1:00:10
+that it is starting on Local Host 3000 so let's refresh you can see that it's UI is running now I'm going to write
+1:00:17
+Omare 1 2 3 join room this is where it happens uh let's try to open up another
+1:00:24
+URL John one to three join room you can see that both of these are having the
+1:00:30
+same UI and if I try to send the message the other user is not going to receive any kind of messages because our server
+1:00:38
+is not running the socket IO server so I'm going to modify this build command
+1:00:43
+as well as the start command um to actually run the socket IO server on the
+1:00:48
+production as well so I'm going to keep these commands as it is instead I'm
+1:00:54
+going to regenerate these commands with the socket keyword after that okay so
+1:01:00
+now I'm going to write npm uh next build just like the above command and then
+1:01:06
+TSC hyphen hyen project TS config server Json and this file is already created I
+1:01:12
+created this file to run our project on the production environment as well so I
+1:01:18
+created that uh before which is good now build process is going to be happening
+1:01:23
+with this TS config server. Json and it is already using the TS config Json
+1:01:29
+which I've added over here and already including the server. MTS file as well
+1:01:34
+okay now uh once the build process is complete I need to configure the start
+1:01:42
+socket as well you can write anything over here and you can modify these commands as well if you don't need that
+1:01:48
+anymore okay uh I'm just rewriting the new commands over here so node under
+1:01:56
+EnV equals to production and then the node server.js okay not the JS I'm going to
+1:02:04
+write MJS because this is going to generate the MJS file uh inside uh our
+1:02:10
+dis folder this is going to generate a disc folder and this folder is going to be available for the production instance
+1:02:18
+okay so uh now let's rebuild that so npm
+1:02:26
+build colon socket so it is now building and it
+1:02:31
+should actually generate the disc folder in our project and that disc folder
+1:02:37
+should be containing this server. MJS file because on the production on the
+1:02:43
+server typescript doesn't work only JavaScript work on the browser so you can see that the dis folder is generated
+1:02:50
+with the server. MGs file now when I will run this start socket command uh um
+1:02:56
+this is actually checking if it is on the production then uh it is running this command node u d server MJS locally
+1:03:05
+I was using TS node because uh locally we can use typescript but on production
+1:03:11
+uh we have to use node okay now socket we have to use start and then the socket
+1:03:20
+now it's running on Local Host 3000 all right so let's remove it let's refresh
+1:03:27
+it and let me rerun it so that we don't see different things so user connected
+1:03:32
+with this ID this is automatically getting generated using socket.io so let's refresh and now you can see that I
+1:03:39
+can write Omare one uh AB CD 1 2 3 4 join room so room is joined we can see
+1:03:46
+this thing if we are looking at this it means that uh with these commands of
+1:03:51
+production environment is properly working along with the soft poet server
+1:03:57
+okay now let's go over here Local Host 3000 uh John ABC d 1 2 3 4 join room all
+1:04:07
+right so it got the notification hi John all right so it has sent this message it
+1:04:14
+has received this message so our socket is working hi om all right so we are
+1:04:19
+able to send and receive messages uh and it is working fine on the production environment as well with the these kinds
+1:04:26
+of configurations all right so I hope that you have learned something new again I would love uh to create more
+1:04:32
+videos for you guys uh but I would request you to subscribe my channel and if you need any development services or
+1:04:38
+live session from me uh you can contact me on LinkedIn for more details we can
+1:04:43
+discuss that uh you can find my LinkedIn profile link from the my Channel or from
+1:04:48
+the description of this video okay do subscribe my channel like this video comment below if you have any question
+1:04:55
+so I'll be Crea more next yes videos let me know what kind of video you want me to create U I will try to make that as
+1:05:02
+soon as possible till then thank you so much for watching guys see you in the next video
+
+
+17:53
+Now playing
+I Upgraded to Next.js 15 and Discovered THIS! Learn The Steps
+tapaScript by Tapas Adhikary
+1.2K views 2 weeks ago
+
+Shorts
+
+Next.js Router.Push Is Too Slow (Change Search Params) #nextjs #nextjs13 #nextjs15
+5.3K views
+
+
+Whats new in Next.js 14 | Turbopack | Server Actions | Learn nextjs14 | Partial Pre Rendering
+2.3K views
+
+
+What Does "Headless UI" Mean? #webdev #webdevelopment #frontend #reactjs #tailwindcss
+10K views
+
+How To Await SetTimeout In JavaScript #webdev #webdevelopment #reactjs #javascript #nodejs
+5.7K views
+
+I was not meant to find this place! 😱 #abandonedexplorer #abandondedplaces #urbex
+4M views
+
+Congress is about to make a huge mistake for astronomy #SaveChandra
+15M views
+
+
+
+20:37
+Now playing
+10 common mistakes with the Next.js App Router
+Vercel
+235K views 11 months ago
+
+
+2:04
+Now playing
+AI Headshots Generator: How to get quality AI portrait from photos via Virbo AI
+Wondershare Virbo
+9 views 4 hours ago
+New
+
+
+27:13
+Now playing
+Building AI App with Next JS 15 and Shadcn UI from Scratch - Part 1
+Artem Kirsanov
+1.9K views 2 months ago
+
+
+1:16:46
+Now playing
+Next.js 15.1: Explained!
+leerob
+18K views Streamed 12 days ago
+
+
+16:14
+Now playing
+Realtime updates with next.js, socket.io and a redis publisher
+Manuel Schoebel
+580 views 6 days ago
+New
+
+
+9:45
+Now playing
+FASTEST way to build apps with Next.js 15
+Supabase
+12K views 1 month ago
+
+
+24:20
+Now playing
+host ALL your AI locally
+NetworkChuck
+1.4M views 7 months ago
+
+
+Now playing
+432 Hz- Frequency Heals All Body Damage - Feel God's Healing Hand - Clear Negative Thoughts
+Meditative Journey
+371 watching
+LIVE
+
+
+
+1:31:40
+Now playing
+Want to make a chat app? Get Real-time With WebSockets & Socket.io!
+Good Morning Developers
+20K views 9 months ago
+
+
+11 videos
+Awesome ReactJS Projects
+As a Programmer
+•
+Playlist
+View full playlist
+
+
+1:04:33
+Now playing
+Build Live Streaming Web App in Next.js 15 using ZegoCloud UIKits
+Programming with Umair
+288 views 7 days ago
+
+
+16:52
+Now playing
+The Drones Are A THREAT
+Sean Spicer
+6.3K views 12 hours ago
+New
+
+
+12:48
+Now playing
+Using shadcn/ui with NextJs 15 and React 19
+Hamed Bahram
+14K views 1 month ago
+
+
+Now playing
+24/7 Livestream: NYC/NJ Drone Watch with Live Air Traffic
+Sam Cooley
+43 watching
+LIVE
+
+
+
+26:57
+Now playing
+NodeJS Realtime Chat: Build a FULL-STACK app in 27 Minutes! (Best UI 🤩)
+Adam La Morre
+801K views 1 year ago
+
+How Florida Got Soo Weird
+Something Different Films
+76K views 7 months ago
+
+Adam Frank: Alien Civilizations and the Search for Extraterrestrial Life | Lex Fridman Podcast #455
+Lex Fridman
+270K views 15 hours ago
+New
+
+Best way to learn Socket IO | complex chat app
+Hitesh Choudhary
+124K views 1 year ago
+
+Shadcn UI Tutorial using Next JS - Build Projects Faster without Coding
+Brian Design
+4.3K views 3 months ago
+
+    

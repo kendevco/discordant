@@ -1,55 +1,55 @@
-import { auth } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
-
+import LoadingRedirect from "@/components/loading-redirect";
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
+import { auth } from "@clerk/nextjs/server";
+
+type Params = Promise<{
+  serverId: string;
+}>;
 
 interface ServerIdPageProps {
-  params: {
-    serverId: string;
-  }
-};
+  params: Params;
+}
 
-const ServerIdPage = async ({
-  params
-}: ServerIdPageProps) => {
+const ServerIdPage = async ({ params }: ServerIdPageProps) => {
+  // Await params since it is now a promise
+  const { serverId } = await params;
   const profile = await currentProfile();
-
-
-  if (!profile ) {
-    return redirect("/");
+  if (!profile) {
+    const authInstance = await auth();
+    return authInstance.redirectToSignIn();
   }
-
   const server = await db.server.findUnique({
     where: {
-      id: params.serverId,
+      id: serverId,
       members: {
         some: {
           profileId: profile.id,
-        }
-      }
+        },
+      },
     },
     include: {
       channels: {
         where: {
-          name: "general"
+          name: "general",
         },
-        take: 1
-      }
-    }
+        orderBy: {
+          createdAt: "asc",
+        },
+      },
+    },
   });
-
-  if (!server) {
-    return redirect("/");
+  const initialChannel = server?.channels[0];
+  if (initialChannel?.name !== "general") {
+    return null;
   }
-
-  const initialChannel = server.channels[0];
-
-  if (!initialChannel) {
-    return redirect("/");
-  }
-
-  return redirect(`/servers/${params.serverId}/channels/${initialChannel.id}`);
-}
+  return (
+    <LoadingRedirect
+      serverId={serverId}
+      initialChannelId={initialChannel?.id}
+      shouldRedirect={initialChannel?.name === "general"}
+    />
+  );
+};
 
 export default ServerIdPage;
