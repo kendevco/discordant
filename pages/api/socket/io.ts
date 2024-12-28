@@ -29,7 +29,7 @@ const ioHandler = (req: NextApiRequest, res: NextApiResponseServerIo) => {
       upgradeTimeout: 30000,
       perMessageDeflate: {
         threshold: 2048,
-      }
+      },
     });
 
     io.on("connection", (socket) => {
