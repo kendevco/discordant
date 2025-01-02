@@ -1,38 +1,46 @@
-import axios from 'axios';
-import OpenAI from 'openai';
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+import axios from "axios";
 
 export async function analyzeImage(imageUrl: string, prompt: string) {
   try {
-    const response = await openai.chat.completions.create({
-      model: "gpt-4-vision-preview",
-      messages: [
-        {
-          role: "system",
-          content: "You are a computer analyzing images. Provide detailed metadata including objects, categories, and any relevant measurements or details. Format response as JSON."
-        },
-        {
-          role: "user",
-          content: [
-            { type: "text", text: prompt },
-            {
-              type: "image_url",
-              image_url: {
-                url: imageUrl,
-                detail: "high"
-              }
-            }
-          ]
-        }
-      ],
-      max_tokens: 1000,
-      response_format: { type: "json_object" }
-    });
+    const messages = [
+      {
+        role: "user",
+        content: [
+          {
+            type: "text",
+            text: `Analyze this image and return a JSON object with:
+              - description: detailed description
+              - objects: array of identified objects
+              - categories: ["food_journal", "expense_tracker", "home_inventory"]
+              - metadata: any extracted location or timestamp data
+              Context: ${prompt}`,
+          },
+          {
+            type: "image_url",
+            image_url: { url: imageUrl },
+          },
+        ],
+      },
+    ];
 
-    return response.choices[0].message.content;
+    const response = await axios.post(
+      `${process.env.GROQ_BASE_URL}/chat/completions`,
+      {
+        model: process.env.MODEL_VISION || "llama-3.2-11b-vision-preview",
+        messages,
+        max_tokens: 1000,
+        temperature: 0.5,
+        response_format: { type: "json_object" },
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    return response.data.choices[0].message.content;
   } catch (error) {
     console.error("Image analysis error:", error);
     return null;

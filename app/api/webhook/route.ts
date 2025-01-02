@@ -40,13 +40,18 @@ export async function POST(req: Request) {
     const { id } = userData;
     const email = userData.email_addresses?.[0]?.email_address;
     const imageUrl = userData.image_url;
+    const firstName = userData.first_name || "";
+    const lastName = userData.last_name || "";
 
     if (!email) {
       return new NextResponse("Email required", { status: 400 });
     }
 
     if (evt.type === "user.created") {
-      const username = await generateUsernameFromEmail(email, db);
+      const username =
+        firstName && lastName
+          ? `${firstName}${lastName}`.replace(/\s+/g, "")
+          : await generateUsernameFromEmail(email, db);
 
       await db.profile.create({
         data: {
@@ -62,11 +67,17 @@ export async function POST(req: Request) {
     }
 
     if (evt.type === "user.updated") {
+      const username =
+        firstName && lastName
+          ? `${firstName}${lastName}`.replace(/\s+/g, "")
+          : undefined;
+
       await db.profile.update({
         where: { id },
         data: {
           email,
           imageUrl,
+          name: username,
           updatedAt: new Date(),
         },
       });

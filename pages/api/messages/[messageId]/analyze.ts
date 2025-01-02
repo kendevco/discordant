@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { analyzeAndUpdateMessage } from "@/lib/system/system-messages";
+import { createSystemMessage } from "@/lib/system/system-messages";
+import { db } from "@/lib/db";
 
 export default async function handler(
   req: NextApiRequest,
@@ -11,7 +12,28 @@ export default async function handler(
 
   try {
     const messageId = req.query.messageId as string;
-    const updatedMessage = await analyzeAndUpdateMessage(messageId);
+
+    // Fetch the message with its channel and member info
+    const message = await db.message.findUnique({
+      where: { id: messageId },
+      include: {
+        member: {
+          include: {
+            profile: true,
+          },
+        },
+      },
+    });
+
+    if (!message) {
+      return res.status(404).json({ error: "Message not found" });
+    }
+
+    const updatedMessage = await createSystemMessage(
+      message.channelId,
+      message,
+      req.body.socketIo // Optional socket instance
+    );
 
     return res.status(200).json(updatedMessage);
   } catch (error) {

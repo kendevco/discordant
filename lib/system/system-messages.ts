@@ -1,10 +1,10 @@
 import { db } from "@/lib/db";
 import { Message, Profile } from "@prisma/client";
 import { analyzeImage } from "./image-analysis";
-import { socketHelper } from "@/lib/system/socket";
 import { randomUUID } from "crypto";
 import { getAIResponse } from "./ai-interface";
-import { ImageAnalysis, AnalysisResult } from "./types/analysis";
+import { WorkflowContent } from "./types/message-content";
+import { determineWorkflow } from "./workflow-utils";
 
 const SYSTEM_USER_ID = process.env.SYSTEM_USER_ID || "system-user-9000";
 
@@ -58,7 +58,7 @@ async function getSystemContext(channelId: string) {
       messages: {
         some: {
           createdAt: {
-            gte: new Date(Date.now() - 1000 * 60 * 60), // Last hour
+            gte: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2), // Last 48 hours
           },
         },
       },
@@ -68,6 +68,7 @@ async function getSystemContext(channelId: string) {
         select: { messages: true },
       },
     },
+    take: 50,
   });
 
   // Get recent messages for context
@@ -89,7 +90,7 @@ async function getSystemContext(channelId: string) {
 
   return {
     systemState: {
-      platform: "Discord-like Chat Platform",
+      platform: "Multi-Workspace, Multi-Channel Chat Platform",
       timestamp: new Date().toISOString(),
     },
     channelContext: {
@@ -113,31 +114,40 @@ export async function createSystemMessage(
 ) {
   try {
     const systemMember = await fetchSystemMember(message.channelId);
+    const context = await getSystemContext(channelId);
 
-    // If it's an image, just store the analysis
+    console.log("[SYSTEM_MESSAGE] Processing message:", {
+      channelId,
+      messageId: message.id,
+      fileUrl: message.fileUrl,
+    });
+
     if (message.fileUrl?.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
-      const analysisResult = (await analyzeImage(
+      console.log("[SYSTEM_MESSAGE] Processing image");
+      const analysis = await analyzeImage(
         message.fileUrl,
-        message.content || "Analyze this image"
-      )) as AnalysisResult;
+        message.content || ""
+      );
 
-      const content =
-        typeof analysisResult === "string"
-          ? { type: "image_analysis", summary: analysisResult }
-          : {
-              type: "image_analysis",
-              ...analysisResult,
-            };
+      if (!analysis) {
+        console.error("[SYSTEM_MESSAGE] Image analysis failed");
+        throw new Error("Image analysis failed");
+      }
 
-      const systemMessage = await db.message.create({
+      console.log("[SYSTEM_MESSAGE] Analysis result:", analysis);
+      const parsedAnalysis = JSON.parse(analysis);
+
+      const workflowContent: WorkflowContent = {
+        type: "workflow",
+        originalPrompt: message.content,
+        analysis: parsedAnalysis,
+        workflow: determineWorkflow(parsedAnalysis.categories, message.fileUrl),
+      };
+
+      const updatedMessage = await db.message.update({
+        where: { id: message.id },
         data: {
-          id: randomUUID(),
-          content: JSON.stringify(content),
-          fileUrl: message.fileUrl,
-          channelId,
-          memberId: systemMember.id,
-          role: "system",
-          updatedAt: new Date(),
+          content: JSON.stringify(workflowContent),
         },
         include: {
           member: {
@@ -148,14 +158,18 @@ export async function createSystemMessage(
         },
       });
 
+      // Emit the updated message to all clients
       const channelKey = `chat:${channelId}:messages`;
-      socketIo?.emit(channelKey, systemMessage);
-      console.log("System message created and emitted", systemMessage);
-      return systemMessage;
+      socketIo?.emit(channelKey, {
+        ...updatedMessage,
+        action: "update", // Add action to help clients handle the update
+      });
+
+      console.log("[SYSTEM_MESSAGE] Updated message:", updatedMessage);
+      return updatedMessage;
     }
 
-    // For text messages, get context and generate LCARS response
-    const context = await getSystemContext(channelId);
+    // Handle regular messages
     const response = await getAIResponse(message.content, context);
 
     const systemMessage = await db.message.create({
@@ -184,41 +198,4 @@ export async function createSystemMessage(
     console.error("[SYSTEM_MESSAGE_ERROR]", error);
     throw error;
   }
-}
-
-export async function analyzeAndUpdateMessage(messageId: string) {
-  const message = await db.message.findUnique({
-    where: { id: messageId },
-    include: {
-      member: {
-        include: {
-          profile: true,
-        },
-      },
-    },
-  });
-
-  if (!message?.fileUrl) return null;
-
-  const analysisResult = (await analyzeImage(
-    message.fileUrl,
-    message.content || "Analyze this image"
-  )) as AnalysisResult;
-
-  const content =
-    typeof analysisResult === "string"
-      ? { type: "image_analysis", summary: analysisResult }
-      : { type: "image_analysis", ...analysisResult };
-
-  return db.message.update({
-    where: { id: messageId },
-    data: { content: JSON.stringify(content) },
-    include: {
-      member: {
-        include: {
-          profile: true,
-        },
-      },
-    },
-  });
 }

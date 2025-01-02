@@ -1,5 +1,6 @@
 // /app/(main)/(routes)/servers/[serverId]/channels/[channelId]/page.tsx
 
+import { Metadata } from "next";
 import ChatHeader from "@/components/chat/chat-header";
 import { ChatInput } from "@/components/chat/chat-input";
 import { ChatMessages } from "@/components/chat/chat-messages";
@@ -15,6 +16,24 @@ type Params = Promise<{ channelId: string; serverId: string }>;
 interface ChannelIdPageProps {
   params: Params;
 }
+
+// Generate metadata
+export async function generateMetadata({ params }: ChannelIdPageProps): Promise<Metadata> {
+  const resolvedParams = await params;
+  const { channelId, serverId } = resolvedParams;
+
+  const channel = await db.channel.findUnique({
+    where: { id: channelId },
+    include: {
+      server: true
+    }
+  });
+
+  return {
+    title: channel ? `#${channel.name} - ${channel.server.name}` : "Channel",
+  };
+}
+
 const ChannelIdPage = async ({ params }: ChannelIdPageProps) => {
   // Await the params, since they are now a promise
   const resolvedParams = await params;
@@ -39,6 +58,7 @@ const ChannelIdPage = async ({ params }: ChannelIdPageProps) => {
   if (!member || !channel) {
     redirect("/");
   }
+
   return (
     <div className="bg-white dark:bg-[#313338] flex flex-col h-full">
       <ChatHeader

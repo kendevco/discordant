@@ -9,11 +9,9 @@ import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import { Metadata } from "next";
 
-const MemberIdPage = async ({
-  params,
-  searchParams,
-}: {
+interface MemberIdPageProps {
   params: Promise<{
     memberId: string;
     serverId: string;
@@ -21,7 +19,27 @@ const MemberIdPage = async ({
   searchParams: Promise<{
     video?: boolean;
   }>;
-}) => {
+}
+
+// Generate metadata
+export async function generateMetadata({ params }: MemberIdPageProps): Promise<Metadata> {
+  const resolvedParams = await params;
+  const { memberId, serverId } = resolvedParams;
+  
+  const member = await db.member.findFirst({
+    where: { id: memberId },
+    include: {
+      profile: true,
+      server: true
+    }
+  });
+
+  return {
+    title: member ? `@${member.profile.name} - ${member.server.name}` : "Conversation",
+  };
+}
+
+const MemberIdPage = async ({ params, searchParams }: MemberIdPageProps) => {
   const { memberId, serverId } = await params;
   const { video } = await searchParams;
   const profile = await currentProfile();
@@ -102,4 +120,5 @@ const MemberIdPage = async ({
     </div>
   );
 };
+
 export default MemberIdPage;

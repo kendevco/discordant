@@ -14,23 +14,29 @@ interface MediaRoomProps {
 export const MediaRoom = ({ chatId, video, audio }: MediaRoomProps) => {
   const { user } = useUser();
   const [token, setToken] = useState("");
+
   useEffect(() => {
-    if (!user?.firstName || !user?.lastName) {
-      return;
-    }
-    const name = `${user.firstName} ${user.lastName}`;
+    if (!user) return;
+
+    // Get user display name with fallbacks
+    const displayName =
+      user.fullName || // Try fullName first
+      `${user.firstName || ''} ${user.lastName || ''}`.trim() || // Then first+last
+      user.primaryEmailAddress?.emailAddress?.split('@')[0] || // Then email username
+      user.id; // Finally, use ID as last resort
+
     (async () => {
       try {
         const response = await fetch(
-          `/api/livekit?room=${chatId}&username=${name}`
+          `/api/livekit?room=${chatId}&username=${encodeURIComponent(displayName)}`
         );
         const data = await response.json();
         setToken(data.token);
       } catch (error) {
-        console.error(error);
+        console.error("LiveKit token error:", error);
       }
     })();
-  }, [user?.firstName, user?.lastName, chatId]);
+  }, [user, chatId]);
 
   if (token === "") {
     return (
@@ -40,6 +46,7 @@ export const MediaRoom = ({ chatId, video, audio }: MediaRoomProps) => {
       </div>
     );
   }
+
   return (
     <LiveKitRoom
       data-lk-theme="default"

@@ -2,11 +2,11 @@ import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
 import { NavigationAction } from "@/components/navigation/navigation-action";
-import { ModeToggle } from "@/components/mode-toggle";
 import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { NavigationItem } from "./navigation-item";
+import { NavigationMenu } from "@/components/navigation/navigation-menu";
 
 export const NavigationSidebar = async () => {
   const profile = await currentProfile();
@@ -39,7 +39,7 @@ export const NavigationSidebar = async () => {
         ))}
       </ScrollArea>
       <div className="flex pb-3 mt-auto items-center flex-col gap-y-4">
-        <ModeToggle />
+        <NavigationMenu />
         <SignedOut>
           <SignInButton />
         </SignedOut>

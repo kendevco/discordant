@@ -29,6 +29,12 @@ interface ChatMessagesProps {
   type: "channel" | "conversation";
 }
 
+const isMessageUpdated = (updatedAt: Date, createdAt: Date) => {
+  // Format to minute precision to ignore milliseconds
+  return format(new Date(updatedAt), 'yyyyMMddHHmm') !==
+    format(new Date(createdAt), 'yyyyMMddHHmm');
+};
+
 export const ChatMessages = ({
   name,
   member,
@@ -118,10 +124,10 @@ export const ChatMessages = ({
                 fileUrl={message.fileUrl}
                 deleted={message.deleted}
                 timestamp={format(new Date(message.createdAt), DATE_FORMAT)}
-                isUpdated={format(new Date(message.updatedAt), 'yyyyMMddHHmm') !== format(new Date(message.createdAt), 'yyyyMMddHHmm')}
+                isUpdated={isMessageUpdated(message.updatedAt, message.createdAt)}
                 socketUrl={socketUrl}
                 socketQuery={socketQuery}
-                isLast={i === 0 && index === 0}
+                isLast={i === 0 && index === group.items.length - 1}
               />
             ))}
           </Fragment>
