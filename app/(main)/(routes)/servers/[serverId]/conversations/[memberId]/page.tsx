@@ -1,3 +1,5 @@
+// /app/(main)/(routes)/servers/[serverId]/conversations/[memberId]/page.tsx
+
 import ChatHeader from "@/components/chat/chat-header";
 import { ChatInput } from "@/components/chat/chat-input";
 import { ChatMessages } from "@/components/chat/chat-messages";

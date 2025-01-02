@@ -1,3 +1,4 @@
+// /app/api/channels/route.ts
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
 import { MemberRole, ChannelType, Prisma } from "@prisma/client";

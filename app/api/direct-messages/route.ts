@@ -1,3 +1,5 @@
+// /app/api/direct-messages/route.ts
+
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
 import { DirectMessage } from "@prisma/client";

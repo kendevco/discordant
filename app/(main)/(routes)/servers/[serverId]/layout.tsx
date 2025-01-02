@@ -1,3 +1,5 @@
+// /app/(main)/(routes)/servers/[serverId]/layout.tsx
+
 import { ServerSidebar } from "@/components/server/server-sidebar";
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";

@@ -25,15 +25,13 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     const socketInstance = io(process.env.NEXT_PUBLIC_SITE_URL!, {
       path: "/api/socket/io",
       addTrailingSlash: false,
-      transports: ["polling", "websocket"], // Start with polling, upgrade to websocket
+      transports: ["polling", "websocket"],
       reconnection: true,
       reconnectionAttempts: Infinity,
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,
       timeout: 20000,
-      autoConnect: true,
       withCredentials: true,
-      forceNew: false,
     });
 
     socketInstance.on("connect", () => {
@@ -44,10 +42,6 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     socketInstance.on("disconnect", (reason) => {
       console.log("[SOCKET] Disconnected:", reason);
       setIsConnected(false);
-      if (reason === "io server disconnect") {
-        // Server initiated disconnect, attempt reconnect
-        socketInstance.connect();
-      }
     });
 
     socketInstance.on("connect_error", (error) => {

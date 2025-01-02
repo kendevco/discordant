@@ -1,3 +1,5 @@
+// /app/(setup)/page.tsx
+
 import { InitialModal } from "@/components/modals/initial-modal";
 import { db } from "@/lib/db";
 import { initialProfile } from "@/lib/initial.profile";
