@@ -27,6 +27,7 @@ import React, { useState } from "react";
 import { FileUpload } from "@/components/file-upload";
 import { useRouter } from "next/navigation";
 import { useModal } from "@/hooks/use-modal-store";
+import { Loader2 } from "lucide-react";
 
 const formSchema = z.object({
   name: z.string().min(1, {
@@ -75,12 +76,12 @@ export const CreateServerModal = () => {
   return (
     <>
       <Dialog open={isModalOpen} onOpenChange={handleClose}>
-        <DialogContent className="bg-white text-black p-0 overflow-hidden">
+        <DialogContent className="bg-gradient-to-br from-[#7364c0] to-[#02264a] dark:from-[#000C2F] dark:to-[#003666] p-0 overflow-hidden">
           <DialogHeader className="pt-8 px-6">
-            <DialogTitle className="text-4xl text-center font-bold mb-3">
+            <DialogTitle className="text-4xl text-center font-bold text-zinc-200">
               Create a server
             </DialogTitle>
-            <DialogDescription className="text-center text-zinc-500">
+            <DialogDescription className="text-center text-zinc-400">
               Give a unique and descriptive name to your server along with an
               image for the server icon. You can always change it later!
             </DialogDescription>
@@ -101,7 +102,7 @@ export const CreateServerModal = () => {
                             onChange={field.onChange}
                           />
                         </FormControl>
-                        <FormMessage />
+                        <FormMessage className="text-red-400" />
                       </FormItem>
                     )}
                   />
@@ -111,28 +112,36 @@ export const CreateServerModal = () => {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-secondary/70">
+                      <FormLabel className="uppercase text-xs font-bold text-zinc-300">
                         Server name
                       </FormLabel>
                       <FormControl>
                         <Input
                           disabled={isLoading}
-                          className="border-0 bg-zinc-300/50 focus-visible:ring-0 text-black focus-visible:ring-offset-0"
+                          className="bg-zinc-700/50 border-0 focus-visible:ring-0 text-zinc-200 focus-visible:ring-offset-0"
                           placeholder="Enter a server name"
                           {...field}
                         />
                       </FormControl>
-                      <FormDescription>
+                      <FormDescription className="text-zinc-400">
                         This is the name of your server
                       </FormDescription>
-                      <FormMessage />
+                      <FormMessage className="text-red-400" />
                     </FormItem>
                   )}
                 />
               </div>
-              <DialogFooter className="bg-gray-100 px-6 py-4">
-                <Button variant="primary" disabled={isLoading}>
-                  Create
+              <DialogFooter className="bg-gradient-to-br from-[#7364c0]/10 to-[#02264a]/10 dark:from-[#000C2F]/10 dark:to-[#003666]/10 px-6 py-4">
+                <Button
+                  variant="primary"
+                  disabled={isLoading}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white transition-colors"
+                >
+                  {isLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    "Create"
+                  )}
                 </Button>
               </DialogFooter>
             </form>

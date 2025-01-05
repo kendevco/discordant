@@ -18,12 +18,12 @@ interface ServerSearchProps {
     label: string;
     type: "channel" | "member";
     data:
-      | {
-          icon: React.ReactNode;
-          name: string;
-          id: string;
-        }[]
-      | undefined;
+    | {
+      icon: React.ReactNode;
+      name: string;
+      id: string;
+    }[]
+    | undefined;
   }[];
 }
 
@@ -31,6 +31,7 @@ export const ServerSearch = ({ data }: ServerSearchProps) => {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const params = useParams();
+
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.key === "s") {
@@ -41,6 +42,7 @@ export const ServerSearch = ({ data }: ServerSearchProps) => {
     document.addEventListener("keydown", down);
     return () => document.removeEventListener("keydown", down);
   }, []);
+
   const onClick = ({
     id,
     type,
@@ -56,46 +58,55 @@ export const ServerSearch = ({ data }: ServerSearchProps) => {
       router.push(`/servers/${params?.serverId}/channels/${id}`);
     }
   };
+
   return (
     <>
       <button
         onClick={() => setOpen(true)}
-        className="group px-2 py-2 rounded-md flex items-center gap-x-2 w-full hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50 transition"
+        className="group px-2 py-2 rounded-md flex items-center gap-x-2 w-full hover:bg-gradient-to-br hover:from-[#7364c0]/10 hover:to-[#02264a]/10 dark:hover:from-[#000C2F]/10 dark:hover:to-[#003666]/10 transition"
       >
-        <Search className="w-4 h-4 dark:text-zinc-400 text-zinc-500" />
-        <p className="font-semibold text-sm text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition">
+        <Search className="w-4 h-4 text-zinc-400 group-hover:text-zinc-300 transition" />
+        <p className="font-semibold text-sm text-zinc-400 group-hover:text-zinc-300 transition">
           Search
         </p>
-        <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground ml-auto">
+        <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border border-zinc-700 bg-zinc-800/50 px-1.5 font-mono text-[10px] font-medium text-zinc-400 ml-auto">
           <span className="text-xs">CTRL+S</span>
         </kbd>
       </button>
       <CommandDialog open={open} onOpenChange={setOpen}>
-        <VisuallyHidden>
-          <DialogTitle>Search Channels and Members</DialogTitle>
-        </VisuallyHidden>
-        <CommandInput placeholder="Search all channels and members" />
-        <CommandList>
-          <CommandEmpty>No results found</CommandEmpty>
-          {data.map(({ label, data, type }) => {
-            if (!data?.length) return null;
-            return (
-              <CommandGroup key={label} heading={label}>
-                {data?.map(({ id, icon, name }) => {
-                  return (
-                    <CommandItem
-                      key={id}
-                      onSelect={() => onClick({ id, type })}
-                    >
-                      {icon}
-                      <span>{name}</span>
-                    </CommandItem>
-                  );
-                })}
-              </CommandGroup>
-            );
-          })}
-        </CommandList>
+        <div className="bg-gradient-to-br from-[#7364c0] to-[#02264a] dark:from-[#000C2F] dark:to-[#003666]">
+          <VisuallyHidden>
+            <DialogTitle>Search Channels and Members</DialogTitle>
+          </VisuallyHidden>
+          <CommandInput
+            placeholder="Search all channels and members"
+            className="bg-zinc-700/50 border-0 focus:ring-0 text-zinc-200 placeholder:text-zinc-400"
+          />
+          <CommandList className="bg-black/10 text-zinc-200">
+            <CommandEmpty className="py-4 text-zinc-400">
+              No results found
+            </CommandEmpty>
+            {data.map(({ label, data, type }) => {
+              if (!data?.length) return null;
+              return (
+                <CommandGroup key={label} heading={label} className="text-zinc-400">
+                  {data?.map(({ id, icon, name }) => {
+                    return (
+                      <CommandItem
+                        key={id}
+                        onSelect={() => onClick({ id, type })}
+                        className="hover:bg-zinc-700/50 text-zinc-200"
+                      >
+                        {icon}
+                        <span>{name}</span>
+                      </CommandItem>
+                    );
+                  })}
+                </CommandGroup>
+              );
+            })}
+          </CommandList>
+        </div>
       </CommandDialog>
     </>
   );

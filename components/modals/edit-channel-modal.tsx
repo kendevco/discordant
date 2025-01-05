@@ -99,12 +99,12 @@ export const EditChannelModal = () => {
   return (
     <>
       <Dialog open={isModalOpen} onOpenChange={handleClose}>
-        <DialogContent className="bg-white text-black p-0 overflow-hidden">
+        <DialogContent className="bg-gradient-to-br from-[#7364c0] to-[#02264a] dark:from-[#000C2F] dark:to-[#003666] p-0 overflow-hidden">
           <DialogHeader className="pt-8 px-6">
-            <DialogTitle className="text-4xl text-center font-bold mb-3">
+            <DialogTitle className="text-4xl text-center font-bold text-white">
               Edit channel
             </DialogTitle>
-            <DialogDescription className="text-center text-zinc-500">
+            <DialogDescription className="text-center text-zinc-400">
               Edit your channel name and type
             </DialogDescription>
           </DialogHeader>
@@ -172,7 +172,7 @@ export const EditChannelModal = () => {
                   )}
                 />
               </div>
-              <DialogFooter className="bg-gray-100 px-6 py-4">
+              <DialogFooter className="bg-gradient-to-br from-[#7364c0] to-[#02264a] dark:from-[#000C2F] dark:to-[#003666] px-6 py-4">
                 <Button variant="primary" disabled={isLoading}>
                   Save
                 </Button>

@@ -64,6 +64,7 @@ model Member {
   @@index([profileId], map: "Member_profileId_idx")
   @@index([serverId], map: "Member_serverId_idx")
   @@map("member")
+  @@unique([serverId, profileId])
 }
 
 enum ChannelType {

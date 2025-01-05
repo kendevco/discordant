@@ -9,6 +9,9 @@ import { QueryProvider } from "@/components/providers/query-provider";
 import { Poppins } from "next/font/google"; // Import Google Font
 import { Analytics } from '@vercel/analytics/react';
 import { Toaster } from "@/components/ui/toaster";
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
+import { ourFileRouter } from "./api/uploadthing/core";
+import { extractRouterConfig } from "uploadthing/server";
 
 // Load Poppins font with specific weights
 const poppins = Poppins({
@@ -37,6 +40,15 @@ export default function RootLayout({
             poppins.className
           )}
         >
+          <NextSSRPlugin
+            /**
+             * The `extractRouterConfig` will extract **only** the route configs
+             * from the router to prevent additional information from being
+             * leaked to the client. The data passed to the client is the same
+             * as if you were to fetch `/api/uploadthing` directly.
+             */
+            routerConfig={extractRouterConfig(ourFileRouter)}
+          />
           <ThemeProvider
             attribute="class"
             defaultTheme="dark"

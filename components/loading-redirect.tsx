@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
+import { Loader2 } from "lucide-react";
 
 interface LoadingRedirectProps {
   serverId: string;
@@ -15,6 +17,7 @@ const LoadingRedirect = ({
   shouldRedirect,
 }: LoadingRedirectProps) => {
   const router = useRouter();
+  const { theme } = useTheme();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -28,11 +31,14 @@ const LoadingRedirect = ({
   return (
     <>
       {isLoading && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-2xl shadow-lg md:p-6 p-3 w-1/2 text-center md:max-w-sm">
-            <p className="md:text-lg text-base font-semibold text-black text-center">
-              Loading...
-            </p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-gradient-to-br from-[#7364c0] to-[#02264a] dark:from-[#000C2F] dark:to-[#003666] rounded-xl shadow-lg p-6 w-full max-w-sm mx-4 transform transition-all">
+            <div className="flex items-center justify-center space-x-4">
+              <Loader2 className="h-6 w-6 animate-spin text-zinc-200" />
+              <p className="text-lg font-semibold text-zinc-200">
+                Redirecting...
+              </p>
+            </div>
           </div>
         </div>
       )}

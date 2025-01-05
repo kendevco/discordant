@@ -43,30 +43,35 @@ export const DeleteMessageModal = () => {
   return (
     <>
       <Dialog open={isModalOpen} onOpenChange={onClose}>
-        <DialogContent className="bg-white text-black p-0 overflow-hidden">
+        <DialogContent className="bg-gradient-to-br from-[#7364c0] to-[#02264a] dark:from-[#000C2F] dark:to-[#003666] p-0 overflow-hidden">
           <DialogHeader className="pt-8 px-6">
-            <DialogTitle className="text-4xl text-center font-bold mb-3 text-red-500">
+            <DialogTitle className="text-4xl text-center font-bold mb-3 text-zinc-200">
               Delete Message?
             </DialogTitle>
-            <DialogDescription className="text-center text-black">
+            <DialogDescription className="text-center text-zinc-400">
               Are you sure you want to delete this message?
               <br />
-              <span className="text-red-500">
+              <span className="text-rose-500">
                 This action cannot be undone.
               </span>
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="bg-gray-100 px-6 py-4">
+          <DialogFooter className="bg-zinc-800/50 px-6 py-4">
             <div className="flex w-full items-center justify-between">
-              <Button disabled={isLoading} onClick={onClose} variant="ghost">
-                No, take me back
+              <Button
+                disabled={isLoading}
+                onClick={onClose}
+                variant="ghost"
+                className="text-zinc-400 hover:text-zinc-300 hover:bg-zinc-700"
+              >
+                Cancel
               </Button>
               <Button
                 disabled={isLoading}
                 onClick={onClick}
-                className="hover:bg-red-500 text-black hover:text-white"
+                className="bg-rose-600 hover:bg-rose-700 text-white"
               >
-                Yes, I confirm
+                Confirm Delete
               </Button>
             </div>
           </DialogFooter>
