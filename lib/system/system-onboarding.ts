@@ -97,9 +97,43 @@ export async function ensureSystemInUserServer(
       return;
     }
 
+    // Enhanced welcome message for new server
+    const welcomeMessage = `🎉 **Welcome to your new server, ${profile.name}!**
+
+🏠 **Server Setup Complete**
+Your "${server.name}" server is ready to go! Here's what I've set up for you:
+
+🤖 **AI Assistant Integration**
+• I'm your dedicated AI assistant for this server
+• Ask me anything about calendar management, research, or general assistance
+• I can help with scheduling, finding information, and business intelligence
+
+📅 **Calendar Features**
+• View and manage your calendar events
+• Schedule meetings with team members
+• Check availability and resolve conflicts
+
+🔍 **Smart Search**
+• Find messages and conversations across channels
+• Search for files and documents
+• Get intelligent summaries of discussions
+
+🌐 **Research Capabilities**
+• Get real-time market data and company intelligence
+• Research competitors and industry trends
+• Analyze business opportunities
+
+💡 **Getting Started**
+Try asking me:
+• "What meetings do I have today?"
+• "Research Tesla's latest news"
+• "Find messages about our project timeline"
+
+Ready to transform your workflow with AI assistance! 🚀`;
+
     await createSystemMessage(generalChannel.id, {
       id: uuidv4(),
-      content: `👋 Welcome to your new server, ${profile.name}!...`,
+      content: welcomeMessage,
       channelId: generalChannel.id,
       memberId: systemUser.id,
       fileUrl: null,
@@ -110,8 +144,10 @@ export async function ensureSystemInUserServer(
       member: {
         profile: systemUser,
       },
+      asIs: true, // Important: This bypasses workflow routing for onboarding
     });
 
+    // Create system channel if it doesn't exist
     const systemChannel = await db.channel.findFirst({
       where: {
         serverId: server.id,
@@ -132,17 +168,37 @@ export async function ensureSystemInUserServer(
         },
       });
 
+      const systemChannelMessage = `🔧 **System Channel Created**
+
+This dedicated system channel will be used for:
+
+🛠️ **Administrative Functions**
+• System announcements and updates
+• Server configuration changes
+• Moderation and security notifications
+
+🤖 **AI Assistant Management**
+• Monitor AI assistant performance
+• Review conversation analytics
+• Configure AI behavior and preferences
+
+📊 **Analytics & Monitoring**
+• Server activity reports
+• User engagement metrics
+• Performance insights
+
+🔐 **Security & Compliance**
+• Audit logs and security events
+• Data privacy notifications
+• Compliance reporting
+
+You can customize system settings and permissions in the server settings panel.
+
+**Tip:** Use this channel to communicate directly with the AI system about server management needs!`;
+
       await createSystemMessage(newSystemChannel.id, {
         id: uuidv4(),
-        content: `🔧 System Channel Created
-
-This channel will be used for:
-• System announcements and updates
-• Moderation notifications
-• Server status updates
-• AI assistance and responses
-
-You can customize system settings and permissions in the server settings.`,
+        content: systemChannelMessage,
         channelId: newSystemChannel.id,
         memberId: systemUser.id,
         fileUrl: null,
@@ -153,6 +209,7 @@ You can customize system settings and permissions in the server settings.`,
         member: {
           profile: systemUser,
         },
+        asIs: true, // Important: This bypasses workflow routing for onboarding
       });
     }
 
@@ -209,9 +266,34 @@ export async function ensureUserInDefaultServer(
 
     if (systemChannel) {
       const systemUser = await fetchSystemUser();
+      const defaultServerWelcome = `🎊 **Welcome ${profile.name} to the ${DEFAULT_SERVER_NAME} server!**
+
+🌟 **You've joined the main community hub**
+This is Kenneth's primary development and AI testing server where we explore cutting-edge technology.
+
+🤖 **AI-Powered Environment**
+• Full business intelligence assistant available
+• Real-time calendar and scheduling integration
+• Advanced search and research capabilities
+• Collaborative AI workflows
+
+🚀 **What's Available**
+• Live development discussions
+• AI assistant testing and feedback
+• Technology research and insights
+• Business intelligence demos
+
+💬 **Getting Started**
+Feel free to explore, ask questions, and test the AI capabilities. Try commands like:
+• "What's Kenneth working on today?"
+• "Research the latest in AI development"
+• "Help me understand this codebase"
+
+Welcome to the future of AI-integrated development! 🔥`;
+
       await createSystemMessage(systemChannel.id, {
         id: uuidv4(),
-        content: `Welcome ${profile.name} to the ${DEFAULT_SERVER_NAME} server! 👋\nFeel free to explore and ask questions.`,
+        content: defaultServerWelcome,
         channelId: systemChannel.id,
         memberId: systemUser.id,
         fileUrl: null,
@@ -222,6 +304,7 @@ export async function ensureUserInDefaultServer(
         member: {
           profile: systemUser,
         },
+        asIs: true, // Important: This bypasses workflow routing for onboarding
       });
     }
 
@@ -281,11 +364,23 @@ export async function ensureDefaultUsersInServer(server: Server) {
 
         if (generalChannel) {
           const systemUser = await fetchSystemUser();
+          const adminJoinMessage = `👨‍💼 **${defaultUser.name} has joined as ${defaultUser.role.toLowerCase()}**
+
+🛡️ **Administrative Access Granted**
+${defaultUser.name} now has ${defaultUser.role.toLowerCase()} privileges to help manage this server and provide technical expertise.
+
+🤖 **AI Collaboration**
+They can work directly with the AI assistant for:
+• Server configuration and optimization
+• Advanced workflow development
+• Business intelligence implementation
+• Technical problem-solving
+
+Welcome to the team! 🎯`;
+
           await createSystemMessage(generalChannel.id, {
             id: uuidv4(),
-            content: `👋 ${
-              defaultUser.name
-            } has been added as a ${defaultUser.role.toLowerCase()} to help manage this server.`,
+            content: adminJoinMessage,
             channelId: generalChannel.id,
             memberId: systemUser.id,
             fileUrl: null,
@@ -296,6 +391,7 @@ export async function ensureDefaultUsersInServer(server: Server) {
             member: {
               profile: systemUser,
             },
+            asIs: true, // Important: This bypasses workflow routing for onboarding
           });
         }
       }

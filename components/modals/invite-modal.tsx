@@ -1,3 +1,4 @@
+// src/components/modals/invite-modal.tsx
 "use client";
 import {
   Dialog,

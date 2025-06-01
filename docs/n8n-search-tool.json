@@ -1,0 +1,52 @@
+{
+  "id": "deep-search-tool",
+  "name": "Deep_Search",
+  "type": "n8n-nodes-base.httpRequestTool",
+  "typeVersion": 1.2,
+  "position": [3000, 300],
+  "parameters": {
+    "url": "={{ $env.NEXT_PUBLIC_APP_URL }}/api/search",
+    "method": "POST",
+    "sendBody": true,
+    "bodyParameters": {
+      "parameters": [
+        {
+          "name": "query",
+          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Search_Query', 'The search query or question to find information about', 'string') }}"
+        },
+        {
+          "name": "searchDepth",
+          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Search_Depth', 'How deep to search: shallow, medium, or deep', 'string') }}"
+        },
+        {
+          "name": "maxResults",
+          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Max_Results', 'Maximum number of results to return (default: 10)', 'number') }}"
+        },
+        {
+          "name": "startDate",
+          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start_Date', 'Optional: Start date for filtering results (ISO format)', 'string') }}"
+        },
+        {
+          "name": "endDate",
+          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End_Date', 'Optional: End date for filtering results (ISO format)', 'string') }}"
+        }
+      ]
+    },
+    "headers": {
+      "parameters": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ]
+    },
+    "options": {
+      "response": {
+        "response": {
+          "fullResponse": false
+        }
+      }
+    },
+    "description": "Search through messages, files, and other data sources"
+  }
+} 

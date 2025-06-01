@@ -1,3 +1,4 @@
+// src/components/server/server-member.tsx
 "use client";
 
 import { cn } from "@/lib/utils";

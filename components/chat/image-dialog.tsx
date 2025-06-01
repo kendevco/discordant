@@ -1,3 +1,4 @@
+// src/components/chat/image-dialog.tsx
 "use client";
 
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";

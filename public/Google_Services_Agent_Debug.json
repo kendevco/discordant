@@ -1,0 +1,371 @@
+{
+  "name": "Google Services Agent - Debug",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "google-ai-services",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "https://discordant.kendev.co,http://localhost:3001,http://localhost:3000,*"
+        }
+      },
+      "id": "03f84561-d2f6-4140-bbf1-13b812506743",
+      "name": "Discordant Chat Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        -1240,
+        -120
+      ],
+      "webhookId": "10dcea49-551a-4902-908c-c91274690fd2"
+    },
+    {
+      "parameters": {
+        "functionCode": "// Parse incoming message from Discordant chat app\nconst payload = $input.first().json;\nconst message = payload.message || payload.content || payload.text || '';\nconst userId = payload.userId || payload.user_id || payload.user || '';\nconst channelId = payload.channelId || payload.channel_id || payload.channel || '';\nconst timestamp = payload.timestamp || new Date().toISOString();\n\n// Extract chat context\nconst result = {\n  originalMessage: message,\n  chatInput: message,\n  userId: userId,\n  channelId: channelId,\n  timestamp: timestamp,\n  platform: 'discordant',\n  sessionId: `${userId}-${channelId}`,\n  responseUrl: payload.responseUrl || payload.webhook_url || null\n};\n\nconsole.log('🔍 PARSE CHAT MESSAGE OUTPUT:', JSON.stringify(result, null, 2));\nreturn result;"
+      },
+      "id": "6cd0389f-459e-459e-a76e-e8a68ddccef0",
+      "name": "Parse Chat Message",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        -1040,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Debug: Log what the AI Agent received and produced\nconst input = $input.first().json;\nconst aiOutput = $('AI Agent').first().json;\n\nconsole.log('🤖 AI AGENT INPUT:', JSON.stringify(input, null, 2));\nconsole.log('🤖 AI AGENT OUTPUT:', JSON.stringify(aiOutput, null, 2));\n\n// Check if AI agent actually used any tools\nif (aiOutput.toolCalls) {\n  console.log('🛠️ TOOLS USED:', aiOutput.toolCalls);\n} else {\n  console.log('⚠️ NO TOOLS WERE CALLED!');\n}\n\nreturn aiOutput;"
+      },
+      "id": "debug-ai-output",
+      "name": "Debug AI Output",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        -620,
+        -120
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "04989fc8-f779-4cf7-9fb3-d3174d3cbdd7",
+      "name": "Persistent Chat Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -720,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "kenneth.courtney@gmail.com",
+          "mode": "list",
+          "cachedResultName": "kenneth.courtney@gmail.com"
+        },
+        "limit": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Limit', ``, 'number') }}",
+        "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('After', ``, 'string') }}",
+        "timeMax": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Before', ``, 'string') }}",
+        "options": {}
+      },
+      "id": "a4412db5-13ab-422a-915b-6188d4f9de1b",
+      "name": "View_Calendar_Events",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        -480,
+        120
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "jttch4cJRgIrcZfh",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "kenneth.courtney@gmail.com",
+          "mode": "list",
+          "cachedResultName": "kenneth.courtney@gmail.com"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+        "additionalFields": {}
+      },
+      "id": "f29dd2f5-3119-4535-b681-3d20dc65260b",
+      "name": "Create_New_Event",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        -280,
+        140
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "jttch4cJRgIrcZfh",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "calendar": {
+          "__rl": true,
+          "value": "kenneth.courtney@gmail.com",
+          "mode": "list",
+          "cachedResultName": "kenneth.courtney@gmail.com"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
+        "updateFields": {}
+      },
+      "id": "680cf96e-49b8-4cc1-8f01-2d451d44336a",
+      "name": "Update_Existing_Event",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        -360,
+        260
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "jttch4cJRgIrcZfh",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "calendar": {
+          "__rl": true,
+          "value": "kenneth.courtney@gmail.com",
+          "mode": "id"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
+        "options": {}
+      },
+      "id": "c36ed7e8-e37a-4824-aa1c-4d1ae97185d0",
+      "name": "Delete_Event",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        -600,
+        280
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "jttch4cJRgIrcZfh",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "// Format AI response for Discordant chat application\nconst aiResponse = $('Debug AI Output').first().json.output;\nconst originalData = $('Parse Chat Message').first().json;\n\nconsole.log('📝 FORMAT RESPONSE - AI RESPONSE:', aiResponse);\nconsole.log('📝 FORMAT RESPONSE - ORIGINAL DATA:', originalData);\n\n// Create formatted response for chat app\nconst response = {\n  message: aiResponse,\n  timestamp: new Date().toISOString(),\n  userId: 'calendar-assistant',\n  type: 'calendar_response',\n  metadata: {\n    originalMessage: originalData.originalMessage,\n    sessionId: originalData.sessionId,\n    platform: 'n8n-calendar-assistant'\n  }\n};\n\nconsole.log('📝 FINAL FORMATTED RESPONSE:', JSON.stringify(response, null, 2));\n\n// If there's a response URL, prepare for webhook response\nif (originalData.responseUrl) {\n  response.responseUrl = originalData.responseUrl;\n}\n\nreturn response;"
+      },
+      "id": "27f3e0e6-9db9-497d-8b17-75ffefcb8fea",
+      "name": "Format Chat Response",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        -420,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.2,
+      "position": [
+        -180,
+        -120
+      ],
+      "id": "d10e557d-6028-4ec0-be59-5f1d62a34a9d",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are Kenneth's comprehensive calendar assistant integrated with his custom chat application at discordant.kendev.co.\n\nUser message: {{ $json.chatInput }}\n\nYou MUST analyze the user's message and use the appropriate calendar tools:\n\n- For viewing calendar: Use View_Calendar_Events tool\n- For creating events: Use Create_New_Event tool  \n- For updating events: Use Update_Existing_Event tool\n- For deleting events: Use Delete_Event tool\n\nDO NOT just give a greeting - actually process the request and use the tools!",
+        "options": {
+          "systemMessage": "You are Kenneth's personal calendar assistant. You MUST use the calendar tools to fulfill requests. Always use the appropriate tool based on the user's request."
+        }
+      },
+      "id": "2ad940e2-6adb-4b7c-a7b3-83363807ea0d",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -840,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4-turbo",
+        "options": {
+          "maxTokens": 1500,
+          "temperature": 0.3
+        }
+      },
+      "id": "f1d2ca0c-11d2-440a-8f97-d4f25d5757c5",
+      "name": "gpt-4-turbo Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -840,
+        120
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "93xrPD7UUL9tV6EG",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Parse Chat Message": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Debug AI Output": {
+      "main": [
+        [
+          {
+            "node": "Format Chat Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Persistent Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "View_Calendar_Events": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create_New_Event": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update_Existing_Event": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete_Event": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Discordant Chat Webhook": {
+      "main": [
+        [
+          {
+            "node": "Parse Chat Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Chat Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Debug AI Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gpt-4-turbo Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "69b9313e-dc52-4ccf-9bb7-a8ff724d1ff1",
+  "meta": {
+    "instanceId": "136461ac021bda65593ed5d2f70798d0433ed7859abfc9e2ca43aa4b9c0b779e"
+  },
+  "id": "pRdsp1BnLiGq6cuA",
+  "tags": []
+} 

@@ -1,3 +1,4 @@
+// src/components/chat/chat-header.tsx
 import { Hash } from "lucide-react";
 import { MobileToggle } from "@/components/mobile-toggle";
 import { UserAvatar } from "@/components/user-avatar";

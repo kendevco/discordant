@@ -1,0 +1,18 @@
+{
+  "parameters": {
+    "operation": "executeQuery",
+    "query": "-- Ensure table exists with correct schema\nDROP TABLE IF EXISTS chat_memory;\n\nCREATE TABLE chat_memory (\n  id INT AUTO_INCREMENT PRIMARY KEY,\n  session_id VARCHAR(255) NOT NULL,\n  user_id VARCHAR(255) NOT NULL,\n  role ENUM('user', 'assistant', 'system') NOT NULL,\n  content LONGTEXT NOT NULL,\n  metadata JSON,\n  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n  INDEX idx_session_created (session_id, created_at),\n  INDEX idx_user_created (user_id, created_at)\n);\n\n-- Verify table was created\nSELECT 'Table created successfully' as status, \n       COUNT(*) as column_count \nFROM INFORMATION_SCHEMA.COLUMNS \nWHERE TABLE_NAME = 'chat_memory' \n  AND COLUMN_NAME = 'created_at';",
+    "options": {}
+  },
+  "id": "d4e5f6a7-b8c9-0123-def0-456789012345",
+  "name": "Create Memory Table",
+  "type": "n8n-nodes-base.mySql",
+  "typeVersion": 1,
+  "credentials": {
+    "mySql": {
+      "id": "TvnUCP0CFWmGulQM",
+      "name": "MySQL account"
+    }
+  },
+  "continueOnFail": false
+} 

@@ -1,0 +1,466 @@
+{
+  "name": "Google Services Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "google-ai-services",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "https://discordant.kendev.co,http://localhost:3001,http://localhost:3000,*"
+        }
+      },
+      "id": "c9887ffd-4f4f-43ee-a6b2-f35d087041cf",
+      "name": "Discordant Chat Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        2120,
+        -500
+      ],
+      "webhookId": "10dcea49-551a-4902-908c-c91274690fd2"
+    },
+    {
+      "parameters": {
+        "functionCode": "// Parse incoming message from Discordant chat app with comprehensive debugging\nconst rawInput = $input.first();\nconst inputData = rawInput?.json || rawInput || {};\n\n// Debug log the raw input structure\nconsole.log('=== RAW INPUT DEBUG ===');\nconsole.log('Raw input type:', typeof rawInput);\nconsole.log('Raw input structure:', JSON.stringify(rawInput, null, 2));\nconsole.log('Input data after .json:', JSON.stringify(inputData, null, 2));\n\n// Try multiple ways to access the payload\nlet payload = inputData;\nif (inputData.body) {\n  payload = typeof inputData.body === 'string' ? JSON.parse(inputData.body) : inputData.body;\n  console.log('Found body field, parsed payload:', JSON.stringify(payload, null, 2));\n} else if (inputData.query) {\n  payload = inputData.query;\n  console.log('Found query field, payload:', JSON.stringify(payload, null, 2));\n} else if (inputData.headers && inputData.headers['content-type']?.includes('application/json')) {\n  console.log('Detected JSON content-type, using inputData as payload');\n}\n\nconsole.log('=== FINAL PAYLOAD ===');\nconsole.log('Final payload:', JSON.stringify(payload, null, 2));\n\n// Extract message with fallback options\nconst message = payload?.message || payload?.content || payload?.text || payload?.msg || payload?.data?.message || '';\nconst userId = payload?.userId || payload?.user_id || payload?.user || payload?.data?.userId || 'unknown-user';\nconst channelId = payload?.channelId || payload?.channel_id || payload?.channel || payload?.data?.channelId || 'unknown-channel';\nconst timestamp = payload?.timestamp || new Date().toISOString();\n\n// Log the extracted data\nconsole.log('=== EXTRACTED DATA ===');\nconsole.log('Extracted message:', message);\nconsole.log('User ID:', userId);\nconsole.log('Channel ID:', channelId);\nconsole.log('Timestamp:', timestamp);\n\n// Ensure we have at least some message content\nif (!message || message.trim() === '') {\n  console.log('WARNING: No message content found in payload!');\n  console.log('Available payload keys:', Object.keys(payload || {}));\n}\n\n// Return structured data for AI Agent\nconst result = {\n  input: message,  // This is the key field the AI Agent expects\n  originalMessage: message,\n  chatInput: message,\n  userId: userId,\n  channelId: channelId,\n  timestamp: timestamp,\n  platform: 'discordant',\n  sessionId: `${userId}-${channelId}`,\n  responseUrl: payload?.responseUrl || payload?.webhook_url || null,\n  debugInfo: {\n    payloadKeys: Object.keys(payload || {}),\n    hasMessage: !!message,\n    messageLength: message?.length || 0\n  }\n};\n\nconsole.log('=== RETURNING RESULT ===');\nconsole.log('Final result:', JSON.stringify(result, null, 2));\n\nreturn result;"
+      },
+      "id": "0ee1e1c0-faaf-40af-8fd5-682642ecc272",
+      "name": "Parse Chat Message",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        2320,
+        -500
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "627cae99-c3c6-480a-9439-49d049476559",
+      "name": "Persistent Chat Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        2640,
+        -280
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "kenneth.courtney@gmail.com",
+          "mode": "list",
+          "cachedResultName": "kenneth.courtney@gmail.com"
+        },
+        "returnAll": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Return_All', `Should return all events? Usually true for viewing calendar.`, 'boolean') }}",
+        "limit": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Limit', `Maximum number of events to return (e.g., 50)`, 'number') }}",
+        "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start_Time', `Start date/time in ISO format (e.g., 2025-01-30T00:00:00Z for today)`, 'string') }}",
+        "timeMax": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End_Time', `End date/time in ISO format (e.g., 2025-02-06T23:59:59Z for next week)`, 'string') }}",
+        "options": {}
+      },
+      "id": "47ec3fd4-e863-416c-b2e4-c5003b7cd4c5",
+      "name": "View_Calendar_Events",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        2880,
+        -260
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "jttch4cJRgIrcZfh",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "kenneth.courtney@gmail.com",
+          "mode": "list",
+          "cachedResultName": "kenneth.courtney@gmail.com"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start_DateTime', `Start date and time in ISO format (e.g., 2025-05-31T15:00:00-04:00)`, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End_DateTime', `End date and time in ISO format (e.g., 2025-05-31T16:00:00-04:00)`, 'string') }}",
+        "additionalFields": {
+          "description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_Description', `Optional description or notes for the event`, 'string') }}",
+          "location": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_Location', `The location of the event (e.g., \"Enterprise Dog Park, Clearwater, FL\")`, 'string') }}",
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_Title', `The title/name of the event (e.g., \"Enterprise Dog Park Meeting\")`, 'string') }}"
+        }
+      },
+      "id": "53d35a1c-6e56-47b0-95fc-7556a25e4ac4",
+      "name": "Create_New_Event",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        3240,
+        -280
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "jttch4cJRgIrcZfh",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "calendar": {
+          "__rl": true,
+          "value": "kenneth.courtney@gmail.com",
+          "mode": "list",
+          "cachedResultName": "kenneth.courtney@gmail.com"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', `The ID of the event to update`, 'string') }}",
+        "updateFields": {
+          "description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('New_Event_Description', `Updated description or notes for the event (optional)`, 'string') }}",
+          "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('New_End_DateTime', `New end date and time in ISO format (e.g., 2025-05-31T17:00:00-04:00)`, 'string') }}",
+          "location": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('New_Event_Location', `Updated location of the event (optional)`, 'string') }}",
+          "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('New_Start_DateTime', `New start date and time in ISO format (e.g., 2025-05-31T16:00:00-04:00)`, 'string') }}",
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('New_Event_Title', `Updated title/name of the event (optional)`, 'string') }}"
+        }
+      },
+      "id": "71d32aca-7cbd-4cab-aa78-efb58139f8f2",
+      "name": "Update_Existing_Event",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        3000,
+        -120
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "jttch4cJRgIrcZfh",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "calendar": {
+          "__rl": true,
+          "value": "kenneth.courtney@gmail.com",
+          "mode": "list",
+          "cachedResultName": "kenneth.courtney@gmail.com"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID_To_Delete', `The ID of the event to delete`, 'string') }}",
+        "options": {}
+      },
+      "id": "6e31c997-e3d7-4bb7-b7b4-0be5acbd76f4",
+      "name": "Delete_Event",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        2760,
+        -100
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "jttch4cJRgIrcZfh",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "// Enhanced Format Chat Response function with comprehensive debugging\n// Debug: Log what the AI Agent produced\nconst aiOutput = $input.first().json;\nconsole.log('=== AI AGENT OUTPUT DEBUG ===');\nconsole.log('AI Agent Response:', JSON.stringify(aiOutput, null, 2));\nconsole.log('Response Type:', typeof aiOutput);\nconsole.log('All keys in aiOutput:', Object.keys(aiOutput || {}));\n\n// Check if it's an execution data node output\nlet actualAiResponse = aiOutput;\nif (aiOutput.json) {\n  actualAiResponse = aiOutput.json;\n  console.log('Found .json property, using that:', JSON.stringify(actualAiResponse, null, 2));\n}\n\n// Try to extract the response from different possible fields with enhanced detection\nlet responseMessage = '';\n\n// Check various possible response fields\nconst possibleFields = [\n  'output', 'text', 'response', 'content', 'message', 'result', \n  'answer', 'reply', 'chatResponse', 'aiResponse', 'data'\n];\n\nconsole.log('=== CHECKING RESPONSE FIELDS ===');\nfor (const field of possibleFields) {\n  if (actualAiResponse && actualAiResponse[field]) {\n    console.log(`Found response in field '${field}':`, actualAiResponse[field]);\n    responseMessage = actualAiResponse[field];\n    break;\n  }\n}\n\n// If no field found, check if the whole response is a string\nif (!responseMessage && typeof actualAiResponse === 'string') {\n  responseMessage = actualAiResponse;\n  console.log('Using entire response as string:', responseMessage);\n}\n\n// Check for nested structures\nif (!responseMessage && actualAiResponse) {\n  // Check for common nested patterns\n  if (actualAiResponse.choices && actualAiResponse.choices[0]?.message?.content) {\n    responseMessage = actualAiResponse.choices[0].message.content;\n    console.log('Found OpenAI-style response:', responseMessage);\n  } else if (actualAiResponse.generations && actualAiResponse.generations[0]?.text) {\n    responseMessage = actualAiResponse.generations[0].text;\n    console.log('Found generations-style response:', responseMessage);\n  } else if (actualAiResponse.completion) {\n    responseMessage = actualAiResponse.completion;\n    console.log('Found completion field:', responseMessage);\n  }\n}\n\n// Last resort - try to find any string value in the object\nif (!responseMessage && actualAiResponse && typeof actualAiResponse === 'object') {\n  console.log('=== SEARCHING FOR ANY STRING VALUES ===');\n  const findStringValues = (obj, path = '') => {\n    for (const [key, value] of Object.entries(obj)) {\n      const currentPath = path ? `${path}.${key}` : key;\n      if (typeof value === 'string' && value.length > 10) {\n        console.log(`Found potential response at ${currentPath}:`, value.substring(0, 100) + '...');\n        return value;\n      } else if (typeof value === 'object' && value !== null) {\n        const found = findStringValues(value, currentPath);\n        if (found) return found;\n      }\n    }\n    return null;\n  };\n  \n  const foundString = findStringValues(actualAiResponse);\n  if (foundString) {\n    responseMessage = foundString;\n  }\n}\n\n// If still no response, provide detailed error\nif (!responseMessage) {\n  console.log('=== NO RESPONSE FOUND - FULL DEBUG ===');\n  console.log('Available data structure:', JSON.stringify(actualAiResponse, null, 2));\n  responseMessage = `📋 **Calendar Assistant Debug Info**\n\nI received your request but couldn't extract the response properly.\n\n**Available data keys:** ${Object.keys(actualAiResponse || {}).join(', ')}\n\n**Request:** Show me my events for next week\n\n**Debug:** The AI Agent ran but the response format is unexpected. Please check the n8n logs for the full output structure.\n\nThis appears to be a formatting issue in the workflow. Please contact your administrator to review the AI Agent output format.`;\n}\n\n// Get original context from earlier in the workflow\nconst parseNode = $('Parse Chat Message').first().json;\nconst originalMessage = parseNode?.originalMessage || parseNode?.chatInput || parseNode?.input || '';\nconst userId = parseNode?.userId || 'unknown';\nconst sessionId = parseNode?.sessionId || 'unknown';\n\nconsole.log('=== CONTEXT DEBUG ===');\nconsole.log('Original Message:', originalMessage);\nconsole.log('User ID:', userId);\nconsole.log('Session ID:', sessionId);\n\n// Clean up the response message\nif (responseMessage && typeof responseMessage === 'string') {\n  // Remove any extra whitespace and ensure it's properly formatted\n  responseMessage = responseMessage.trim();\n  \n  // If it's a very long response, ensure it's reasonable for chat\n  if (responseMessage.length > 2000) {\n    responseMessage = responseMessage.substring(0, 1900) + '...\\n\\n*Response truncated for chat display*';\n  }\n}\n\n// Format the response\nconst formattedResponse = {\n  message: responseMessage,\n  timestamp: new Date().toISOString(),\n  userId: 'calendar-assistant',\n  type: 'calendar_response',\n  metadata: {\n    originalMessage: originalMessage,\n    sessionId: sessionId,\n    platform: 'n8n-calendar-assistant',\n    responseFound: !!responseMessage,\n    debugTimestamp: new Date().toISOString()\n  }\n};\n\nconsole.log('=== FORMATTED RESPONSE ===');\nconsole.log('Final Response:', JSON.stringify(formattedResponse, null, 2));\nconsole.log('Response message length:', responseMessage?.length || 0);\n\nreturn formattedResponse;"
+      },
+      "id": "352e841b-f804-4916-b773-b4643a3b9bb4",
+      "name": "Format Chat Response",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        3100,
+        -500
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.2,
+      "position": [
+        3280,
+        -500
+      ],
+      "id": "2018b504-538d-440f-8285-dbd1844f13ca",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.input }}",
+        "options": {
+          "systemMessage": "You are Kenneth's comprehensive calendar assistant integrated with his custom chat application at discordant.kendev.co.\\n\\n⏰ **CURRENT DATE & TIME CONTEXT:**\\n- **Current Date:** {{ new Date().toISOString().split('T')[0] }} ({{ new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) }})\\n- **Current Time:** {{ new Date().toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour12: true }) }} Eastern Time\\n- **Current Week:** Week of {{ new Date(Date.now() - (new Date().getDay() * 24 * 60 * 60 * 1000)).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) }} - {{ new Date(Date.now() + ((6 - new Date().getDay()) * 24 * 60 * 60 * 1000)).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) }}\\n- **Next Week:** Week of {{ new Date(Date.now() + ((7 - new Date().getDay()) * 24 * 60 * 60 * 1000)).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) }} - {{ new Date(Date.now() + ((13 - new Date().getDay()) * 24 * 60 * 60 * 1000)).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) }}\\n\\n🎯 **YOUR CAPABILITIES:**\\n\\n📅 **VIEW CALENDAR EVENTS:**\\n- Show today's, tomorrow's, or any date's events\\n- Display weekly/monthly overviews\\n- Search events by keywords, location, or attendees\\n- Filter by time ranges or event types\\n\\n➕ **CREATE NEW EVENTS:**\\n- Schedule meetings with full details (title, time, location, description)\\n- Add attendees and send invitations\\n- Set custom reminders (minutes, hours, days before)\\n- Create recurring events (daily, weekly, monthly, yearly)\\n- Handle timezone conversions automatically\\n\\n✏️ **MODIFY EXISTING EVENTS:**\\n- Update event times, dates, or duration\\n- Change titles, descriptions, or locations\\n- Add or remove attendees\\n- Modify reminder settings\\n- Move events between calendars\\n\\n🗑️ **DELETE EVENTS:**\\n- Remove single events\\n- Cancel entire recurring series\\n- Bulk delete by criteria (date range, keywords, etc.)\\n\\n⏰ **AVAILABILITY & SCHEDULING:**\\n- Check free/busy status for any time period\\n- Find optimal meeting times for multiple people\\n- Suggest alternative times when conflicts exist\\n- Block time for focus work or personal activities\\n\\n🔍 **SMART FEATURES:**\\n- Natural language processing for event creation\\n- Automatic conflict detection and resolution\\n- Meeting preparation reminders\\n- Location-based travel time calculations\\n- Integration with Kenneth's work and personal calendars\\n\\n💬 **CHAT INTEGRATION:**\\n- Respond in conversational, friendly tone\\n- Use emojis for better readability\\n- Provide quick action buttons when possible\\n- Remember context from previous messages\\n- Handle multiple requests in single message\\n\\n📝 **EXAMPLE INTERACTIONS:**\\n- \\\"Show me what I have today\\\" → Display today's schedule using View_Calendar_Events\\n- \\\"Create a dentist appointment next Friday at 2pm\\\" → Use Create_New_Event tool with proper date/time\\n- \\\"Add a meeting for tomorrow at 3pm called 'Team Sync'\\\" → Use Create_New_Event tool\\n- \\\"Schedule Enterprise Dog Park Meeting for Sat May 31 3pm at Enterprise Dog Park, Clearwater FL for 1 hour\\\" → Use Create_New_Event tool\\n- \\\"Do I have time for a 1-hour meeting tomorrow afternoon?\\\" → Check availability with View_Calendar_Events\\n- \\\"Move my 3pm meeting to 4pm\\\" → Use Update_Existing_Event tool\\n- \\\"Cancel all meetings with 'project X' in the title\\\" → Use Delete_Event tool\\n- \\\"When am I free this week for a 2-hour block?\\\" → Find availability with View_Calendar_Events\\n\\n🔧 **TOOL USAGE REQUIREMENTS:**\\n- **ALWAYS use View_Calendar_Events** when asked to view, show, check, or display calendar information\\n- **ALWAYS use Create_New_Event** when asked to create, add, schedule, or book new events\\n- **ALWAYS use Update_Existing_Event** when asked to modify, update, change, or move existing events\\n- **ALWAYS use Delete_Event** when asked to cancel, delete, or remove events\\n- **NEVER just respond without using tools** - always call the appropriate calendar tool for any calendar operation\\n\\n📅 **CREATE EVENT INSTRUCTIONS:**\\nWhen creating events, ALWAYS extract and use:\\n- **Event_Title**: The name/title of the event (required)\\n- **Start_DateTime**: Start time in ISO format with timezone (required)\\n- **End_DateTime**: End time in ISO format with timezone (required)\\n- **Event_Location**: Where the event takes place (if mentioned)\\n- **Event_Description**: Any additional details or notes (if provided)\\n\\n✏️ **UPDATE EVENT INSTRUCTIONS:**\\nWhen updating events, follow this process:\\n1. **FIRST** use View_Calendar_Events to find the event and get its ID\\n2. **THEN** use Update_Existing_Event with:\\n   - **Event_ID**: The exact event ID from the calendar (required)\\n   - **New_Start_DateTime**: Updated start time in ISO format (if changing time)\\n   - **New_End_DateTime**: Updated end time in ISO format (if changing time)\\n   - **New_Event_Title**: Updated title (if changing title)\\n   - **New_Event_Location**: Updated location (if changing location)\\n   - **New_Event_Description**: Updated description (if changing description)\\n3. **IMPORTANT**: You must extract the event ID from the View_Calendar_Events response before updating\\n4. **VERIFY**: Always provide specific confirmation with the new event details\\n\\n🚨 **IMPORTANT BUSINESS CONTEXT:**\\nYou operate as the **duty officer** for National Registration Group's business operations. Kenneth relies on you for:\\n- Managing client meetings and deadlines\\n- Coordinating with team members\\n- Ensuring no conflicts with important business calls\\n- Maintaining professional scheduling standards\\n- Quick responses during business hours\\n\\n⚡ **RESPONSE FORMAT:**\\n- Always acknowledge the request immediately\\n- Use calendar tools to get real data when possible\\n- Provide specific, actionable information\\n- Include relevant times in user's timezone (Eastern Time)\\n- Offer helpful suggestions or alternatives\\n- End with asking if they need anything else\\n\\n🔧 **TECHNICAL NOTES:**\\n- You have direct access to Kenneth's Google Calendar\\n- All times should be handled in Eastern Time\\n- Use proper ISO date/time formats for API calls (e.g., 2025-01-30T00:00:00-05:00)\\n- Always use tools to get actual calendar data - never guess\\n- Event IDs are extracted from the 'id' field in calendar event responses\\n\\n📅 **DATE PROCESSING RULES:**\\n- **\\\"today\\\"** = Current date: {{ new Date().toISOString().split('T')[0] }}\\n- **\\\"tomorrow\\\"** = {{ new Date(Date.now() + 24*60*60*1000).toISOString().split('T')[0] }}\\n- **\\\"this week\\\"** = {{ new Date(Date.now() - (new Date().getDay() * 24*60*60*1000)).toISOString().split('T')[0] }} to {{ new Date(Date.now() + ((6-new Date().getDay()) * 24*60*60*1000)).toISOString().split('T')[0] }}\\n- **\\\"next week\\\"** = {{ new Date(Date.now() + ((7-new Date().getDay()) * 24*60*60*1000)).toISOString().split('T')[0] }} to {{ new Date(Date.now() + ((13-new Date().getDay()) * 24*60*60*1000)).toISOString().split('T')[0] }}\\n- For date ranges, use timeMin and timeMax with proper ISO formats\\n- Always convert relative dates to absolute ISO dates before using tools\\n\\n📝 **IMPORTANT:** Always use the available calendar tools to get real data. When someone asks about their calendar, use the View_Calendar_Events tool with the appropriate date range calculated from the current date context above.\\n\\nRemember: You're Kenneth's trusted business operations assistant. Be proactive, professional, and always get real calendar data using the tools."
+        }
+      },
+      "id": "a3bfa034-3fbd-484f-b117-6df0d0140b75",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        2520,
+        -500
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4-turbo",
+        "options": {
+          "maxTokens": 1500,
+          "temperature": 0.3
+        }
+      },
+      "id": "79161528-4261-4e13-b9f5-98b0061dd0c2",
+      "name": "gpt-4-turbo Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        2520,
+        -260
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "93xrPD7UUL9tV6EG",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataToSave": {
+          "values": [
+            {
+              "key": "user_message",
+              "value": "={{ $('Parse Chat Message').first().json.chatInput }}"
+            },
+            {
+              "key": "user_input",
+              "value": "={{ $('Parse Chat Message').first().json.input }}"
+            },
+            {
+              "key": "ai_agent_output",
+              "value": "={{ $('AI Agent').first().json.output }}"
+            },
+            {
+              "key": "ai_agent_full",
+              "value": "={{ JSON.stringify($('AI Agent').first().json) }}"
+            },
+            {
+              "key": "tools_called",
+              "value": "={{ $('AI Agent').first().json.toolCalls ? JSON.stringify($('AI Agent').first().json.toolCalls) : ($('AI Agent').first().json.intermediateSteps ? JSON.stringify($('AI Agent').first().json.intermediateSteps) : ($('AI Agent').first().json.steps ? JSON.stringify($('AI Agent').first().json.steps) : \"Tools called but debug data not captured\")) }}"
+            },
+            {
+              "key": "session_id",
+              "value": "={{ $('Parse Chat Message').first().json.sessionId }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executionData",
+      "typeVersion": 1,
+      "position": [
+        2900,
+        -500
+      ],
+      "id": "f878f7af-0fca-4723-be1e-4c68cf520381",
+      "name": "Execution Data"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "table": {
+          "__rl": true,
+          "value": "message",
+          "mode": "list",
+          "cachedResultName": "message"
+        },
+        "limit": 10,
+        "where": {
+          "values": [
+            {
+              "column": "createdAt",
+              "condition": ">=",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "sort": {
+          "values": [
+            {
+              "column": "createdAt",
+              "direction": "DESC"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySqlTool",
+      "typeVersion": 2.4,
+      "position": [
+        3080,
+        -280
+      ],
+      "id": "1c8b1210-72a0-4771-b1f8-1c1d12e097d5",
+      "name": "DB_View_Latest_Messages",
+      "credentials": {
+        "mySql": {
+          "id": "TvnUCP0CFWmGulQM",
+          "name": "MySQL account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Parse Chat Message": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Persistent Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "View_Calendar_Events": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create_New_Event": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update_Existing_Event": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete_Event": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Discordant Chat Webhook": {
+      "main": [
+        [
+          {
+            "node": "Parse Chat Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Chat Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Execution Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gpt-4-turbo Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execution Data": {
+      "main": [
+        [
+          {
+            "node": "Format Chat Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DB_View_Latest_Messages": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4cdfa93a-8e6e-4469-bf26-9729b67cc793",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "136461ac021bda65593ed5d2f70798d0433ed7859abfc9e2ca43aa4b9c0b779e"
+  },
+  "id": "pRdsp1BnLiGq6cuA",
+  "tags": []
+}

@@ -1,3 +1,4 @@
+// src/components/chat/chat-welcome.tsx
 import { Hash } from "lucide-react";
 
 interface ChatWelcomeProps {

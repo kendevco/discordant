@@ -1,3 +1,4 @@
+// src/components/chat/chat-item.tsx
 "use client";
 
 import { Member, MemberRole, Profile } from "@prisma/client";
@@ -20,6 +21,7 @@ import { useRouter, useParams } from "next/navigation";
 import { useSocket } from "@/hooks/use-socket";
 import { MessageStatus } from "@/lib/system/types/messagestatus";
 import { ImageDialog } from "./image-dialog";
+import { RichContentRenderer } from "./rich-content-renderer";
 
 const roleIconMap = {
   GUEST: null,
@@ -123,6 +125,7 @@ export const ChatItem = ({
       console.log(error);
     }
   };
+
   useEffect(() => {
     form.reset({
       content: content,
@@ -149,36 +152,15 @@ export const ChatItem = ({
   const isPDF = fileType === "pdf" && fileUrl;
   const isImage = !isPDF && fileUrl;
 
-  const renderContent = (text: string) => {
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-    const parts = text.split(urlRegex);
-
-    // First split by URLs, then handle line breaks
-    const formattedParts = parts.map((part, i) => {
-      if (part.match(urlRegex)) {
-        return (
-          <a
-            key={i}
-            href={part}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-white underline break-all hover:text-white/90"
-          >
-            {part}
-          </a>
-        );
-      }
-      // Split by newlines and join with br tags
-      return part.split('\n').map((line, j) => (
-        <Fragment key={`${i}-${j}`}>
-          {line}
-          {j !== part.split('\n').length - 1 && <br />}
-        </Fragment>
-      ));
-    });
-
-    return formattedParts;
-  };
+  // Check if this is a system message (from system user or contains system indicators)
+  const isSystemMessage = member.profile.name === "System" || 
+                          content.includes("🔍 **Research Results:**") ||
+                          content.includes("📋 **DUTY OFFICER") ||
+                          content.includes("✅ **DUTY OFFICER") ||
+                          content.includes("🔄 **DUTY OFFICER") ||
+                          content.includes("❌ **DUTY OFFICER") ||
+                          content.includes("🕐 **DUTY OFFICER") ||
+                          content.includes("📅 **DUTY OFFICER");
 
   return (
     <div className="relative group flex items-center hover:bg-black/5 p-4 transition w-full">
@@ -189,8 +171,14 @@ export const ChatItem = ({
         <div className="flex flex-col w-full">
           <div className="flex items-center gap-x-2">
             <div className="flex items-center">
-              <p onClick={onMemberClick} className="font-semibold text-sm hover:underline cursor-pointer">
-                {member.profile.name}
+              <p 
+                onClick={onMemberClick} 
+                className={cn(
+                  "font-semibold text-sm hover:underline cursor-pointer",
+                  isSystemMessage && "text-blue-400 dark:text-blue-300"
+                )}
+              >
+                {isSystemMessage ? "🤖 System" : member.profile.name}
               </p>
               <ActionTooltip label={member.role}>
                 {roleIconMap[member.role]}
@@ -236,17 +224,27 @@ export const ChatItem = ({
             </div>
           )}
           {!fileUrl && !isEditing && (
-            <p className={cn(
-              "text-sm text-zinc-600 dark:text-zinc-300",
-              deleted && "italic text-zinc-500 dark:text-zinc-400 text-xs mt-1"
+            <div className={cn(
+              "text-sm mt-2",
+              deleted && "italic text-zinc-500 dark:text-zinc-400 text-xs mt-1",
+              isSystemMessage && "bg-zinc-900/50 dark:bg-zinc-800/50 p-3 rounded-lg border-l-4 border-blue-500"
             )}>
-              {renderContent(content)}
+              {deleted ? (
+                <span className="italic text-zinc-500 dark:text-zinc-400">
+                  This message has been deleted
+                </span>
+              ) : (
+                <RichContentRenderer 
+                  content={content} 
+                  isSystemMessage={isSystemMessage}
+                />
+              )}
               {isUpdated && !deleted && (
                 <span className="text-[10px] mx-2 text-zinc-500 dark:text-zinc-400">
                   (edited)
                 </span>
               )}
-            </p>
+            </div>
           )}
           {!fileUrl && isEditing && (
             <Form {...form}>
@@ -282,7 +280,7 @@ export const ChatItem = ({
             </Form>
           )}
         </div>
-        {canDeleteMessage && (
+        {canDeleteMessage && !isSystemMessage && (
           <div className="hidden group-hover:flex items-center gap-x-2 absolute p-1 -top-2 right-5 bg-white dark:bg-zinc-800 border rounded-sm">
             {canEditMessage && (
               <ActionTooltip label="Edit">

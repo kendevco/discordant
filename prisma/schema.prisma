@@ -7,6 +7,7 @@ datasource db {
   url          = env("DATABASE_URL")
   relationMode = "prisma"
 }
+
 model Profile {
   id        String   @id
   userId    String   @unique(map: "Profile_userId_key")
@@ -16,6 +17,7 @@ model Profile {
   servers   Server[]
   members   Member[]
   channels  Channel[]
+  sessions  UserSession[]
   createdAt DateTime @default(now())
   updatedAt DateTime
 
@@ -31,6 +33,7 @@ model Server {
   profile    Profile   @relation(fields: [profileId], references: [id], onDelete: Cascade)
   members    Member[]
   channels   Channel[]
+  activities ServerActivity[]
   createdAt  DateTime  @default(now())
   updatedAt  DateTime
 
@@ -46,6 +49,15 @@ enum MemberRole {
   @@map("member_role")
 }
 
+enum OnlineStatus {
+  ONLINE
+  AWAY
+  DO_NOT_DISTURB
+  OFFLINE
+
+  @@map("online_status")
+}
+
 model Member {
   id                     String          @id @default(uuid())
   role                   MemberRole      @default(GUEST)
@@ -53,16 +65,24 @@ model Member {
   profile                Profile         @relation(fields: [profileId], references: [id], onDelete: Cascade)
   serverId               String
   server                 Server          @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  
+  onlineStatus           OnlineStatus    @default(OFFLINE)
+  lastSeen               DateTime        @default(now())
+  isOnline               Boolean         @default(false)
 
   messages               Message[]
   conversationsInitiated Conversation[]  @relation("MemberOne")
   conversationsReceived  Conversation[]  @relation("MemberTwo")
   directMessages         DirectMessage[]
+  activities             MemberActivity[]
   createdAt              DateTime        @default(now())
   updatedAt              DateTime        @updatedAt
 
   @@index([profileId], map: "Member_profileId_idx")
   @@index([serverId], map: "Member_serverId_idx")
+  @@index([onlineStatus], map: "Member_onlineStatus_idx")
+  @@index([isOnline], map: "Member_isOnline_idx")
+  @@index([lastSeen], map: "Member_lastSeen_idx")
   @@map("member")
   @@unique([serverId, profileId])
 }
@@ -84,6 +104,7 @@ model Channel {
   serverId  String
   server    Server      @relation(fields: [serverId], references: [id], onDelete: Cascade)
   messages  Message[]
+  activities ChannelActivity[]
   createdAt DateTime   @default(now())
   updatedAt DateTime
 
@@ -113,6 +134,7 @@ model Message {
 
   @@index([channelId], map: "Message_channelId_idx")
   @@index([memberId], map: "Message_memberId_idx")
+  @@index([createdAt], map: "Message_createdAt_idx")
   @@map("message")
 }
 
@@ -143,5 +165,101 @@ model DirectMessage {
 
   @@index([conversationId], map: "DirectMessage_conversationId_idx")
   @@index([memberId], map: "DirectMessage_memberId_idx")
+  @@index([createdAt], map: "DirectMessage_createdAt_idx")
   @@map("directmessage")
+}
+
+enum ActivityType {
+  MESSAGE_SENT
+  MESSAGE_DELETED
+  MESSAGE_EDITED
+  CHANNEL_JOINED
+  CHANNEL_LEFT
+  VOICE_JOINED
+  VOICE_LEFT
+  TYPING_STARTED
+  TYPING_STOPPED
+  FILE_UPLOADED
+  MEMBER_JOINED
+  MEMBER_LEFT
+
+  @@map("activity_type")
+}
+
+model UserSession {
+  id          String   @id @default(uuid())
+  profileId   String
+  profile     Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  sessionId   String   @unique
+  serverId    String?
+  channelId   String?
+  ipAddress   String?
+  userAgent   String?  @db.Text
+  isActive    Boolean  @default(true)
+  lastActivity DateTime @default(now())
+  connectedAt DateTime @default(now())
+  disconnectedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([profileId], map: "UserSession_profileId_idx")
+  @@index([sessionId], map: "UserSession_sessionId_idx")
+  @@index([isActive], map: "UserSession_isActive_idx")
+  @@index([lastActivity], map: "UserSession_lastActivity_idx")
+  @@map("user_session")
+}
+
+model ServerActivity {
+  id          String      @id @default(uuid())
+  serverId    String
+  server      Server      @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  memberId    String?
+  activityType ActivityType
+  description String      @db.Text
+  metadata    String?     @db.Text
+  channelId   String?
+  timestamp   DateTime    @default(now())
+
+  @@index([serverId], map: "ServerActivity_serverId_idx")
+  @@index([memberId], map: "ServerActivity_memberId_idx")
+  @@index([activityType], map: "ServerActivity_activityType_idx")
+  @@index([timestamp], map: "ServerActivity_timestamp_idx")
+  @@index([channelId], map: "ServerActivity_channelId_idx")
+  @@map("server_activity")
+}
+
+model ChannelActivity {
+  id          String      @id @default(uuid())
+  channelId   String
+  channel     Channel     @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  memberId    String?
+  activityType ActivityType
+  description String      @db.Text
+  metadata    String?     @db.Text
+  timestamp   DateTime    @default(now())
+
+  @@index([channelId], map: "ChannelActivity_channelId_idx")
+  @@index([memberId], map: "ChannelActivity_memberId_idx")
+  @@index([activityType], map: "ChannelActivity_activityType_idx")
+  @@index([timestamp], map: "ChannelActivity_timestamp_idx")
+  @@map("channel_activity")
+}
+
+model MemberActivity {
+  id          String      @id @default(uuid())
+  memberId    String
+  member      Member      @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  activityType ActivityType
+  description String      @db.Text
+  metadata    String?     @db.Text
+  serverId    String?
+  channelId   String?
+  timestamp   DateTime    @default(now())
+
+  @@index([memberId], map: "MemberActivity_memberId_idx")
+  @@index([activityType], map: "MemberActivity_activityType_idx")
+  @@index([timestamp], map: "MemberActivity_timestamp_idx")
+  @@index([serverId], map: "MemberActivity_serverId_idx")
+  @@index([channelId], map: "MemberActivity_channelId_idx")
+  @@map("member_activity")
 }

@@ -42,6 +42,7 @@ export default async function handler(
     );
     if (!member) return res.status(404).json({ error: "Member not found" });
 
+    // Create the user message
     const message = await db.message.create({
       data: {
         id: randomUUID(),
@@ -62,11 +63,40 @@ export default async function handler(
     });
 
     const channelKey = `chat:${channelId}:messages`;
-    res?.socket?.server?.io?.emit(channelKey, message);
+    
+    // Debug socket availability
+    console.log(`[MESSAGES_API] Socket server available: ${!!res?.socket?.server}`);
+    console.log(`[MESSAGES_API] Socket IO available: ${!!res?.socket?.server?.io}`);
+    console.log(`[MESSAGES_API] Channel key: ${channelKey}`);
+    console.log(`[MESSAGES_API] User message ID: ${message.id}`);
+    
+    // Emit the user message immediately with force flag
+    try {
+      res?.socket?.server?.io?.emit(channelKey, {
+        ...message,
+        _forceUpdate: true, // Add flag to force immediate UI update
+      });
+      console.log(`[MESSAGES_API] ✅ User message emitted successfully`);
+    } catch (emitError) {
+      console.error(`[MESSAGES_API] ❌ User message emission failed:`, emitError);
+    }
+    
+    // Send response to client immediately
+    res.status(200).json(message);
 
-    createSystemMessage(channelId, message).catch(console.error);
+    // Process system message asynchronously
+    // Use process.nextTick for immediate execution after current operation
+    process.nextTick(async () => {
+      try {
+        console.log(`[MESSAGES_API] Starting system message creation for channel: ${channelId}`);
+        console.log(`[MESSAGES_API] Passing socket IO to system message handler: ${!!res?.socket?.server?.io}`);
+        await createSystemMessage(channelId, message, res?.socket?.server?.io);
+        console.log(`[MESSAGES_API] ✅ System message creation completed`);
+      } catch (error) {
+        console.error("[SYSTEM_MESSAGE_ERROR]", error);
+      }
+    });
 
-    return res.status(200).json(message);
   } catch (error) {
     console.error("[MESSAGES_POST]", error);
     return res.status(500).json({ error: "Internal Error" });

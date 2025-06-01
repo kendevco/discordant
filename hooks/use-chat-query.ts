@@ -1,3 +1,5 @@
+// /hooks/use-chat-query.ts
+
 "use client";
 import qs from "query-string";
 import { useInfiniteQuery } from "@tanstack/react-query";

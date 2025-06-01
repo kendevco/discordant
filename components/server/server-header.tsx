@@ -1,3 +1,4 @@
+// src/components/server/server-header.tsx
 "use client";
 
 import { ServerWithMembersWithProfiles } from "@/types";

@@ -1,3 +1,5 @@
+// /hooks/use-modal-store.ts
+
 import { Channel, ChannelType, Server } from "@prisma/client";
 import { create } from "zustand";
 export type ModalType =

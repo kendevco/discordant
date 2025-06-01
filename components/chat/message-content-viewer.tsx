@@ -1,3 +1,4 @@
+// src/components/chat/message-content-viewer.tsx
 import { JSONTree } from 'react-json-tree';
 
 export const MessageContentViewer = ({ content }: { content: string }) => {

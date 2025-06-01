@@ -1,3 +1,4 @@
+// src/components/modals/delete-channel-modal.tsx
 "use client";
 import {
   Dialog,

@@ -1,3 +1,4 @@
+// src/components/chat/chat-messages.tsx
 "use client";
 import { Member, Message, Profile } from "@prisma/client";
 import { ChatWelcome } from "./chat-welcome";
@@ -66,13 +67,16 @@ export const ChatMessages = ({
     paramValue,
   });
 
+  // Calculate message count
+  const messageCount = data?.pages?.reduce((acc, page) => acc + page.items.length, 0) ?? 0;
+
   useChatSocket({ queryKey, addKey, updateKey });
   useChatScroll({
     chatRef,
     bottomRef,
     loadMore: fetchNextPage,
     shouldLoadMore: !isFetchingNextPage && !!hasNextPage,
-    count: data?.pages?.reduce((acc, page) => acc + page.items.length, 0) ?? 0,
+    count: messageCount,
   });
 
   if (status === "pending") {

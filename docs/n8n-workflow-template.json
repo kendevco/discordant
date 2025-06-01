@@ -1,0 +1,789 @@
+{
+  "name": "Discordant General Assistant",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "discordant-ai-services",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "https://discordant.kendev.co,http://localhost:3001,http://localhost:3000,*"
+        }
+      },
+      "id": "c9887ffd-4f4f-43ee-a6b2-f35d087041cf",
+      "name": "Discordant Chat Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        2040,
+        -700
+      ],
+      "webhookId": "10dcea49-551a-4902-908c-c91274690fd2"
+    },
+    {
+      "parameters": {
+        "options": {
+          "initialPrompt": "👋 Welcome to Kenneth's Calendar Assistant!\n\nI can help you with:\n- 📅 View your calendar events\n- ➕ Create new appointments\n- ✏️ Update existing events\n- 🗑️ Delete events\n- 🔍 Check availability\n\nTry asking:\n- \"What do I have today?\"\n- \"Schedule a meeting tomorrow at 2pm\"\n- \"Am I free this Friday afternoon?\"\n\nHow can I assist you with your calendar today?"
+        }
+      },
+      "id": "chat-trigger-node",
+      "name": "Chat Test Interface",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        2040,
+        -500
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Merge and normalize inputs from both webhook and chat trigger\nconst input = $input.first();\nconst sourceNode = $input.context.nodeId;\nlet normalizedData = {};\n\n// Check if this is from the chat trigger\nif (sourceNode === 'chat-trigger-node' || input.json.chatInput) {\n  // Chat trigger format\n  normalizedData = {\n    message: input.json.chatInput || input.json.input || '',\n    userId: input.json.sessionId || 'chat-test-user',\n    channelId: 'chat-test-channel',\n    sessionId: input.json.sessionId || 'chat-test-session',\n    platform: 'n8n-chat-test',\n    timestamp: new Date().toISOString(),\n    isTestMode: true\n  };\n} else {\n  // Webhook format - keep existing parsing logic\n  const rawInput = input.json || input || {};\n  let payload = rawInput;\n  \n  if (rawInput.body) {\n    payload = typeof rawInput.body === 'string' ? JSON.parse(rawInput.body) : rawInput.body;\n  } else if (rawInput.query) {\n    payload = rawInput.query;\n  }\n  \n  normalizedData = {\n    message: payload?.message || payload?.content || payload?.text || '',\n    userId: payload?.userId || payload?.user_id || 'unknown-user',\n    channelId: payload?.channelId || payload?.channel_id || 'unknown-channel',\n    sessionId: `${payload?.userId || 'unknown'}-${payload?.channelId || 'unknown'}`,\n    platform: 'discordant',\n    timestamp: payload?.timestamp || new Date().toISOString(),\n    isTestMode: false\n  };\n}\n\n// Common output format\nreturn {\n  input: normalizedData.message,\n  originalMessage: normalizedData.message,\n  chatInput: normalizedData.message,\n  userId: normalizedData.userId,\n  channelId: normalizedData.channelId,\n  sessionId: normalizedData.sessionId,\n  timestamp: normalizedData.timestamp,\n  platform: normalizedData.platform,\n  isTestMode: normalizedData.isTestMode,\n  responseUrl: input.json?.responseUrl || null,\n  debugInfo: {\n    sourceNode: sourceNode,\n    hasMessage: !!normalizedData.message,\n    messageLength: normalizedData.message?.length || 0\n  }\n};"
+      },
+      "id": "merge-and-normalize",
+      "name": "Merge Inputs",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        2240,
+        -600
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=CREATE TABLE IF NOT EXISTS chat_memory (\n  id INT AUTO_INCREMENT PRIMARY KEY,\n  session_id VARCHAR(255) NOT NULL,\n  user_id VARCHAR(255) NOT NULL,\n  role ENUM('user', 'assistant', 'system') NOT NULL,\n  content TEXT NOT NULL,\n  timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,\n  metadata JSON,\n  INDEX idx_session (session_id),\n  INDEX idx_user (user_id),\n  INDEX idx_timestamp (timestamp)\n)",
+        "options": {}
+      },
+      "id": "create-memory-table",
+      "name": "Create Memory Table",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 1,
+      "position": [
+        2200,
+        -400
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "TvnUCP0CFWmGulQM",
+          "name": "MySQL account"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=SELECT role, content, timestamp \nFROM chat_memory \nWHERE session_id = '{{ $('Merge Inputs').first().json.sessionId }}' \nORDER BY timestamp DESC \nLIMIT 20"
+      },
+      "id": "load-chat-memory",
+      "name": "Load Chat Memory",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 1,
+      "position": [
+        2400,
+        -400
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "TvnUCP0CFWmGulQM",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=INSERT INTO chat_memory (session_id, user_id, role, content, metadata) \nVALUES (\n  '{{ $('Merge Inputs').first().json.sessionId }}',\n  '{{ $('Merge Inputs').first().json.userId }}',\n  'user',\n  '{{ $('Merge Inputs').first().json.input }}',\n  JSON_OBJECT(\n    'channelId', '{{ $('Merge Inputs').first().json.channelId }}',\n    'platform', '{{ $('Merge Inputs').first().json.platform }}',\n    'timestamp', '{{ new Date().toISOString() }}',\n    'isTestMode', {{ $('Merge Inputs').first().json.isTestMode }}\n  )\n)"
+      },
+      "id": "save-user-message",
+      "name": "Save User Message",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 1,
+      "position": [
+        2400,
+        -300
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "TvnUCP0CFWmGulQM",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "// Format chat memory for AI Agent\nconst memoryData = $('Load Chat Memory').all();\nconst parseData = $('Merge Inputs').first().json;\n\n// Reverse the messages to chronological order and format for AI\nconst conversationHistory = memoryData\n  .map(item => item.json)\n  .reverse()\n  .map(msg => `${msg.role}: ${msg.content}`)\n  .join('\\n\\n');\n\n// Return formatted data for AI Agent\nreturn {\n  input: parseData.input,\n  conversationHistory: conversationHistory,\n  messageCount: memoryData.length,\n  sessionId: parseData.sessionId,\n  userId: parseData.userId,\n  channelId: parseData.channelId,\n  timestamp: parseData.timestamp,\n  platform: parseData.platform,\n  isTestMode: parseData.isTestMode\n};"
+      },
+      "id": "format-memory-for-ai",
+      "name": "Format Memory for AI",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        2600,
+        -400
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery", 
+        "query": "=INSERT INTO chat_memory (session_id, user_id, role, content, metadata) \nVALUES (\n  '{{ $('Merge Inputs').first().json.sessionId }}',\n  'calendar-assistant',\n  'assistant',\n  '{{ $('AI Agent').first().json.output }}',\n  JSON_OBJECT(\n    'platform', 'n8n-assistant',\n    'timestamp', '{{ new Date().toISOString() }}',\n    'executionId', '{{ $execution.id }}',\n    'isTestMode', {{ $('Merge Inputs').first().json.isTestMode }}\n  )\n)"
+      },
+      "id": "save-ai-response",
+      "name": "Save AI Response",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 1,
+      "position": [
+        2900,
+        -400
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "TvnUCP0CFWmGulQM",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=DELETE FROM chat_memory \nWHERE session_id = '{{ $('Merge Inputs').first().json.sessionId }}' \nAND id NOT IN (\n  SELECT id FROM (\n    SELECT id FROM chat_memory \n    WHERE session_id = '{{ $('Merge Inputs').first().json.sessionId }}' \n    ORDER BY timestamp DESC \n    LIMIT 100\n  ) AS recent\n)"
+      },
+      "id": "cleanup-old-messages",
+      "name": "Cleanup Old Messages",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 1,
+      "position": [
+        3100,
+        -400
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "TvnUCP0CFWmGulQM",
+          "name": "MySQL account"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "kenneth.courtney@gmail.com",
+          "mode": "list",
+          "cachedResultName": "kenneth.courtney@gmail.com"
+        },
+        "returnAll": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Return_All', `Should return all events? Usually true for viewing calendar.`, 'boolean') }}",
+        "limit": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Limit', `Maximum number of events to return (e.g., 50)`, 'number') }}",
+        "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start_Time', `Start date/time in ISO format (e.g., 2025-01-30T00:00:00Z for today)`, 'string') }}",
+        "timeMax": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End_Time', `End date/time in ISO format (e.g., 2025-02-06T23:59:59Z for next week)`, 'string') }}",
+        "options": {}
+      },
+      "id": "47ec3fd4-e863-416c-b2e4-c5003b7cd4c5",
+      "name": "View_Calendar_Events",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        2880,
+        -260
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "jttch4cJRgIrcZfh",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "kenneth.courtney@gmail.com",
+          "mode": "list",
+          "cachedResultName": "kenneth.courtney@gmail.com"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start_DateTime', `Start date and time in ISO format (e.g., 2025-05-31T15:00:00-04:00)`, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End_DateTime', `End date and time in ISO format (e.g., 2025-05-31T16:00:00-04:00)`, 'string') }}",
+        "additionalFields": {
+          "description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_Description', `Optional description or notes for the event`, 'string') }}",
+          "location": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_Location', `The location of the event (e.g., \"Enterprise Dog Park, Clearwater, FL\")`, 'string') }}",
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_Title', `The title/name of the event (e.g., \"Enterprise Dog Park Meeting\")`, 'string') }}"
+        }
+      },
+      "id": "53d35a1c-6e56-47b0-95fc-7556a25e4ac4",
+      "name": "Create_New_Event",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        3240,
+        -280
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "jttch4cJRgIrcZfh",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "calendar": {
+          "__rl": true,
+          "value": "kenneth.courtney@gmail.com",
+          "mode": "list",
+          "cachedResultName": "kenneth.courtney@gmail.com"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', `The ID of the event to update`, 'string') }}",
+        "updateFields": {
+          "description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('New_Event_Description', `Updated description or notes for the event (optional)`, 'string') }}",
+          "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('New_End_DateTime', `New end date and time in ISO format (e.g., 2025-05-31T17:00:00-04:00)`, 'string') }}",
+          "location": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('New_Event_Location', `Updated location of the event (optional)`, 'string') }}",
+          "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('New_Start_DateTime', `New start date and time in ISO format (e.g., 2025-05-31T16:00:00-04:00)`, 'string') }}",
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('New_Event_Title', `Updated title/name of the event (optional)`, 'string') }}"
+        }
+      },
+      "id": "71d32aca-7cbd-4cab-aa78-efb58139f8f2",
+      "name": "Update_Existing_Event",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        3000,
+        -120
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "jttch4cJRgIrcZfh",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "calendar": {
+          "__rl": true,
+          "value": "kenneth.courtney@gmail.com",
+          "mode": "list",
+          "cachedResultName": "kenneth.courtney@gmail.com"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID_To_Delete', `The ID of the event to delete`, 'string') }}",
+        "options": {}
+      },
+      "id": "6e31c997-e3d7-4bb7-b7b4-0be5acbd76f4",
+      "name": "Delete_Event",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        2760,
+        -100
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "jttch4cJRgIrcZfh",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "// Enhanced Format Chat Response function with comprehensive debugging\n// Debug: Log what the AI Agent produced\nconst aiOutput = $input.first().json;\nconsole.log('=== AI AGENT OUTPUT DEBUG ===');\nconsole.log('AI Agent Response:', JSON.stringify(aiOutput, null, 2));\nconsole.log('Response Type:', typeof aiOutput);\nconsole.log('All keys in aiOutput:', Object.keys(aiOutput || {}));\n\n// Check if it's an execution data node output\nlet actualAiResponse = aiOutput;\nif (aiOutput.json) {\n  actualAiResponse = aiOutput.json;\n  console.log('Found .json property, using that:', JSON.stringify(actualAiResponse, null, 2));\n}\n\n// Try to extract the response from different possible fields with enhanced detection\nlet responseMessage = '';\n\n// Check various possible response fields\nconst possibleFields = [\n  'output', 'text', 'response', 'content', 'message', 'result', \n  'answer', 'reply', 'chatResponse', 'aiResponse', 'data'\n];\n\nconsole.log('=== CHECKING RESPONSE FIELDS ===');\nfor (const field of possibleFields) {\n  if (actualAiResponse && actualAiResponse[field]) {\n    console.log(`Found response in field '${field}':`, actualAiResponse[field]);\n    responseMessage = actualAiResponse[field];\n    break;\n  }\n}\n\n// If no field found, check if the whole response is a string\nif (!responseMessage && typeof actualAiResponse === 'string') {\n  responseMessage = actualAiResponse;\n  console.log('Using entire response as string:', responseMessage);\n}\n\n// Check for nested structures\nif (!responseMessage && actualAiResponse) {\n  // Check for common nested patterns\n  if (actualAiResponse.choices && actualAiResponse.choices[0]?.message?.content) {\n    responseMessage = actualAiResponse.choices[0].message.content;\n    console.log('Found OpenAI-style response:', responseMessage);\n  } else if (actualAiResponse.generations && actualAiResponse.generations[0]?.text) {\n    responseMessage = actualAiResponse.generations[0].text;\n    console.log('Found generations-style response:', responseMessage);\n  } else if (actualAiResponse.completion) {\n    responseMessage = actualAiResponse.completion;\n    console.log('Found completion field:', responseMessage);\n  }\n}\n\n// Last resort - try to find any string value in the object\nif (!responseMessage && actualAiResponse && typeof actualAiResponse === 'object') {\n  console.log('=== SEARCHING FOR ANY STRING VALUES ===');\n  const findStringValues = (obj, path = '') => {\n    for (const [key, value] of Object.entries(obj)) {\n      const currentPath = path ? `${path}.${key}` : key;\n      if (typeof value === 'string' && value.length > 10) {\n        console.log(`Found potential response at ${currentPath}:`, value.substring(0, 100) + '...');\n        return value;\n      } else if (typeof value === 'object' && value !== null) {\n        const found = findStringValues(value, currentPath);\n        if (found) return found;\n      }\n    }\n    return null;\n  };\n  \n  const foundString = findStringValues(actualAiResponse);\n  if (foundString) {\n    responseMessage = foundString;\n  }\n}\n\n// If still no response, provide detailed error\nif (!responseMessage) {\n  console.log('=== NO RESPONSE FOUND - FULL DEBUG ===');\n  console.log('Available data structure:', JSON.stringify(actualAiResponse, null, 2));\n  responseMessage = `📋 **Calendar Assistant Debug Info**\n\nI received your request but couldn't extract the response properly.\n\n**Available data keys:** ${Object.keys(actualAiResponse || {}).join(', ')}\n\n**Request:** Show me my events for next week\n\n**Debug:** The AI Agent ran but the response format is unexpected. Please check the n8n logs for the full output structure.\n\nThis appears to be a formatting issue in the workflow. Please contact your administrator to review the AI Agent output format.`;\n}\n\n// Get original context from earlier in the workflow\nconst parseNode = $('Merge Inputs').first().json;\nconst originalMessage = parseNode?.originalMessage || parseNode?.chatInput || parseNode?.input || '';\nconst userId = parseNode?.userId || 'unknown';\nconst sessionId = parseNode?.sessionId || 'unknown';\n\nconsole.log('=== CONTEXT DEBUG ===');\nconsole.log('Original Message:', originalMessage);\nconsole.log('User ID:', userId);\nconsole.log('Session ID:', sessionId);\n\n// Clean up the response message\nif (responseMessage && typeof responseMessage === 'string') {\n  // Remove any extra whitespace and ensure it's properly formatted\n  responseMessage = responseMessage.trim();\n  \n  // If it's a very long response, ensure it's reasonable for chat\n  if (responseMessage.length > 2000) {\n    responseMessage = responseMessage.substring(0, 1900) + '...\\n\\n*Response truncated for chat display*';\n  }\n}\n\n// Format the response\nconst formattedResponse = {\n  message: responseMessage,\n  timestamp: new Date().toISOString(),\n  userId: 'calendar-assistant',\n  type: 'calendar_response',\n  metadata: {\n    originalMessage: originalMessage,\n    sessionId: sessionId,\n    platform: 'n8n-calendar-assistant',\n    responseFound: !!responseMessage,\n    debugTimestamp: new Date().toISOString()\n  }\n};\n\nconsole.log('=== FORMATTED RESPONSE ===');\nconsole.log('Final Response:', JSON.stringify(formattedResponse, null, 2));\nconsole.log('Response message length:', responseMessage?.length || 0);\n\nreturn formattedResponse;"
+      },
+      "id": "352e841b-f804-4916-b773-b4643a3b9bb4",
+      "name": "Format Chat Response",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        3100,
+        -500
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.2,
+      "position": [
+        3280,
+        -500
+      ],
+      "id": "2018b504-538d-440f-8285-dbd1844f13ca",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "functionCode": "// Compute dynamic date/time values for AI Agent prompt\nconst inputData = $json;\nconst now = new Date();\nconst easternTime = new Intl.DateTimeFormat('en-US', {\n  timeZone: 'America/New_York',\n  hour12: true,\n  hour: 'numeric',\n  minute: '2-digit'\n}).format(now);\n\n// Calculate current week dates\nconst currentWeekStart = new Date(now.getTime() - (now.getDay() * 24 * 60 * 60 * 1000));\nconst currentWeekEnd = new Date(now.getTime() + ((6 - now.getDay()) * 24 * 60 * 60 * 1000));\n\n// Calculate next week dates\nconst nextWeekStart = new Date(now.getTime() + ((7 - now.getDay()) * 24 * 60 * 60 * 1000));\nconst nextWeekEnd = new Date(now.getTime() + ((13 - now.getDay()) * 24 * 60 * 60 * 1000));\n\n// Format dates\nconst currentDate = now.toISOString().split('T')[0];\nconst tomorrowDate = new Date(now.getTime() + 24*60*60*1000).toISOString().split('T')[0];\nconst currentDateFormatted = now.toLocaleDateString('en-US', { \n  weekday: 'long', \n  year: 'numeric', \n  month: 'long', \n  day: 'numeric' \n});\n\nreturn {\n  ...inputData,\n  currentDate: currentDate,\n  currentDateFormatted: currentDateFormatted,\n  currentTime: easternTime,\n  tomorrowDate: tomorrowDate,\n  currentWeekStart: currentWeekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),\n  currentWeekEnd: currentWeekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),\n  nextWeekStart: nextWeekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),\n  nextWeekEnd: nextWeekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),\n  thisWeekStartISO: currentWeekStart.toISOString().split('T')[0],\n  thisWeekEndISO: currentWeekEnd.toISOString().split('T')[0],\n  nextWeekStartISO: nextWeekStart.toISOString().split('T')[0],\n  nextWeekEndISO: nextWeekEnd.toISOString().split('T')[0]\n};"
+      },
+      "id": "compute-date-context",
+      "name": "Compute Date Context",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        2800,
+        -540
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.input }}\n\n{{ $json.conversationHistory ? '== Previous Conversation ==\n' + $json.conversationHistory + '\n== End of Previous Conversation ==\n\n' : '' }}",
+        "options": {
+          "systemMessage": "You are Kenneth's comprehensive AI assistant integrated with his custom chat application at discordant.kendev.co.\n\n⏰ **CURRENT DATE & TIME CONTEXT:**\n- **Current Date:** {{ $json.currentDate }} ({{ $json.currentDateFormatted }})\n- **Current Time:** {{ $json.currentTime }} Eastern Time\n- **Current Week:** Week of {{ $json.currentWeekStart }} - {{ $json.currentWeekEnd }}\n- **Next Week:** Week of {{ $json.nextWeekStart }} - {{ $json.nextWeekEnd }}\n\n💭 **CONVERSATION CONTEXT:**\nYou have access to conversation history with each user/channel. Use this context to:\n- Remember previous requests and follow-ups\n- Maintain consistency in your responses\n- Reference earlier conversations and research\n- Provide more personalized assistance\n\n🛠️ **YOUR THREE POWERFUL TOOL CATEGORIES:**\n\n📅 **CALENDAR TOOLS** - Manage Kenneth's schedule:\n- **View_Calendar_Events** - Show events for any date/time range\n- **Create_New_Event** - Schedule new appointments/meetings\n- **Update_Existing_Event** - Modify existing events\n- **Delete_Event** - Cancel appointments\n\n🔍 **MESSAGE SEARCH TOOL** - Search past conversations:\n- **Search_Discordant_Messages** - Find messages, files, discussions in channels/DMs\n  - Use User_ID from session context ({{ $json.userId }})\n  - Search_Term: Extract key terms from user's request\n  - Days_Back: How far to search (default 30 days)\n  - Result_Limit: Max results (default 10)\n\n🌐 **WEB RESEARCH TOOL** - Get current information:\n- **Web_Research_Tool** - Search the internet for real-time data\n  - Research_Query: What to search for\n  - Result_Count: Number of results (default 5)\n\n🎯 **SMART TOOL SELECTION EXAMPLES:**\n\n**Calendar Requests:**\n- \"What do I have today?\" → Use View_Calendar_Events\n- \"Schedule a meeting tomorrow at 3pm\" → Use Create_New_Event\n- \"Move my 2pm meeting to 4pm\" → Use Update_Existing_Event\n\n**Message Search Requests:**\n- \"Find messages about Project Alpha\" → Use Search_Discordant_Messages\n- \"Show me files from John last week\" → Use Search_Discordant_Messages\n- \"What did we discuss about the budget?\" → Use Search_Discordant_Messages\n\n**Web Research Requests:**\n- \"What's Tesla's current stock price?\" → Use Web_Research_Tool\n- \"Research Acme Corp's competitors\" → Use Web_Research_Tool\n- \"What is blockchain technology?\" → Use Web_Research_Tool\n\n**Multi-Tool Requests:**\n- \"Research Microsoft earnings and schedule a review meeting\" → Use Web_Research_Tool + Create_New_Event\n- \"Find our previous discussion about Tesla and book a follow-up\" → Use Search_Discordant_Messages + Create_New_Event\n- \"What did we plan for the Johnson project and what's their stock doing?\" → Use Search_Discordant_Messages + Web_Research_Tool\n\n🚨 **IMPORTANT BUSINESS CONTEXT:**\nYou operate as the **duty officer** for National Registration Group's business operations. Kenneth relies on you for:\n- Managing client meetings and deadlines\n- Finding past conversations and decisions\n- Researching companies, markets, and topics\n- Coordinating business activities\n- Providing comprehensive business intelligence\n\n⚡ **RESPONSE GUIDELINES:**\n- **Always use tools** - Don't guess, get real data\n- **Choose the right tool(s)** for each request\n- **Provide specific, actionable information**\n- **Reference conversation history** when relevant\n- **Use friendly, professional tone** with emojis\n- **Offer follow-up suggestions** when appropriate\n- **Handle timezone** in Eastern Time for calendar operations\n\n🔧 **TECHNICAL NOTES:**\n- **Calendar**: Use ISO date/time formats (e.g., 2025-01-30T15:00:00-05:00)\n- **Message Search**: User ID is automatically provided from session\n- **Web Research**: Get current, accurate information\n- **Multi-requests**: Handle complex requests that need multiple tools\n\n📅 **DATE PROCESSING RULES:**\n- **\"today\"** = {{ $json.currentDate }}\n- **\"tomorrow\"** = {{ $json.tomorrowDate }}\n- **\"this week\"** = {{ $json.thisWeekStartISO }} to {{ $json.thisWeekEndISO }}\n- **\"next week\"** = {{ $json.nextWeekStartISO }} to {{ $json.nextWeekEndISO }}\n\n💡 **SMART COMBINATIONS:**\nWhen users mention companies, people, or topics:\n- Consider if they want calendar actions (meetings)\n- Consider if they want to search past discussions\n- Consider if they want current research\n- Offer relevant combinations: \"I found our Tesla discussion. Want me to research their latest earnings and schedule a review?\"\n\nRemember: You're Kenneth's trusted business intelligence assistant. Be proactive, comprehensive, and always get real data using your tools!"
+        }
+      },
+      "id": "a3bfa034-3fbd-484f-b117-6df0d0140b75",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        2620,
+        -540
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4-turbo",
+        "options": {
+          "maxTokens": 1500,
+          "temperature": 0.3
+        }
+      },
+      "id": "79161528-4261-4e13-b9f5-98b0061dd0c2",
+      "name": "gpt-4-turbo Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        2520,
+        -260
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "93xrPD7UUL9tV6EG",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataToSave": {
+          "values": [
+            {
+              "key": "user_message",
+              "value": "={{ $('Merge Inputs').first().json.chatInput }}"
+            },
+            {
+              "key": "user_input",
+              "value": "={{ $('Merge Inputs').first().json.input }}"
+            },
+            {
+              "key": "ai_agent_output",
+              "value": "={{ $('AI Agent').first().json.output }}"
+            },
+            {
+              "key": "ai_agent_full",
+              "value": "={{ JSON.stringify($('AI Agent').first().json) }}"
+            },
+            {
+              "key": "tools_called",
+              "value": "={{ $('AI Agent').first().json.toolCalls ? JSON.stringify($('AI Agent').first().json.toolCalls) : ($('AI Agent').first().json.intermediateSteps ? JSON.stringify($('AI Agent').first().json.intermediateSteps) : ($('AI Agent').first().json.steps ? JSON.stringify($('AI Agent').first().json.steps) : \"Tools called but debug data not captured\")) }}"
+            },
+            {
+              "key": "session_id",
+              "value": "={{ $('Merge Inputs').first().json.sessionId }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executionData",
+      "typeVersion": 1,
+      "position": [
+        2900,
+        -500
+      ],
+      "id": "f878f7af-0fca-4723-be1e-4c68cf520381",
+      "name": "Execution Data"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "table": {
+          "__rl": true,
+          "value": "message",
+          "mode": "list",
+          "cachedResultName": "message"
+        },
+        "limit": 10,
+        "where": {
+          "values": [
+            {
+              "column": "createdAt",
+              "condition": ">=",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "sort": {
+          "values": [
+            {
+              "column": "createdAt",
+              "direction": "DESC"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySqlTool",
+      "typeVersion": 2.4,
+      "position": [
+        3080,
+        -280
+      ],
+      "id": "1c8b1210-72a0-4771-b1f8-1c1d12e097d5",
+      "name": "DB_View_Latest_Messages",
+      "credentials": {
+        "mySql": {
+          "id": "TvnUCP0CFWmGulQM",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "// Prepare search queries with proper permission checks\nconst searchTerm = $json.input.replace(/search for |find |look for /gi, '').trim();\nconst userId = $json.userId;\nconst dayRange = 30; // Default to last 30 days\n\n// Channel messages query\nconst channelQuery = `\nSELECT \n  m.id,\n  m.content,\n  m.fileUrl,\n  m.createdAt,\n  m.role as messageRole,\n  p.name as userName,\n  p.imageUrl as userAvatar,\n  c.name as channelName,\n  c.type as channelType,\n  s.name as serverName,\n  s.id as serverId\nFROM message m\nINNER JOIN member msg_member ON m.memberId = msg_member.id\nINNER JOIN profile p ON msg_member.profileId = p.id\nINNER JOIN channel c ON m.channelId = c.id\nINNER JOIN server s ON c.serverId = s.id\nINNER JOIN member user_member ON user_member.serverId = s.id \n                              AND user_member.profileId = '${userId}'\nWHERE \n  (m.content LIKE '%${searchTerm}%' \n   OR m.fileUrl LIKE '%${searchTerm}%')\n  AND m.createdAt >= DATE_SUB(NOW(), INTERVAL ${dayRange} DAY)\nORDER BY m.createdAt DESC\nLIMIT 10`;\n\n// Direct messages query\nconst dmQuery = `\nSELECT \n  dm.id,\n  dm.content,\n  dm.fileUrl,\n  dm.createdAt,\n  p.name as userName,\n  p.imageUrl as userAvatar,\n  other_p.name as otherUserName,\n  conv.id as conversationId,\n  'DIRECT_MESSAGE' as messageType\nFROM directmessage dm\nINNER JOIN conversation conv ON dm.conversationId = conv.id\nINNER JOIN member sender_member ON dm.memberId = sender_member.id\nINNER JOIN profile p ON sender_member.profileId = p.id\nINNER JOIN member other_member ON \n  (conv.memberOneId = other_member.id AND conv.memberTwoId = sender_member.id)\n  OR \n  (conv.memberTwoId = other_member.id AND conv.memberOneId = sender_member.id)\nINNER JOIN profile other_p ON other_member.profileId = other_p.id\nWHERE \n  EXISTS (\n    SELECT 1 FROM member user_member \n    WHERE user_member.profileId = '${userId}'\n    AND (conv.memberOneId = user_member.id OR conv.memberTwoId = user_member.id)\n  )\n  AND (dm.content LIKE '%${searchTerm}%' \n       OR dm.fileUrl LIKE '%${searchTerm}%')\n  AND dm.createdAt >= DATE_SUB(NOW(), INTERVAL ${dayRange} DAY)\nORDER BY dm.createdAt DESC\nLIMIT 10`;\n\n// Combined query\nconst combinedQuery = `\n(\n  SELECT \n    m.id,\n    m.content,\n    m.fileUrl,\n    m.createdAt,\n    p.name as userName,\n    p.imageUrl as userAvatar,\n    c.name as locationName,\n    'CHANNEL' as locationType,\n    s.name as serverName\n  FROM message m\n  INNER JOIN member msg_member ON m.memberId = msg_member.id\n  INNER JOIN profile p ON msg_member.profileId = p.id\n  INNER JOIN channel c ON m.channelId = c.id\n  INNER JOIN server s ON c.serverId = s.id\n  INNER JOIN member user_member ON user_member.serverId = s.id \n                                AND user_member.profileId = '${userId}'\n  WHERE \n    (m.content LIKE '%${searchTerm}%' \n     OR m.fileUrl LIKE '%${searchTerm}%')\n    AND m.createdAt >= DATE_SUB(NOW(), INTERVAL ${dayRange} DAY)\n)\nUNION ALL\n(\n  SELECT \n    dm.id,\n    dm.content,\n    dm.fileUrl,\n    dm.createdAt,\n    p.name as userName,\n    p.imageUrl as userAvatar,\n    other_p.name as locationName,\n    'DM' as locationType,\n    NULL as serverName\n  FROM directmessage dm\n  INNER JOIN conversation conv ON dm.conversationId = conv.id\n  INNER JOIN member sender_member ON dm.memberId = sender_member.id\n  INNER JOIN profile p ON sender_member.profileId = p.id\n  INNER JOIN member other_member ON \n    (conv.memberOneId = other_member.id AND conv.memberTwoId = sender_member.id)\n    OR \n    (conv.memberTwoId = other_member.id AND conv.memberOneId = sender_member.id)\n  INNER JOIN profile other_p ON other_member.profileId = other_p.id\n  WHERE \n    EXISTS (\n      SELECT 1 FROM member user_member \n      WHERE user_member.profileId = '${userId}'\n      AND (conv.memberOneId = user_member.id OR conv.memberTwoId = user_member.id)\n    )\n    AND (dm.content LIKE '%${searchTerm}%' \n         OR dm.fileUrl LIKE '%${searchTerm}%')\n    AND dm.createdAt >= DATE_SUB(NOW(), INTERVAL ${dayRange} DAY)\n)\nORDER BY createdAt DESC\nLIMIT 10`;\n\nreturn {\n  searchTerm,\n  channelQuery,\n  dmQuery,\n  combinedQuery,\n  ...($json)\n};"
+      },
+      "id": "b5fa4090-3c97-4921-9e44-3f559986e556",
+      "name": "Search Query Selector",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        2640,
+        -720
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Format search results\nconst results = $input.all();\nlet formattedMessage = '';\n\nif (!results || results.length === 0) {\n  formattedMessage = 'No results found for your search query.';\n} else {\n  formattedMessage = `Found ${results.length} result${results.length > 1 ? 's' : ''}:\\n\\n`;\n  \n  results.forEach((item, index) => {\n    const result = item.json;\n    const location = result.channelName ? \n      `#${result.channelName} in ${result.serverName}` : \n      `DM with ${result.otherUserName || result.locationName}`;\n    \n    const preview = result.content ? \n      result.content.substring(0, 100) + (result.content.length > 100 ? '...' : '') : \n      '[File attachment]';\n    \n    const date = new Date(result.createdAt).toLocaleString();\n    \n    formattedMessage += `**${index + 1}. ${result.userName}** in ${location}\\n`;\n    formattedMessage += `   ${preview}\\n`;\n    formattedMessage += `   _${date}_\\n\\n`;\n  });\n}\n\nreturn [{\n  message: formattedMessage,\n  timestamp: new Date().toISOString(),\n  userId: 'assistant',\n  type: 'search_results',\n  metadata: {\n    resultCount: results.length,\n    searchTerm: $('Search Query Selector').item.json.searchTerm,\n    intent: 'search',\n    responseFound: true\n  }\n}];"
+      },
+      "id": "5aa093c6-67fc-4af4-8682-fbb4247bb096",
+      "name": "Format Search Results",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        3040,
+        -720
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Handle errors gracefully\nconst error = $input.first().error;\nconst originalInput = $('Merge Inputs').first()?.json || {};\n\nconsole.error('Workflow error:', error);\n\nreturn [{\n  message: 'I encountered an error processing your request. Please try again or contact support if the issue persists.',\n  timestamp: new Date().toISOString(),\n  userId: 'assistant',\n  type: 'error_response',\n  metadata: {\n    error: error.message || 'Unknown error',\n    originalMessage: originalInput.input || '',\n    intent: originalInput.intent || 'unknown',\n    platform: 'n8n-assistant',\n    responseFound: false\n  }\n}];"
+      },
+      "id": "8b2dc6bd-ba07-496a-8660-a4d3a9151516",
+      "name": "Error Handler",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        3240,
+        -740
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=-- Dynamic search query based on AI input\nSELECT \n  m.id,\n  m.content,\n  m.fileUrl,\n  m.createdAt,\n  m.role as messageRole,\n  p.name as userName,\n  p.imageUrl as userAvatar,\n  c.name as channelName,\n  c.type as channelType,\n  s.name as serverName,\n  s.id as serverId\nFROM message m\nINNER JOIN member msg_member ON m.memberId = msg_member.id\nINNER JOIN profile p ON msg_member.profileId = p.id\nINNER JOIN channel c ON m.channelId = c.id\nINNER JOIN server s ON c.serverId = s.id\nINNER JOIN member user_member ON user_member.serverId = s.id \n                              AND user_member.profileId = '{{ /*n8n-auto-generated-fromAI-override*/ $fromAI('User_ID', `The user ID to search for (from session context)`, 'string') }}'\nWHERE \n  (m.content LIKE '%{{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Search_Term', `What to search for in messages (e.g., \"project alpha\", \"budget\", \"client name\")`, 'string') }}%' \n   OR m.fileUrl LIKE '%{{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Search_Term', `What to search for in messages`, 'string') }}%')\n  AND m.createdAt >= DATE_SUB(NOW(), INTERVAL {{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Days_Back', `How many days back to search (default: 30)`, 'number') }} DAY)\nORDER BY m.createdAt DESC\nLIMIT {{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Result_Limit', `Maximum results to return (default: 10)`, 'number') }}",
+        "options": {}
+      },
+      "id": "search-discordant-messages",
+      "name": "Search_Discordant_Messages", 
+      "type": "n8n-nodes-base.mySqlTool",
+      "typeVersion": 2.4,
+      "position": [
+        3080,
+        -280
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "TvnUCP0CFWmGulQM",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Research_Query', `What to research on the web (e.g., \"Microsoft current stock price\", \"Acme Corp competitors\", \"blockchain explained\")`, 'string') }}",
+        "limit": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Result_Count', `Number of search results to return (default: 5)`, 'number') }}",
+        "options": {}
+      },
+      "id": "web-research-tool",
+      "name": "Web_Research_Tool",
+      "type": "n8n-nodes-base.googleSearchTool", 
+      "typeVersion": 1,
+      "position": [
+        3240,
+        -280
+      ],
+      "credentials": {
+        "googleSearchApi": {
+          "id": "your-google-search-api-id",
+          "name": "Google Search API"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Discordant Chat Webhook": {
+      "main": [
+        [
+          {
+            "node": "Merge Inputs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat Test Interface": {
+      "main": [
+        [
+          {
+            "node": "Merge Inputs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Inputs": {
+      "main": [
+        [
+          {
+            "node": "Create Memory Table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Memory Table": {
+      "main": [
+        [
+          {
+            "node": "Load Chat Memory",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Save User Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Chat Memory": {
+      "main": [
+        [
+          {
+            "node": "Format Memory for AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save User Message": {
+      "main": [
+        [
+          {
+            "node": "Format Memory for AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Memory for AI": {
+      "main": [
+        [
+          {
+            "node": "Compute Date Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compute Date Context": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search_Discordant_Messages": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Web_Research_Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "View_Calendar_Events": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create_New_Event": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update_Existing_Event": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete_Event": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DB_View_Latest_Messages": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Chat Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Save AI Response",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Execution Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save AI Response": {
+      "main": [
+        [
+          {
+            "node": "Cleanup Old Messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cleanup Old Messages": {
+      "main": [
+        [
+          {
+            "node": "Format Chat Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gpt-4-turbo Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execution Data": {
+      "main": [
+        [
+          {
+            "node": "Format Chat Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "e296a513-eba2-4736-b322-196c8cd54353",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "136461ac021bda65593ed5d2f70798d0433ed7859abfc9e2ca43aa4b9c0b779e"
+  },
+  "id": "pRdsp1BnLiGq6cuA",
+  "tags": []
+}
