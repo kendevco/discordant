@@ -322,6 +322,13 @@ class WorkflowHandler implements SystemMessageHandler {
     // Determine which workflow should handle this message
     const route = WorkflowRouter.getWorkflowRoute(message.content);
     
+    console.log(`[WORKFLOW_HANDLER] === PRODUCTION DEBUG ===`);
+    console.log(`[WORKFLOW_HANDLER] Environment: ${process.env.NODE_ENV}`);
+    console.log(`[WORKFLOW_HANDLER] App URL: ${process.env.NEXT_PUBLIC_APP_URL}`);
+    console.log(`[WORKFLOW_HANDLER] N8N URL: ${process.env.N8N_WEBHOOK_URL}`);
+    console.log(`[WORKFLOW_HANDLER] Channel ID: ${channelId}`);
+    console.log(`[WORKFLOW_HANDLER] Server ID: ${serverId}`);
+    console.log(`[WORKFLOW_HANDLER] Message content: ${message.content}`);
     console.log(`[WORKFLOW_HANDLER] Routing message to: ${route.workflowId}`);
     console.log(`[WORKFLOW_HANDLER] Webhook path: ${route.webhookPath}`);
 
@@ -349,6 +356,9 @@ class WorkflowHandler implements SystemMessageHandler {
                    (process.env.NODE_ENV === 'production' ? "https://discordant.kendev.co" : "http://localhost:3000");
     const proxyUrl = `${baseUrl}/api/workflow`;
     
+    console.log(`[WORKFLOW_HANDLER] Proxy URL: ${proxyUrl}`);
+    console.log(`[WORKFLOW_HANDLER] Payload:`, JSON.stringify(payload, null, 2));
+    
     let workflowResponse;
     let errorType = null;
     let usedFallback = false;
@@ -356,6 +366,7 @@ class WorkflowHandler implements SystemMessageHandler {
     // First, try the n8n workflow
     try {
       console.log(`[WORKFLOW_HANDLER] Attempting n8n workflow connection...`);
+      console.log(`[WORKFLOW_HANDLER] Making fetch request to: ${proxyUrl}`);
       
       const res = await fetch(proxyUrl, {
         method: "POST",
@@ -369,15 +380,25 @@ class WorkflowHandler implements SystemMessageHandler {
         signal: AbortSignal.timeout(60000), // 60 second timeout to match n8n workflow settings
       });
 
+      console.log(`[WORKFLOW_HANDLER] Response status: ${res.status}`);
+      console.log(`[WORKFLOW_HANDLER] Response headers:`, Object.fromEntries(res.headers.entries()));
+
       if (!res.ok) {
-        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        const errorText = await res.text();
+        console.error(`[WORKFLOW_HANDLER] HTTP Error Response: ${errorText}`);
+        throw new Error(`HTTP ${res.status}: ${res.statusText} - ${errorText}`);
       }
 
       workflowResponse = await res.json();
-      console.log(`[WORKFLOW_HANDLER] ✅ n8n workflow response received`);
+      console.log(`[WORKFLOW_HANDLER] ✅ n8n workflow response received:`, JSON.stringify(workflowResponse, null, 2));
 
     } catch (err) {
       console.error(`[WORKFLOW_HANDLER] ❌ n8n workflow failed, attempting OpenAI fallback:`, err);
+      console.error(`[WORKFLOW_HANDLER] Error details:`, {
+        name: err instanceof Error ? err.name : 'Unknown',
+        message: err instanceof Error ? err.message : 'Unknown error',
+        stack: err instanceof Error ? err.stack : 'No stack trace'
+      });
       
       // Fallback to OpenAI
       try {
@@ -416,6 +437,7 @@ Both the primary AI workflow system and the backup Site AI service are currently
 
 Please try again in a few minutes, or contact your system administrator if the issue persists.
 
+**Environment:** ${process.env.NODE_ENV}
 **Timestamp:** ${new Date().toISOString()}`,
           type: "system_error",
           timestamp: new Date().toISOString(),
