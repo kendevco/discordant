@@ -14,7 +14,7 @@ export const RichContentRenderer = ({
 }: RichContentRendererProps) => {
   
   // If content is short enough, render normally with existing logic
-  if (content.length <= 2000) {
+  if (content.length <= 650) {
     if (isSystemMessage) {
       return (
         <div className="system-message">
@@ -37,6 +37,11 @@ export const RichContentRenderer = ({
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(/\n/g, '<br />')
+      // Clean up markdown formatting around URLs first (fix the Google Calendar link issue)
+      .replace(/\*\*\[([^\]]+)\]\(([^)]+)\)\*\*/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 underline break-all transition-colors">$1</a>')
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 underline break-all transition-colors">$1</a>')
+      // Clean up stray ** around URLs
+      .replace(/\*\*(https?:\/\/[^\s*]+)\*\*/g, '$1')
       .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-white">$1</strong>')
       .replace(/\*(.*?)\*/g, '<em class="italic text-zinc-200">$1</em>')
       .replace(/`(.*?)`/g, '<code class="bg-zinc-800 dark:bg-zinc-700 px-1 py-0.5 rounded text-sm font-mono text-yellow-300">$1</code>')
@@ -47,7 +52,7 @@ export const RichContentRenderer = ({
     return (
       <ExpandableMessage 
         content={formatContentForHTML(content)}
-        maxLength={2000}
+        maxLength={650}
         className="system-message text-zinc-200 dark:text-zinc-300"
       />
     );
@@ -56,7 +61,7 @@ export const RichContentRenderer = ({
   return (
     <ExpandableMessage 
       content={formatContentForHTML(content)}
-      maxLength={2000}
+      maxLength={650}
       className="regular-message text-zinc-600 dark:text-zinc-300"
     />
   );
@@ -108,29 +113,62 @@ export const RichContentRenderer = ({
   }
     
   function renderFormattedLine(line: string): React.ReactNode {
-    // Process URLs first to avoid conflicts with other formatting
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-      const urlParts = line.split(urlRegex);
+    // Clean up markdown formatting around URLs first to fix Google Calendar link issues
+    let cleanedLine = line
+      // Remove ** formatting around URLs
+      .replace(/\*\*(https?:\/\/[^\s*]+)\*\*/g, '$1')
+      // Handle markdown links [text](url) wrapped in **
+      .replace(/\*\*\[([^\]]+)\]\(([^)]+)\)\*\*/g, '[$1]($2)')
+      // Clean up any trailing ** after URLs
+      .replace(/(https?:\/\/[^\s]+)\*\*/g, '$1');
+    
+    // Process URLs and markdown links
+    const urlAndLinkRegex = /(\[([^\]]+)\]\(([^)]+)\)|(https?:\/\/[^\s]+))/g;
+    const parts = cleanedLine.split(urlAndLinkRegex);
 
-    return urlParts.map((part, i) => {
-        if (part.match(urlRegex)) {
+    return parts.map((part, i) => {
+      // Handle markdown links [text](url)
+      if (part && part.match(/^\[([^\]]+)\]\(([^)]+)\)$/)) {
+        const linkMatch = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+        if (linkMatch) {
           return (
             <a
               key={i}
-              href={part}
+              href={linkMatch[2]}
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-400 hover:text-blue-300 underline break-all transition-colors"
             >
-              {part}
+              {linkMatch[1]}
             </a>
           );
         }
-    
+      }
+      
+      // Handle plain URLs
+      if (part && part.match(/^https?:\/\/[^\s]+$/)) {
+        return (
+          <a
+            key={i}
+            href={part}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-400 hover:text-blue-300 underline break-all transition-colors"
+          >
+            {part}
+          </a>
+        );
+      }
+      
+      // Skip the captured groups from regex
+      if (part === undefined || part.match(/^[^\]]+$/) || part.match(/^[^)]+$/)) {
+        return null;
+      }
+      
       // Apply text formatting to non-URL parts
       return <Fragment key={i}>{applyTextFormatting(part)}</Fragment>;
-      });
-    }
+    });
+  }
     
   function applyTextFormatting(text: string): React.ReactNode {
     let result: React.ReactNode = text;

@@ -12,7 +12,7 @@ interface ExpandableMessageProps {
 
 export const ExpandableMessage = ({ 
   content, 
-  maxLength = 2000, 
+  maxLength = 650,
   className = "" 
 }: ExpandableMessageProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
