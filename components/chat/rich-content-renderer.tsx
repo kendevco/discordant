@@ -32,7 +32,21 @@ export const RichContentRenderer = ({
 
   // For long content, use ExpandableMessage with a simpler HTML formatter
   const formatContentForHTML = (text: string): string => {
-    return text
+    // First, let's add a more comprehensive cleanup for malformed HTML
+    let cleanedText = text
+      // Handle the specific pattern: URL" target="_blank" rel="noopener noreferrer" class="...">Link Text
+      .replace(/(https?:\/\/[^\s"]+)"\s+target="_blank"\s+rel="noopener noreferrer"\s+class="[^"]*"[^>]*>([^<\n]+?)(?=\s*\n|\s*$|<)/g, '[$2]($1)')
+      // Handle variations with different attribute orders
+      .replace(/(https?:\/\/[^\s"]+)"\s+[^>]*target="_blank"[^>]*>([^<\n]+?)(?=\s*\n|\s*$|<)/g, '[$2]($1)')
+      // Handle cases where the URL might not have quotes
+      .replace(/(https?:\/\/[^\s"]+)\s+target="_blank"[^>]*>([^<\n]+?)(?=\s*\n|\s*$|<)/g, '[$2]($1)')
+      // Clean up any remaining HTML attribute fragments
+      .replace(/\s*target="_blank"[^>]*>/g, '')
+      .replace(/"\s*class="[^"]*"/g, '')
+      .replace(/"\s*rel="[^"]*"/g, '');
+    
+    return cleanedText
+      // NOW do HTML escaping
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
@@ -116,9 +130,19 @@ export const RichContentRenderer = ({
   }
     
   function renderFormattedLine(line: string): React.ReactNode {
-    // First clean up markdown formatting around URLs to fix Google Calendar link issues
+    // Clean up malformed HTML anchor tags from n8n workflow responses
     let cleanedLine = line
-      // Remove ** formatting around URLs
+      // Handle the specific pattern: URL" target="_blank" rel="noopener noreferrer" class="...">Link Text
+      .replace(/(https?:\/\/[^\s"]+)"\s+target="_blank"\s+rel="noopener noreferrer"\s+class="[^"]*"[^>]*>([^<\n]+?)(?=\s*\n|\s*$|<|$)/g, '[$2]($1)')
+      // Handle variations with different attribute orders
+      .replace(/(https?:\/\/[^\s"]+)"\s+[^>]*target="_blank"[^>]*>([^<\n]+?)(?=\s*\n|\s*$|<|$)/g, '[$2]($1)')
+      // Handle cases where the URL might not have quotes
+      .replace(/(https?:\/\/[^\s"]+)\s+target="_blank"[^>]*>([^<\n]+?)(?=\s*\n|\s*$|<|$)/g, '[$2]($1)')
+      // Clean up any remaining HTML attribute fragments
+      .replace(/\s*target="_blank"[^>]*>/g, '')
+      .replace(/"\s*class="[^"]*"/g, '')
+      .replace(/"\s*rel="[^"]*"/g, '')
+      // First clean up markdown formatting around URLs to fix Google Calendar link issues
       .replace(/\*\*(https?:\/\/[^\s*]+)\*\*/g, '$1')
       // Handle markdown links [text](url) wrapped in **
       .replace(/\*\*\[([^\]]+)\]\(([^)]+)\)\*\*/g, '[$1]($2)')
