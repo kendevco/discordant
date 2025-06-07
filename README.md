@@ -1,125 +1,151 @@
-# NextJS Discord Clone
+**Discordant+n8n** is a production-ready, full-featured communication and automation platform. Built with **Next.js**, **Prisma ORM**, **MySQL**, and **LiveKit**, it combines a real-time Discord-style UX with low-code automation powered by **n8n**.
 
-This project is a completely refreshed and re-architected version of Code with Antonio's popular Discord Clone, integrating modern enterprise-grade solutions. Designed to provide a robust and elegant experience, this clone extends the original functionality while serving as a learning tool for developers. It features updated navigation, file uploads, video and voice messaging, Clerk authentication, and more.
-
-## Features
-
-- **File Uploads**: Powered by UploadThing with image analysis for seamless management.
-- **Video and Voice Messaging**: Real-time communication capabilities via LiveKit.
-- **Authentication**: Secure and scalable authentication through Clerk.
-- **AI Integration**: Enhanced messaging and interaction with AI-powered responses.
-- **Enterprise-Grade Navigation**: Reimagined for scalability and usability.
-- **Elegant Design**: Featuring Framer Motion animations and a polished user interface.
-
-## Origin
-
-This project builds upon the foundational concepts in Code with Antonio's Discord Clone. Antonio's videos are invaluable learning resources, and while much of his content is behind a paywall, this repository provides an accessible way for developers to explore, learn, and expand their skills. This effort aligns with similar projects, including:
-
-- Next LMS Clone
-- Notion Clone
-- NextJS Commerce Site and Admin Dashboard
-- AirBNB Clone
-- KenDev Taskify (Trello Clone)
-- Payload CMS repositories
-
-The ultimate goal is to integrate this Discord Clone with **Payload CMS 3.0**, unlocking advanced features like collection hooks and deeper content management capabilities.
-
-## Getting Started
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/your-repo/discord-clone.git
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Configure environment variables in `.env`:
-   ```bash
-   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_key
-   CLERK_SECRET_KEY=your_clerk_secret
-   UPLOADTHING_SECRET=your_uploadthing_secret
-   UPLOADTHING_APP_ID=your_uploadthing_app_id
-   LIVEKIT_API_KEY=your_livekit_key
-   LIVEKIT_API_SECRET=your_livekit_secret
-   NEXT_PUBLIC_LIVEKIT_URL=your_livekit_url
-   NEXT_PUBLIC_SITE_URL=http://localhost:3000
-   NEXT_PUBLIC_APP_URL=http://localhost:3000
-   ```
-
-4. Run the development server:
-   ```bash
-   npm run dev
-   ```
-
-5. Visit [http://localhost:3000](http://localhost:3000) to explore the app.
-
-## Contact
-
-I'm available for work! Connect with me at:
-
-- [folio.kendev.co](https://folio.kendev.co)
-- [kendev.co](https://kendev.co)
+Each client receives a **white-labeled portal** (like a private Discord server) with secure channels, video/audio conferencing, file sharing, and chat-driven workflows. This platform is ideal for consulting firms, agencies, and automation-led service providers looking to deliver AI-powered solutions in private environments.
 
 ---
 
-## Three-Minute Overview Video Transcript
+## 🔑 Highlights
 
-"Welcome to the updated NextJS Discord Clone, a modern reimagining of Code with Antonio's foundational project. This refreshed clone integrates enterprise-grade solutions with sleek functionality. From file uploads to video and voice messaging, this project offers a comprehensive communication platform for developers to explore.
+### 🔁 Conversational Automation (n8n)
+- Trigger and interact with **n8n workflows** directly from chat
+- Chat-first interface for backend automation
+- Fully self-hosted & isolated per client or tenant
+- Token-based secure communication with n8n
 
-Powered by UploadThing, file uploads are now streamlined with image analysis for enhanced usability. LiveKit brings real-time video and voice messaging to the table, while Clerk handles secure authentication with ease.
+### 💬 Real-Time Communication
+- Multi-channel server layout (like Discord)
+- Live **video, audio, and screen sharing** via LiveKit
+- Secure **file uploads** using UploadThing
+- Auth with **Clerk** (scalable, production-grade)
 
-We’ve also included AI-powered responses for smarter messaging interactions, restructured the navigation system for scalability, and added elegant Framer Motion animations for a polished user experience.
-
-But there’s more to come! We’re preparing to integrate this project with Payload CMS 3.0, making it a powerhouse for content and communication management.
-
-Explore this repository, build something great, and feel free to reach out at [folio.kendev.co](https://folio.kendev.co) or [kendev.co](https://kendev.co). Thank you for watching!"
-
----
-
-## LinkedIn Article
-
-**Building a Modern Communication Hub: The NextJS Discord Clone**
-
-In today’s fast-paced tech landscape, developers need robust tools to learn, build, and expand their skillsets. Inspired by Code with Antonio’s Discord Clone, I’ve reimagined this project as a cutting-edge communication hub with enterprise-grade solutions.
-
-### What’s New?
-
-This clone isn’t just a replication; it’s a transformation. It includes:
-
-- **File Uploads**: With UploadThing and image analysis for seamless management.
-- **Video/Voice Messaging**: Real-time communication through LiveKit.
-- **Authentication**: Secure login with Clerk.
-- **AI Integration**: Smart responses for enhanced interactions.
-- **Elegant Navigation**: Rebuilt for scalability and usability.
-- **Polished Design**: Featuring Framer Motion animations.
-
-### Why Build This?
-
-Antonio’s videos provide incredible learning opportunities, but they’re often locked behind a paywall. By maintaining and sharing updated examples, I aim to democratize access to these concepts, helping developers learn and grow. This project joins a suite of refreshed builds, including the Next LMS Clone, Notion Clone, AirBNB Clone, and more.
-
-### What’s Next?
-
-The next step is integrating this project with Payload CMS 3.0. With its collection hooks and content management capabilities, it will transform the app into an autonomous system for communication and collaboration.
-
-### Let’s Connect
-
-I’m available for new opportunities and collaborations. Check out my portfolio at [folio.kendev.co](https://folio.kendev.co) or visit [kendev.co](https://kendev.co).
-
-Together, let’s build the future of software. 
+### 🛠️ Infrastructure & Stack
+- Backend: **Prisma + MySQL**
+- Frontend: **Next.js + Tailwind + shadcn/ui + Framer Motion**
+- Real-time: **LiveKit WebRTC**
+- Auth: **Clerk.dev**
+- DevOps-ready and deployable in **private environments**
 
 ---
 
-Feel free to suggest any changes or share your thoughts!
+## 🧱 Architecture
 
-## Overview Video
+Discordant+ is built on a **simple, scalable stack**:
 
-Check out our detailed overview video to get a comprehensive understanding of the NextJS Discord Clone project. This video covers all the key features and functionalities, providing a visual guide to help you navigate and utilize the platform effectively.
+- Next.js frontend
+- Prisma ORM connected to a **MySQL** database
+- WebRTC with LiveKit
+- Clerk for auth and session control
+- UploadThing for file handling
+- External integration with **n8n**, hosted privately or on-prem
 
-# Video Demo
+> 🔹 A Payload CMS version also exists at [spaces.kendev.co](https://spaces.kendev.co) if you’re exploring content-driven variations of this platform.
 
-https://github.com/kendevco/discordant/raw/main/public/demo/Discordant_Chat_Overview_480p.mp4
+---
 
-You can also download the video directly [here](https://github.com/kendevco/discordant/raw/main/public/demo/Discordant_Chat_Overview_480p.mp4).
+## 🚀 Getting Started
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/your-org/discordant-plus.git
+```
+
+### 2. Install Dependencies
+
+```bash
+npm install
+```
+
+### 3. Configure Environment Variables
+
+```bash
+# .env
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_key
+CLERK_SECRET_KEY=your_clerk_secret
+UPLOADTHING_SECRET=your_uploadthing_secret
+UPLOADTHING_APP_ID=your_uploadthing_app_id
+LIVEKIT_API_KEY=your_livekit_key
+LIVEKIT_API_SECRET=your_livekit_secret
+NEXT_PUBLIC_LIVEKIT_URL=your_livekit_url
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+N8N_API_URL=http://localhost:5678
+N8N_API_TOKEN=your_n8n_api_token
+DATABASE_URL=mysql://user:password@localhost:3306/discordant
+```
+
+### 4. Setup the Database
+
+```bash
+npx prisma db push
+```
+
+### 5. Run the Development Server
+
+```bash
+npm run dev
+```
+
+### 6. Launch the App
+
+Visit [http://localhost:3000](http://localhost:3000)
+
+---
+
+## 🎥 Demo Video
+
+[![Watch Demo](https://img.shields.io/badge/🎬%20Watch%20Video-blue?style=for-the-badge)](https://github.com/kendevco/discordant/raw/main/public/demo/Discordant_Chat_Overview_480p.mp4)
+
+📅 Or [download the video directly](https://github.com/kendevco/discordant/raw/main/public/demo/Discordant_Chat_Overview_480p.mp4)
+
+---
+
+## 🌐 LiveKit + n8n Integration
+
+Discordant+ integrates directly with your **n8n instance**, enabling:
+
+- Conversational workflow launches
+- Slack/Discord-style automations via chat commands
+- Visual feedback from flows into chat or modal components
+- Works with any n8n trigger, including webhooks, schedulers, or external apps
+
+> 🔐 You retain full control over your infrastructure — host n8n, LiveKit, and the app privately.
+
+---
+
+## 📆 Use Cases
+
+- Client Automation Portals  
+- AI-Led Operational Interfaces  
+- Internal Tools for Agencies  
+- Private Collaboration Environments  
+- White-Label Managed Service Platforms
+
+---
+
+## 💼 Consulting & Private Integration
+
+If you're looking to:
+
+- Deploy Discordant+ in your own private environment
+- Integrate it with your self-hosted **n8n**
+- Customize portals, commands, or workflows
+- Expand to include billing, analytics, or enterprise SSO
+
+🧑‍💻 **Connect with me on [LinkedIn](https://www.linkedin.com/in/kendevco/)** — I’m available for full-cycle consulting, white-label deployment, and integration work.
+
+---
+
+## 📚 Related Projects
+
+- [spaces.kendev.co](https://spaces.kendev.co) — Payload CMS-powered version of Discordant+
+- [Next LMS Clone](https://github.com/...)
+- [Trello Clone (Taskify)](https://github.com/...)
+- [Notion Clone](https://github.com/...)
+- [n8n.io](https://n8n.io)
+
+---
+
+## 🙏 Acknowledgments
+
+This project was originally inspired by the excellent teaching content from [Code with Antonio](https://www.youtube.com/@codewithantonio), then reimagined for enterprise-grade conversational automation.
