@@ -1,0 +1,78 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=-- Insert AI response with full schema compliance\nSET @messageId = UUID();\nSET @systemMemberId = (\n  SELECT m.id FROM member m \n  JOIN profile p ON m.profileId = p.id \n  WHERE p.name = 'System User' \n  AND m.serverId = (\n    SELECT serverId FROM channel WHERE id = '{{ $('Enhanced Input Processor').first().json.channelId }}'\n  )\n  LIMIT 1\n);\n\nINSERT INTO message (\n  id, content, channelId, memberId, role, deleted, createdAt, updatedAt\n) VALUES (\n  @messageId,\n  '{{ $('Enhanced AI Agent').first().json.output || $('Enhanced AI Agent').first().json.text }}',\n  '{{ $('Enhanced Input Processor').first().json.channelId }}',\n  COALESCE(@systemMemberId, 'fallback-system-member-id'),\n  'system',\n  false,\n  NOW(),\n  NOW()\n);\n\n-- Return complete message data for Socket.IO emission\nSELECT \n  @messageId as messageId,\n  m.*,\n  mb.id as memberId,\n  p.id as profileId,\n  p.name as memberName,\n  p.imageUrl as memberAvatar,\n  c.name as channelName\nFROM message m\nJOIN member mb ON m.memberId = mb.id\nJOIN profile p ON mb.profileId = p.id  \nJOIN channel c ON m.channelId = c.id\nWHERE m.id = @messageId;"
+      },
+      "id": "hybrid-save-message",
+      "name": "Save AI Response to DB",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 1,
+      "position": [
+        500,
+        -80
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "TvnUCP0CFWmGulQM",
+          "name": "MySQL account"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Enhanced Input Processor').first().json.appUrl || 'http://localhost:3001' }}/api/socket/emit",
+        "method": "POST",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "event",
+              "value": "message:new"
+            },
+            {
+              "name": "room", 
+              "value": "=chat:{{ $('Enhanced Input Processor').first().json.channelId }}:messages"
+            },
+            {
+              "name": "data",
+              "value": "={{ JSON.stringify({\n  id: $('Save AI Response to DB').first().json.messageId,\n  content: $('Save AI Response to DB').first().json.content,\n  role: 'system',\n  channelId: $('Enhanced Input Processor').first().json.channelId,\n  createdAt: new Date().toISOString(),\n  member: {\n    id: $('Save AI Response to DB').first().json.memberId,\n    profile: {\n      id: $('Save AI Response to DB').first().json.profileId,\n      name: $('Save AI Response to DB').first().json.memberName,\n      imageUrl: $('Save AI Response to DB').first().json.memberAvatar\n    }\n  },\n  _systemMetadata: {\n    messageType: 'workflow_response',\n    workflowId: $('Enhanced Input Processor').first().json.workflowId,\n    responseSource: 'n8n-workflow'\n  }\n}) }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "emit-socket-update",
+      "name": "Emit Socket.IO Update", 
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        700,
+        -80
+      ],
+      "continueOnFail": true
+    }
+  ],
+  "connections": {
+    "Save AI Response to DB": {
+      "main": [
+        [
+          {
+            "node": "Emit Socket.IO Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Emit Socket.IO Update": {
+      "main": [
+        []
+      ]
+    }
+  }
+} 

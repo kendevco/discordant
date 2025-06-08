@@ -22,31 +22,51 @@ export const ExpandableMessage = ({
     return <div className={className} dangerouslySetInnerHTML={{ __html: content }} />;
   }
 
-  // Find a good place to truncate (try to break at sentence or paragraph)
-  const findTruncatePoint = (text: string, maxLen: number): number => {
+
+
+  // Find a better truncation point that doesn't break in the middle of HTML elements
+  const findSafeTruncatePoint = (text: string, maxLen: number): number => {
     if (text.length <= maxLen) return text.length;
     
-    // Try to break at paragraph
-    const paragraphBreak = text.lastIndexOf('\n\n', maxLen);
-    if (paragraphBreak > maxLen * 0.7) return paragraphBreak;
+    let truncatePoint = maxLen;
     
-    // Try to break at sentence
-    const sentenceBreak = text.lastIndexOf('. ', maxLen);
-    if (sentenceBreak > maxLen * 0.7) return sentenceBreak + 1;
+    // Don't break in the middle of an HTML tag
+    const tagOpenIndex = text.lastIndexOf('<', truncatePoint);
+    const tagCloseIndex = text.lastIndexOf('>', truncatePoint);
     
-    // Try to break at line
-    const lineBreak = text.lastIndexOf('\n', maxLen);
-    if (lineBreak > maxLen * 0.8) return lineBreak;
+    if (tagOpenIndex > tagCloseIndex) {
+      // We're in the middle of a tag, go back to before the tag
+      truncatePoint = tagOpenIndex;
+    }
     
-    // Try to break at word
-    const wordBreak = text.lastIndexOf(' ', maxLen);
-    if (wordBreak > maxLen * 0.8) return wordBreak;
+    // Try to break at a logical point
+    const breakPoints = [
+      text.lastIndexOf('</div>', truncatePoint),
+      text.lastIndexOf('<br>', truncatePoint),
+      text.lastIndexOf('</h3>', truncatePoint),
+      text.lastIndexOf('</h2>', truncatePoint),
+      text.lastIndexOf('. ', truncatePoint),
+      text.lastIndexOf('\n', truncatePoint)
+    ].filter(point => point > maxLen * 0.7);
     
-    // Fallback to exact length
-    return maxLen;
+    if (breakPoints.length > 0) {
+      truncatePoint = Math.max(...breakPoints);
+      // If we found a closing tag, include it
+      if (text.substring(truncatePoint, truncatePoint + 6) === '</div>') {
+        truncatePoint += 6;
+      } else if (text.substring(truncatePoint, truncatePoint + 5) === '</h3>') {
+        truncatePoint += 5;
+      } else if (text.substring(truncatePoint, truncatePoint + 5) === '</h2>') {
+        truncatePoint += 5;
+      } else if (text.substring(truncatePoint, truncatePoint + 4) === '<br>') {
+        truncatePoint += 4;
+      }
+    }
+    
+    return Math.max(truncatePoint, maxLen * 0.5); // Ensure we don't truncate too early
   };
 
-  const truncatePoint = findTruncatePoint(content, maxLength);
+  const truncatePoint = findSafeTruncatePoint(content, maxLength);
   const truncatedContent = content.substring(0, truncatePoint);
   const remainingContent = content.substring(truncatePoint);
 
@@ -54,8 +74,8 @@ export const ExpandableMessage = ({
     <div className={className}>
       <div dangerouslySetInnerHTML={{ __html: truncatedContent }} />
       
-      {!isExpanded && (
-        <div className="mt-2">
+      {!isExpanded && remainingContent.length > 0 && (
+        <div className="mt-3 pt-2 border-t border-zinc-700/50">
           <Button
             onClick={() => setIsExpanded(true)}
             variant="ghost"
@@ -63,7 +83,7 @@ export const ExpandableMessage = ({
             className="h-8 px-3 text-muted-foreground hover:text-foreground transition-colors"
           >
             <ChevronDown className="h-4 w-4 mr-1" />
-            Show More ({Math.ceil(remainingContent.length / 100)} more lines)
+            Show More ({Math.ceil(remainingContent.replace(/<[^>]*>/g, '').length / 50)} more sections)
           </Button>
         </div>
       )}
@@ -71,7 +91,7 @@ export const ExpandableMessage = ({
       {isExpanded && (
         <>
           <div dangerouslySetInnerHTML={{ __html: remainingContent }} />
-          <div className="mt-2">
+          <div className="mt-3 pt-2 border-t border-zinc-700/50">
             <Button
               onClick={() => setIsExpanded(false)}
               variant="ghost"

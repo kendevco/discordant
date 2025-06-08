@@ -131,6 +131,9 @@ model Message {
   deleted   Boolean    @default(false)
   createdAt DateTime  @default(now())
   updatedAt DateTime
+  
+  // Enhanced file metadata relation
+  fileMetadata FileMetadata?
 
   @@index([channelId], map: "Message_channelId_idx")
   @@index([memberId], map: "Message_memberId_idx")
@@ -162,6 +165,9 @@ model DirectMessage {
   deleted        Boolean      @default(false)
   createdAt      DateTime     @default(now())
   updatedAt      DateTime
+  
+  // Enhanced file metadata relation
+  fileMetadata   FileMetadata?
 
   @@index([conversationId], map: "DirectMessage_conversationId_idx")
   @@index([memberId], map: "DirectMessage_memberId_idx")
@@ -262,4 +268,80 @@ model MemberActivity {
   @@index([serverId], map: "MemberActivity_serverId_idx")
   @@index([channelId], map: "MemberActivity_channelId_idx")
   @@map("member_activity")
+}
+
+enum FileType {
+  IMAGE
+  PDF
+  VIDEO
+  AUDIO
+  DOCUMENT
+  OTHER
+
+  @@map("file_type")
+}
+
+enum ProcessingStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  ENHANCED
+
+  @@map("processing_status")
+}
+
+model FileMetadata {
+  id               String           @id @default(uuid())
+  messageId        String?          @unique
+  directMessageId  String?          @unique
+  message          Message?         @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  directMessage    DirectMessage?   @relation(fields: [directMessageId], references: [id], onDelete: Cascade)
+  
+  // Basic file information
+  originalUrl      String           @db.Text
+  fileName         String?          @db.Text
+  fileSize         Int?
+  mimeType         String?
+  fileType         FileType
+  
+  // Enhanced metadata
+  extractedText    String?          @db.LongText
+  description      String?          @db.Text
+  tags             String?          @db.Text // JSON array of tags
+  location         String?          @db.Text // JSON object with location data
+  businessContext  String?          @db.Text
+  
+  // External document links
+  externalLinks    String?          @db.Text // JSON array of external doc links
+  googleDocsUrl    String?          @db.Text
+  sharePointUrl    String?          @db.Text
+  confluenceUrl    String?          @db.Text
+  
+  // Processing status
+  processingStatus ProcessingStatus @default(PENDING)
+  ocrCompleted     Boolean          @default(false)
+  aiAnalyzed       Boolean          @default(false)
+  lastProcessed    DateTime?
+  
+  // AI Analysis results
+  aiSummary        String?          @db.Text
+  aiCategories     String?          @db.Text // JSON array
+  businessEntities String?          @db.Text // JSON array of detected companies/people
+  actionItems      String?          @db.Text // JSON array of extracted action items
+  
+  // Workflow integration
+  workflowTriggered Boolean         @default(false)
+  workflowResults   String?         @db.Text // JSON object of workflow outputs
+  
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  @@index([fileType], map: "FileMetadata_fileType_idx")
+  @@index([processingStatus], map: "FileMetadata_processingStatus_idx")
+  @@index([createdAt], map: "FileMetadata_createdAt_idx")
+  @@index([lastProcessed], map: "FileMetadata_lastProcessed_idx")
+  @@index([messageId], map: "FileMetadata_messageId_idx")
+  @@index([directMessageId], map: "FileMetadata_directMessageId_idx")
+  @@map("file_metadata")
 }

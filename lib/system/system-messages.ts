@@ -1,13 +1,9 @@
 import { db } from "@/lib/db";
-import { Message, Profile } from "@prisma/client";
-import { analyzeImage } from "./image-analysis";
+import { Member, Message, Profile } from "@prisma/client";
 import { randomUUID } from "crypto";
 import { getAIResponse } from "./ai-interface";
-import { WorkflowContent } from "./types/message-content";
-import { determineWorkflow } from "./workflow-utils";
-import { CalendarCommandDetector } from "@/lib/utils/calendar-command-detector";
-import { ResearchAgent, ResearchResult } from "./research-agent";
 import { WorkflowRouter, WorkflowRoute, WorkflowPayload } from "./workflow-router";
+import { CalendarCommandDetector } from "@/lib/utils/calendar-command-detector";
 import OpenAI from "openai";
 
 const SYSTEM_USER_ID = process.env.SYSTEM_USER_ID || "system-user-9000";
@@ -325,7 +321,11 @@ class WorkflowHandler implements SystemMessageHandler {
     console.log(`[WORKFLOW_HANDLER] === PRODUCTION DEBUG ===`);
     console.log(`[WORKFLOW_HANDLER] Environment: ${process.env.NODE_ENV}`);
     console.log(`[WORKFLOW_HANDLER] App URL: ${process.env.NEXT_PUBLIC_APP_URL}`);
-    console.log(`[WORKFLOW_HANDLER] N8N URL: ${process.env.N8N_WEBHOOK_URL}`);
+    console.log(`[WORKFLOW_HANDLER] Raw N8N URL: "${process.env.N8N_WEBHOOK_URL}"`);
+    // Sanitize the URL for debugging
+    const rawN8nUrl = process.env.N8N_WEBHOOK_URL || "https://n8n.kendev.co/webhook";
+    const sanitizedN8nUrl = rawN8nUrl.replace(/[";]/g, '').trim();
+    console.log(`[WORKFLOW_HANDLER] Sanitized N8N URL: "${sanitizedN8nUrl}"`);
     console.log(`[WORKFLOW_HANDLER] Channel ID: ${channelId}`);
     console.log(`[WORKFLOW_HANDLER] Server ID: ${serverId}`);
     console.log(`[WORKFLOW_HANDLER] Message content: ${message.content}`);
@@ -616,23 +616,9 @@ class ImageAnalysisHandler implements SystemMessageHandler {
     return !!message.fileUrl?.match(/\.(jpg|jpeg|png|gif|webp)$/i);
   }
   async handle(message: MessageWithMember, { channelId, socketIo }: HandlerContext) {
-    const analysis = await analyzeImage(message.fileUrl!, message.content || "");
-    if (!analysis) throw new Error("Image analysis failed");
-    const parsedAnalysis = JSON.parse(analysis);
-    const workflowContent: WorkflowContent = {
-      type: "workflow",
-      originalPrompt: message.content,
-      analysis: parsedAnalysis,
-      workflow: determineWorkflow(parsedAnalysis.categories, message.fileUrl!),
-    };
-    const updatedMessage = await db.message.update({
-      where: { id: message.id },
-      data: { content: JSON.stringify(workflowContent) },
-      include: { member: { include: { profile: true } } },
-    });
-    const channelKey = `chat:${channelId}:messages`;
-    socketIo?.emit(channelKey, { ...updatedMessage, action: "update" });
-    return updatedMessage;
+    // Image analysis functionality would be handled by n8n workflow instead
+    // For now, route to WorkflowHandler
+    throw new Error("Image analysis should be handled by workflow");
   }
 }
 
@@ -651,8 +637,8 @@ export async function createSystemMessage(
 
   const handlers = [
     new OnboardingHandler(),
-    new WorkflowHandler(), // This now handles all non-onboarding messages
-    // ImageAnalysisHandler can be kept for local image processing or moved to workflow
+    new WorkflowHandler(), // This now handles all non-onboarding messages including voice commands via n8n
+    new ImageAnalysisHandler(),
   ];
 
   for (const handler of handlers) {

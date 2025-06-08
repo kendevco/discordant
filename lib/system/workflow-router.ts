@@ -94,7 +94,9 @@ export class WorkflowRouter {
    * Build the webhook URL for the determined workflow
    */
   static getWebhookUrl(route: WorkflowRoute): string {
-    const n8nBaseUrl = process.env.N8N_WEBHOOK_URL || "https://n8n.kendev.co/webhook";
+    const rawN8nUrl = process.env.N8N_WEBHOOK_URL || "https://n8n.kendev.co/webhook";
+    // Sanitize the URL by removing quotes and semicolons
+    const n8nBaseUrl = rawN8nUrl.replace(/[";]/g, '').trim();
     return `${n8nBaseUrl}/${route.webhookPath}`;
   }
 

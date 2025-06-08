@@ -88,6 +88,7 @@ const MemberIdPage = async ({ params, searchParams }: MemberIdPageProps) => {
         name={otherMember?.profile.name || ""}
         serverId={serverId}
         type="conversation"
+        conversationId={conversation.id}
       />
       {video && (
         <MediaRoom chatId={conversation.id} video={true} audio={true} />

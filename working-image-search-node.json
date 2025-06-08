@@ -1,0 +1,122 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "select",
+        "table": {
+          "__rl": true,
+          "value": "message",
+          "mode": "list",
+          "cachedResultName": "message"
+        },
+        "limit": "{{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Result_Limit', 'Maximum number of results to return (default 20)', 'number') || 20 }}",
+        "columns": {
+          "values": [
+            {
+              "column": "id"
+            },
+            {
+              "column": "content"
+            },
+            {
+              "column": "fileUrl"
+            },
+            {
+              "column": "createdAt"
+            },
+            {
+              "column": "channelId"
+            },
+            {
+              "column": "memberId"
+            },
+            {
+              "column": "role"
+            }
+          ]
+        },
+        "where": {
+          "values": [
+            {
+              "column": "channelId",
+              "value": "{{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Channel_ID', 'Channel ID to search within', 'string') }}"
+            },
+            {
+              "column": "fileUrl",
+              "condition": "isNotNull"
+            },
+            {
+              "column": "fileUrl",
+              "condition": "like",
+              "value": "%uploadthing.com%"
+            },
+            {
+              "column": "fileUrl",
+              "condition": "like",
+              "value": "%.png%",
+              "operator": "OR"
+            },
+            {
+              "column": "fileUrl", 
+              "condition": "like",
+              "value": "%.jpg%",
+              "operator": "OR"
+            },
+            {
+              "column": "fileUrl",
+              "condition": "like", 
+              "value": "%.jpeg%",
+              "operator": "OR"
+            },
+            {
+              "column": "fileUrl",
+              "condition": "like",
+              "value": "%.gif%",
+              "operator": "OR"
+            },
+            {
+              "column": "fileUrl",
+              "condition": "like",
+              "value": "%.webp%",
+              "operator": "OR"
+            }
+          ]
+        },
+        "sort": {
+          "values": [
+            {
+              "column": "createdAt",
+              "direction": "DESC"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "77e6328a-ab66-4faf-966e-0e81fa92b7ca",
+      "name": "Find_All_Images_In_Channel",
+      "type": "n8n-nodes-base.mySqlTool",
+      "typeVersion": 2.4,
+      "position": [
+        340,
+        220
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "TvnUCP0CFWmGulQM",
+          "name": "MySQL account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Find_All_Images_In_Channel": {
+      "ai_tool": [
+        []
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "instanceId": "136461ac021bda65593ed5d2f70798d0433ed7859abfc9e2ca43aa4b9c0b779e"
+  }
+} 

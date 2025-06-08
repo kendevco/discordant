@@ -1,0 +1,500 @@
+ntro
+0:00
+in this video I'm going to show you how
+0:01
+I've updated my voice a agent to make
+0:03
+outbound calls so that we can fully
+0:05
+automate Outreach follow-ups and
+0:07
+scheduling without lifting a finger this
+0:08
+is a continuation of my previous video
+0:10
+where I shared how to create a voice a
+0:12
+agent for 5 cents a minute using ultrax
+0:14
+na10 and Tulio the agent is now able to
+0:17
+automatically run through a list of
+0:18
+contacts and call each one to schedule
+0:20
+an appointment I have also added the
+0:21
+hangout functionality to end the call
+0:23
+because that was missing from the
+0:24
+previous version I'll first show you
+0:26
+guys a full demo of the agent in action
+0:27
+but make sure you stick to the end
+0:28
+because I'll be giving a full break down
+0:30
+of the complete system showing the
+0:31
+updated code and also how to use enr to
+0:33
+test the agent locally but first things
+0:35
+first let's see a quick demo of the
+Demo
+0:37
+agent first I just want to quickly show
+0:38
+you that the logs are currently empty
+0:40
+before the call um so to start off we
+0:43
+have to just run this n10 workflow and
+0:46
+the agent will call me so this is
+0:47
+outbound call um I should receive one
+0:49
+real soon there we go let me just put on
+0:52
+louds speaker hello Ahmed my name is
+0:55
+Sarah and I'm calling from agenic AI
+0:57
+Solutions I'm reaching out to discuss
+0:59
+how our Solutions can help your business
+1:02
+before we proceed I'd like to schedule a
+1:04
+call with you at your convenience can
+1:06
+you please tell me what time works best
+1:08
+for you can we do it later on today at 6
+1:14
+p.m. 6 p.m. today sounds great Ahmed
+1:17
+before I confirm the meeting can you
+1:19
+please tell me your email address so I
+1:20
+can send you a meeting invite uh my
+1:23
+email address is Ahmed aex.com
+1:27
+thanks Ahmed so just to recap I have
+1:30
+your name eden.com and you'd like to
+1:33
+schu meeting for today at 6 p.m. now can
+1:36
+you please tell me which location would
+1:38
+you prefer for the meeting we have
+1:40
+offices in London Manchester or Brighton
+1:43
+can we do it at the London office
+1:46
+please the London office it is Ahmed
+1:49
+I'll go ahead and check the
+1:51
+availability your meeting is all set
+1:53
+ahed I've confirmed your appointment at
+1:55
+the London office for today at 6 p.m.
+1:57
+we'll see you then is there anything
+1:59
+else I can help you with before we wrap
+2:01
+up no it I'll be all thank you very much
+2:06
+goodbye and it also hangs up the call at
+2:08
+the end so we should also get the
+2:11
+summary so the agent Sarah from aenx AI
+2:13
+solution reach out to armit to discuss
+2:15
+the AI solutions to assist them with
+2:17
+their business they scheduled a meeting
+2:18
+for today at 600 p.m. in a London office
+2:20
+and confirmed the email address amazing
+2:22
+so we got the summary we managed to get
+2:25
+the transcript at the end of the call
+2:27
+and it was all triggered by this n10
+2:29
+workflow so let's look at the full
+2:30
+system diagram and see the things that
+2:32
+we've added to make it happen so here we
+System Breakdown
+2:34
+have the previous 2.0 version of The
+2:36
+Voice AI agent setup however now we have
+2:39
+the new and improved 3.0 version and all
+2:41
+the things you see in green are the new
+2:43
+components that we've added and if we
+2:44
+start on the right hand side here we
+2:45
+have the new workflow that I've just
+2:46
+shown you guys the n10 workflow that
+2:49
+kicks off the outbound core and this is
+2:51
+a simple Google Sheets and I can quickly
+2:53
+show you what that actually looks like
+2:55
+so on another tab here we have the call
+2:57
+list and this is a very simple list of
+2:59
+the phone number numbers and names for
+3:01
+different people that you want to call
+3:02
+you can also add different fields here
+3:04
+and dynamically pass them to the agent
+3:06
+to customize the conversation so inside
+3:08
+of the na10 workflow we have the HTTP
+3:11
+request and this is a post request to
+3:13
+our enro URL for testing purposes we put
+3:15
+the enr URL here however when it's
+3:17
+deployed this could be our Railway URL
+3:19
+and at the end we have the outgoing call
+3:21
+endpoint and at the body is where we put
+3:22
+the first message to sent to the agent
+3:24
+and this is how we pass different
+3:25
+Dynamic variables so here I've passed
+3:27
+just the name for the sake of the demo
+3:29
+but we can add any other variables that
+3:31
+we want to tell the agent to personalize
+3:33
+the conversation so going back to the
+3:36
+system diagram so this goes off and
+3:38
+calls our new endpoint inside of our
+3:40
+fast API python backend and this is a
+3:42
+very simple function that basically
+3:43
+triggers a new Tulio call and also tells
+3:46
+it the media stream again similar to how
+3:48
+we were doing it with the incoming call
+3:50
+where we just tell the Tulio this is the
+3:52
+media stream URL for the data
+3:54
+communication between Tulio and Ultravox
+3:56
+and it goes ahead and makes that
+3:57
+outbound call to the phone number that
+3:59
+we've supplied it with and everything
+4:01
+else has been kept the same so we now
+4:03
+have one fast API backend that handles
+4:06
+both outgoing calls and incoming calls
+4:08
+so let's jump on and see what we added
+4:10
+inside of the code so I actually made
+Code Breakdown
+4:12
+sure not to commit the changes so that
+4:14
+we able to easily see the things that
+4:16
+were changed and added to make this
+4:18
+possible so from the start we can see
+4:19
+that I've added three different new
+4:21
+environment variables for the Tulio
+4:23
+setup because this time we're doing an
+4:24
+ad bound call the setup is slightly
+4:26
+different so we need these three
+4:28
+environment variables to make that
+4:29
+happen
+4:30
+and we can get those from the Tulio
+4:33
+console so just log into your Tulio and
+4:36
+if you click Account dashboard might see
+4:38
+something different here at the top but
+4:39
+you just have to scroll down inside of
+4:41
+the account info section and you'll see
+4:42
+the account Sid the O token and the toio
+4:45
+number so just copy those exactly as
+4:48
+they are and paste them inside of your
+4:50
+environment variables so I've just added
+4:53
+this here in the example and moving on
+4:55
+we can come down we now have so the
+4:57
+incoming call endpoint is basically the
+4:59
+same hasn't been touched but now we have
+5:01
+a new endpoint for the outgoing calls so
+5:03
+all we're doing is just extracting that
+5:05
+data so we get the phone number and the
+5:06
+first message then we initialize the
+5:07
+Tulio client via the account information
+5:10
+that we've added and then we create the
+5:12
+call using this section here you can see
+5:14
+we pass it the stream URL uh the first
+5:17
+message and the phone number and also
+5:19
+make sure to include these two variables
+5:20
+at the bottom to get the call statuses
+5:22
+and I'll show you the function actually
+5:24
+runs this in just a second so that goes
+5:26
+ahead and creates the call and returns
+5:28
+success to our na10 workflow then that
+5:31
+goes into Tulio and Tulio will then call
+5:34
+our media stream endpoint to start the
+5:36
+communication Channel between ultrax and
+5:38
+the customer so we actually created a
+5:40
+second end point for the call statuses
+5:41
+and it's a very simple function that
+5:43
+grabs the status of the call from tulo
+5:45
+so toio will actually call this endpoint
+5:47
+and pass it the call status duration the
+5:49
+time stamp and the call Sid and this
+5:52
+will be handy when it comes to
+5:53
+troubleshooting any errors and then
+5:54
+finally inside of our create ultrax
+5:56
+function we just added a new tool for
+5:58
+the hangup functionality ultrax actually
+6:00
+already comes with a hangup
+6:01
+functionality built in however that
+6:03
+doesn't really work with this setup so I
+6:04
+just created my own custom tool and
+6:06
+overwritten the existing hang-up tool
+6:08
+that they had and also modified the
+6:09
+system prompt slightly to account for
+6:11
+the outbound call so there's certain
+6:13
+areas where we had to sort of add a few
+6:15
+lines to make sure it knows for outbound
+6:17
+this is not needed for example when it
+6:18
+came to scheduling the meeting we don't
+6:20
+need their name because we have that
+6:22
+already so it's not needed for the
+6:23
+outbound call and also for the purpose
+6:25
+of the meeting this is also not
+6:26
+necessary so we just put Discovery call
+6:28
+as the purpose I also added a couple
+6:30
+lines for the hangup functionality so I
+6:33
+just told it when a call naturally wraps
+6:34
+up use the hangup tool to end the call
+6:37
+um and I just added it here again to
+6:39
+reiterate that at the end here right so
+Using Ngrok
+6:41
+when it comes to testing the application
+6:43
+locally before we deploy we just have to
+6:45
+start by running the application using
+6:47
+this command here and that will start up
+6:49
+the fast API back end however there's a
+6:52
+second step where we have to start
+6:53
+enrock so make sure you download enrock
+6:55
+and the purpose of enrock is to get a
+6:57
+public URL directed to our local post so
+7:00
+that other third party public
+7:01
+applications are able to communicate
+7:03
+with our fast API backend so make sure
+7:05
+that you download enrock just uh put it
+7:07
+on chat jpt how to install enr very
+7:09
+simple just it's like one command in the
+7:11
+command line and we start a new enro
+7:14
+server by just running this command here
+7:16
+engro HTP 8000 because that's the port
+7:19
+that we've used and this will generate a
+7:20
+URL that you then paste inside of the
+7:23
+environment variables and also inside of
+7:26
+the HTTP request U make sure that's also
+7:29
+the same name URL but that's only when
+7:31
+it comes to testing out the application
+7:32
+locally once you've deployed the
+7:34
+application into something like Railway
+7:35
+this is where you would paste your
+7:36
+Railway URL one thing to also keep in
+7:38
+mind is that if you're on the free plan
+7:40
+of enrock every time you restart the
+7:42
+server it will generate a new URL so
+7:44
+make sure that you actually use the
+7:46
+latest URL and update the environment
+7:48
+variable and HTTP request every time you
+7:51
+restart it otherwise you can just pay
+7:53
+for an account and it will give you a
+7:55
+permanent URL now be for this video I
+Outro
+7:57
+hope you have found some value in this
+7:59
+and I'm going to continue to build out
+8:00
+this agent and include different
+8:01
+features to it so make sure you hit that
+8:03
+like And subscribe button so you don't
+8:04
+miss out and if you have any ideas that
+8:05
+you want me to try out with this Ultra
+8:07
+box agent let me know in the comments
+8:09
+down below thanks for making it to the
+8:10
+end of the video I hope you have a good
+8:11
+day and I'll see you in the next one

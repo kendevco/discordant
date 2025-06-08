@@ -13,12 +13,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Construct n8n webhook URL
-    const n8nBaseUrl = process.env.N8N_WEBHOOK_URL || "https://n8n.kendev.co/webhook";
+    // Construct n8n webhook URL with sanitization
+    const rawN8nUrl = process.env.N8N_WEBHOOK_URL || "https://n8n.kendev.co/webhook";
+    // Sanitize the URL by removing quotes and semicolons
+    const n8nBaseUrl = rawN8nUrl.replace(/[";]/g, '').trim();
     const webhookUrl = `${n8nBaseUrl}/${webhookPath}`;
     
     console.log(`📤 Routing to n8n workflow: ${workflowId}`);
-    console.log(`📍 Webhook URL: ${webhookUrl}`);
+    console.log(`📍 Raw N8N URL: ${rawN8nUrl}`);
+    console.log(`📍 Sanitized N8N URL: ${n8nBaseUrl}`);
+    console.log(`📍 Final Webhook URL: ${webhookUrl}`);
     console.log(`📦 Payload:`, JSON.stringify(body, null, 2));
 
     // Forward request to n8n

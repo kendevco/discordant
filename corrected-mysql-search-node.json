@@ -1,0 +1,67 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "select",
+        "table": {
+          "__rl": true,
+          "value": "message",
+          "mode": "list",
+          "cachedResultName": "message"
+        },
+        "limit": "{{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Result_Limit', 'Maximum number of results to return (default 20)', 'number') || 20 }}",
+        "where": {
+          "values": [
+            {
+              "column": "channelId",
+              "value": "{{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Channel_ID', 'Channel ID to search within', 'string') }}"
+            },
+            {
+              "column": "fileUrl",
+              "condition": "isNotNull"
+            },
+            {
+              "column": "createdAt",
+              "condition": ">=",
+              "value": "{{ $now.minus({days: 20}).toSQL() }}"
+            }
+          ]
+        },
+        "sort": {
+          "values": [
+            {
+              "column": "createdAt",
+              "direction": "DESC"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "77e6328a-ab66-4faf-966e-0e81fa92b7ca",
+      "name": "Enhanced_MySQL_Search_Images",
+      "type": "n8n-nodes-base.mySqlTool",
+      "typeVersion": 2.4,
+      "position": [
+        340,
+        220
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "TvnUCP0CFWmGulQM",
+          "name": "MySQL account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Enhanced_MySQL_Search_Images": {
+      "ai_tool": [
+        []
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "instanceId": "136461ac021bda65593ed5d2f70798d0433ed7859abfc9e2ca43aa4b9c0b779e"
+  }
+} 

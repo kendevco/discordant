@@ -1,0 +1,314 @@
+{
+  "name": "VAPI.AI Voice Calling Subflow",
+  "version": "1.0.0",
+  "description": "Modular voice calling system using VAPI.AI - can be imported as subflow",
+  "subflows": [
+    {
+      "id": "voice-ai-call-subflow",
+      "name": "Voice AI Call Handler",
+      "description": "Handles all voice calling operations through VAPI.AI",
+      "input": {
+        "schema": {
+          "phoneNumber": "string",
+          "purpose": "enum:verification|gatekeeper|outbound_sales|follow_up",
+          "customMessage": "string",
+          "contactData": "object"
+        }
+      },
+      "nodes": [
+        {
+          "id": "vapi-call-initiate",
+          "name": "VAPI Call Initiate",
+          "type": "n8n-nodes-base.httpRequest",
+          "parameters": {
+            "url": "https://api.vapi.ai/call",
+            "method": "POST",
+            "headers": {
+              "Authorization": "Bearer {{ $env.VAPI_API_KEY }}",
+              "Content-Type": "application/json"
+            },
+            "bodyParameters": {
+              "phoneNumber": "={{ $input.phoneNumber }}",
+              "assistantId": "={{ $input.purpose === 'gatekeeper' ? $env.VAPI_GATEKEEPER_ASSISTANT_ID : $env.VAPI_GENERAL_ASSISTANT_ID }}",
+              "metadata": {
+                "purpose": "={{ $input.purpose }}",
+                "contactData": "={{ $input.contactData }}",
+                "initiatedBy": "discordant-n8n",
+                "timestamp": "={{ new Date().toISOString() }}"
+              }
+            }
+          }
+        },
+        {
+          "id": "call-status-tracker",
+          "name": "Call Status Tracker",
+          "type": "n8n-nodes-base.wait",
+          "parameters": {
+            "amount": 5,
+            "unit": "seconds"
+          }
+        },
+        {
+          "id": "vapi-status-check",
+          "name": "VAPI Status Check",
+          "type": "n8n-nodes-base.httpRequest",
+          "parameters": {
+            "url": "https://api.vapi.ai/call/{{ $('VAPI Call Initiate').json.id }}",
+            "method": "GET",
+            "headers": {
+              "Authorization": "Bearer {{ $env.VAPI_API_KEY }}"
+            }
+          }
+        },
+        {
+          "id": "outcome-router",
+          "name": "Call Outcome Router",
+          "type": "n8n-nodes-base.switch",
+          "parameters": {
+            "rules": [
+              {
+                "field": "status",
+                "operation": "equal",
+                "value": "completed"
+              },
+              {
+                "field": "status",
+                "operation": "equal", 
+                "value": "failed"
+              },
+              {
+                "field": "status",
+                "operation": "equal",
+                "value": "in_progress"
+              }
+            ]
+          }
+        },
+        {
+          "id": "sugarcrm-lead-update",
+          "name": "SugarCRM Lead Update",
+          "type": "n8n-nodes-base.httpRequest",
+          "parameters": {
+            "url": "{{ $env.SUGARCRM_BASE_URL }}/rest/v11_24/Leads",
+            "method": "POST",
+            "headers": {
+              "Authorization": "Bearer {{ $env.SUGARCRM_ACCESS_TOKEN }}",
+              "Content-Type": "application/json"
+            },
+            "bodyParameters": {
+              "name": "{{ $input.contactData.name }}",
+              "phone_work": "{{ $input.phoneNumber }}",
+              "lead_source": "Voice AI Call",
+              "status": "{{ $('Call Outcome Router').json.outcome }}",
+              "description": "Voice AI call {{ $input.purpose }} - {{ $('VAPI Status Check').json.summary }}"
+            }
+          }
+        },
+        {
+          "id": "discord-notification",
+          "name": "Discord Call Result Notification", 
+          "type": "n8n-nodes-base.httpRequest",
+          "parameters": {
+            "url": "{{ $env.DISCORD_WEBHOOK_URL }}",
+            "method": "POST",
+            "bodyParameters": {
+              "content": "📞 **Voice Call Completed**\\n\\n**Phone**: {{ $input.phoneNumber }}\\n**Purpose**: {{ $input.purpose }}\\n**Status**: {{ $('VAPI Status Check').json.status }}\\n**Duration**: {{ $('VAPI Status Check').json.duration }}s\\n**Outcome**: {{ $('VAPI Status Check').json.outcome }}\\n\\n{{ $('VAPI Status Check').json.summary || 'No summary available' }}"
+            }
+          }
+        }
+      ],
+      "output": {
+        "callId": "{{ $('VAPI Call Initiate').json.id }}",
+        "status": "{{ $('VAPI Status Check').json.status }}",
+        "outcome": "{{ $('VAPI Status Check').json.outcome }}",
+        "transcription": "{{ $('VAPI Status Check').json.transcription }}",
+        "duration": "{{ $('VAPI Status Check').json.duration }}",
+        "summary": "{{ $('VAPI Status Check').json.summary }}"
+      }
+    },
+    {
+      "id": "voice-campaign-subflow",
+      "name": "Voice Campaign Manager",
+      "description": "Batch calling system inspired by the YouTube video",
+      "input": {
+        "schema": {
+          "campaignName": "string",
+          "purpose": "enum:verification|gatekeeper|outbound_sales|follow_up", 
+          "contactList": "array",
+          "delayBetweenCalls": "number"
+        }
+      },
+      "nodes": [
+        {
+          "id": "campaign-contact-iterator",
+          "name": "Contact List Iterator",
+          "type": "n8n-nodes-base.itemLists",
+          "parameters": {
+            "operation": "splitOutItems",
+            "fieldName": "contactList"
+          }
+        },
+        {
+          "id": "call-delay",
+          "name": "Call Delay",
+          "type": "n8n-nodes-base.wait",
+          "parameters": {
+            "amount": "{{ $input.delayBetweenCalls || 30 }}",
+            "unit": "seconds"
+          }
+        },
+        {
+          "id": "invoke-voice-call",
+          "name": "Invoke Voice Call Subflow",
+          "type": "n8n-nodes-base.executeWorkflow",
+          "parameters": {
+            "workflowId": "voice-ai-call-subflow",
+            "waitForExecution": true,
+            "source": {
+              "phoneNumber": "{{ $json.phone }}",
+              "purpose": "{{ $input.purpose }}",
+              "contactData": "{{ $json }}"
+            }
+          }
+        },
+        {
+          "id": "campaign-progress-tracker",
+          "name": "Campaign Progress Tracker",
+          "type": "n8n-nodes-base.function",
+          "parameters": {
+            "functionCode": "// Track campaign progress\\nconst campaignId = $input.first().json.campaignId;\\nconst totalContacts = $input.first().json.totalContacts;\\nconst currentIndex = $itemIndex;\\nconst completed = currentIndex + 1;\\nconst progress = Math.round((completed / totalContacts) * 100);\\n\\nreturn {\\n  campaignId,\\n  completed,\\n  totalContacts,\\n  progress,\\n  status: progress === 100 ? 'completed' : 'running'\\n};"
+          }
+        }
+      ]
+    },
+    {
+      "id": "sugarcrm-integration-subflow",
+      "name": "SugarCRM Integration Handler",
+      "description": "Modular SugarCRM operations based on the transcript requirements",
+      "input": {
+        "schema": {
+          "operation": "enum:create_lead|update_lead|create_touchpoint|get_lead_details",
+          "leadData": "object",
+          "touchpointData": "object"
+        }
+      },
+      "nodes": [
+        {
+          "id": "sugarcrm-auth",
+          "name": "SugarCRM Authentication",
+          "type": "n8n-nodes-base.httpRequest",
+          "parameters": {
+            "url": "{{ $env.SUGARCRM_BASE_URL }}/rest/v11_24/oauth2/token",
+            "method": "POST",
+            "bodyParameters": {
+              "grant_type": "client_credentials",
+              "client_id": "{{ $env.SUGARCRM_CLIENT_ID }}",
+              "client_secret": "{{ $env.SUGARCRM_CLIENT_SECRET }}"
+            }
+          }
+        },
+        {
+          "id": "operation-router",
+          "name": "SugarCRM Operation Router", 
+          "type": "n8n-nodes-base.switch",
+          "parameters": {
+            "rules": [
+              {
+                "field": "operation",
+                "operation": "equal",
+                "value": "create_lead"
+              },
+              {
+                "field": "operation", 
+                "operation": "equal",
+                "value": "create_touchpoint"
+              },
+              {
+                "field": "operation",
+                "operation": "equal", 
+                "value": "update_lead"
+              }
+            ]
+          }
+        },
+        {
+          "id": "create-lead",
+          "name": "Create Lead in SugarCRM",
+          "type": "n8n-nodes-base.httpRequest",
+          "parameters": {
+            "url": "{{ $env.SUGARCRM_BASE_URL }}/rest/v11_24/Leads",
+            "method": "POST",
+            "headers": {
+              "Authorization": "Bearer {{ $('SugarCRM Authentication').json.access_token }}"
+            },
+            "bodyParameters": "{{ $input.leadData }}"
+          }
+        },
+        {
+          "id": "create-touchpoint",
+          "name": "Create Touchpoint Record",
+          "type": "n8n-nodes-base.httpRequest", 
+          "parameters": {
+            "url": "{{ $env.SUGARCRM_BASE_URL }}/rest/v11_24/TouchPoints",
+            "method": "POST",
+            "headers": {
+              "Authorization": "Bearer {{ $('SugarCRM Authentication').json.access_token }}"
+            },
+            "bodyParameters": {
+              "touch_point_category": "{{ $input.touchpointData.category }}",
+              "interaction_type": "{{ $input.touchpointData.type }}",
+              "related_lead_id": "{{ $input.touchpointData.leadId }}",
+              "notes": "{{ $input.touchpointData.notes }}",
+              "date_entered": "{{ new Date().toISOString() }}"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "integrationPoints": {
+    "discordCommands": {
+      "description": "How Discord commands would invoke these subflows",
+      "examples": [
+        {
+          "command": "/call +1-555-123-4567 gatekeeper",
+          "trigger": "voice-ai-call-subflow",
+          "payload": {
+            "phoneNumber": "+1-555-123-4567",
+            "purpose": "gatekeeper",
+            "contactData": {
+              "source": "discord",
+              "initiatedBy": "user_123"
+            }
+          }
+        },
+        {
+          "command": "/campaign-start gsa-prospects gatekeeper",
+          "trigger": "voice-campaign-subflow", 
+          "payload": {
+            "campaignName": "gsa-prospects",
+            "purpose": "gatekeeper",
+            "contactList": "{{ spreadsheet_contacts }}",
+            "delayBetweenCalls": 30
+          }
+        }
+      ]
+    },
+    "webhookEndpoints": {
+      "vapiCallback": "{{ $env.N8N_WEBHOOK_URL }}/vapi-callback",
+      "sugarFormSubmission": "{{ $env.N8N_WEBHOOK_URL }}/sugar-form",
+      "campaignTrigger": "{{ $env.N8N_WEBHOOK_URL }}/campaign-start"
+    }
+  },
+  "environmentVariables": {
+    "required": [
+      "VAPI_API_KEY",
+      "VAPI_GATEKEEPER_ASSISTANT_ID", 
+      "VAPI_GENERAL_ASSISTANT_ID",
+      "SUGARCRM_BASE_URL",
+      "SUGARCRM_CLIENT_ID",
+      "SUGARCRM_CLIENT_SECRET",
+      "DISCORD_WEBHOOK_URL"
+    ]
+  }
+} 

@@ -1,0 +1,58 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=-- First, get or create system member\nSET @systemMemberId = (\n  SELECT m.id FROM member m \n  JOIN profile p ON m.profileId = p.id \n  WHERE p.name = 'System User' \n  AND m.serverId = (\n    SELECT serverId FROM channel WHERE id = '{{ $('Enhanced Input Processor').first().json.channelId }}'\n  )\n  LIMIT 1\n);\n\n-- Insert the AI response message\nINSERT INTO message (\n  id,\n  content, \n  channelId, \n  memberId, \n  role,\n  deleted,\n  createdAt, \n  updatedAt\n) VALUES (\n  UUID(),\n  '{{ $('Enhanced AI Agent').first().json.output || $('Enhanced AI Agent').first().json.text || \"AI response processing failed\" }}',\n  '{{ $('Enhanced Input Processor').first().json.channelId }}',\n  COALESCE(@systemMemberId, 'fallback-system-member-id'),\n  'system',\n  false,\n  NOW(),\n  NOW()\n);\n\n-- Return the inserted message for confirmation\nSELECT \n  m.*,\n  p.name as memberName,\n  c.name as channelName\nFROM message m\nJOIN member mb ON m.memberId = mb.id\nJOIN profile p ON mb.profileId = p.id  \nJOIN channel c ON m.channelId = c.id\nWHERE m.id = LAST_INSERT_ID()\nORDER BY m.createdAt DESC\nLIMIT 1;"
+      },
+      "id": "fixed-save-message",
+      "name": "Save AI Response (Fixed)",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 1,
+      "position": [
+        500,
+        -80
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "TvnUCP0CFWmGulQM",
+          "name": "MySQL account"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery", 
+        "query": "=-- Load channel history with full member and profile data\nSELECT \n  m.id,\n  m.content,\n  m.role,\n  m.fileUrl,\n  m.createdAt as timestamp,\n  m.updatedAt,\n  mb.id as memberId,\n  p.id as userId,\n  p.name as userName,\n  p.imageUrl as userAvatar,\n  c.name as channelName,\n  c.type as channelType,\n  CASE \n    WHEN m.fileUrl IS NOT NULL THEN 'file'\n    ELSE 'text'\n  END as messageType,\n  -- Check if message has rich metadata\n  CASE \n    WHEN fm.id IS NOT NULL THEN true\n    ELSE false\n  END as hasFileMetadata,\n  fm.description as fileDescription,\n  fm.aiSummary as aiAnalysis\nFROM message m\nINNER JOIN member mb ON m.memberId = mb.id\nINNER JOIN profile p ON mb.profileId = p.id\nINNER JOIN channel c ON m.channelId = c.id\nLEFT JOIN file_metadata fm ON m.id = fm.messageId\nWHERE \n  m.channelId = '{{ $json.channelId }}'\n  AND m.deleted = false\nORDER BY m.createdAt DESC \nLIMIT {{ $json.limit || 20 }};"
+      },
+      "id": "fixed-load-history",
+      "name": "Load Channel History (Fixed)",
+      "type": "n8n-nodes-base.mySql", 
+      "typeVersion": 1,
+      "position": [
+        -280,
+        -80
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "TvnUCP0CFWmGulQM",
+          "name": "MySQL account"
+        }
+      },
+      "continueOnFail": true
+    }
+  ],
+  "connections": {
+    "Save AI Response (Fixed)": {
+      "main": [
+        []
+      ]
+    },
+    "Load Channel History (Fixed)": {
+      "main": [
+        []
+      ]
+    }
+  }
+} 

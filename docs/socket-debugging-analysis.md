@@ -126,4 +126,51 @@ The debugging logs will help us identify whether the issue is:
 - Socket connection/emission
 - Message structure/parsing
 - Client-side reception/processing
-- n8n workflow response format 
+- n8n workflow response format
+
+## Enhanced Message Search Tool Fix
+
+### Issue Identified
+The original `DB_View_Latest_Messages` tool was too generic - it only retrieved the latest 20 messages regardless of content type. When users asked for "recent photos" or "image attachments", the AI couldn't specifically filter for images.
+
+### Solution Implemented
+Replaced the generic tool with `Search_Messages_And_Files` - an intelligent search tool that:
+
+**🔍 Key Features:**
+- **File Type Filtering**: Can specifically search for 'image', 'document', 'video', 'audio', or 'any' file types
+- **Content Matching**: Searches both message content and file URLs
+- **Smart Detection**: Automatically detects when users are looking for attachments
+- **Detailed Results**: Shows file names, URLs, content previews, and timestamps
+
+**📂 SQL Query Logic:**
+```sql
+-- Example: Finding image attachments
+SELECT id, content, fileUrl, memberId, channelId, createdAt,
+  CASE 
+    WHEN fileUrl LIKE '%.jpg' OR fileUrl LIKE '%.jpeg' OR fileUrl LIKE '%.png' 
+         OR fileUrl LIKE '%.gif' OR fileUrl LIKE '%.webp' THEN 'image'
+    WHEN fileUrl LIKE '%.pdf' OR fileUrl LIKE '%.doc' THEN 'document'
+    WHEN fileUrl IS NOT NULL THEN 'file'
+    ELSE 'text'
+  END as content_type
+FROM message 
+WHERE (fileUrl LIKE "%.jpg" OR fileUrl LIKE "%.jpeg" OR fileUrl LIKE "%.png" 
+       OR fileUrl LIKE "%.gif" OR fileUrl LIKE "%.webp")
+ORDER BY createdAt DESC 
+LIMIT 20
+```
+
+**🎯 Usage Examples:**
+- "Find recent photos" → `file_type: 'image'`
+- "Show image attachments" → `file_type: 'image'`
+- "Last five image uploads" → `file_type: 'image', limit: 5`
+- "Search for PDF files" → `file_type: 'document'`
+
+### Test Results Expected
+With the enhanced tool, the AI should now be able to:
+1. ✅ Find actual image attachments from the database
+2. ✅ Display file names and upload dates
+3. ✅ Show clickable URLs to the images
+4. ✅ Provide relevant search results for file queries
+
+This fix addresses the core issue where the workflow was working but couldn't find specific content types. 

@@ -30,39 +30,38 @@ export const RichContentRenderer = ({
     );
   }
 
-  // For long content, use ExpandableMessage with a simpler HTML formatter
+  // For long content, use ExpandableMessage with proper markdown-to-React conversion
   const formatContentForHTML = (text: string): string => {
-    // First, let's add a more comprehensive cleanup for malformed HTML
+    // Clean the text first - remove any existing HTML that might have been mistakenly added
     let cleanedText = text
-      // Handle the specific pattern: URL" target="_blank" rel="noopener noreferrer" class="...">Link Text
-      .replace(/(https?:\/\/[^\s"]+)"\s+target="_blank"\s+rel="noopener noreferrer"\s+class="[^"]*"[^>]*>([^<\n]+?)(?=\s*\n|\s*$|<)/g, '[$2]($1)')
-      // Handle variations with different attribute orders
-      .replace(/(https?:\/\/[^\s"]+)"\s+[^>]*target="_blank"[^>]*>([^<\n]+?)(?=\s*\n|\s*$|<)/g, '[$2]($1)')
-      // Handle cases where the URL might not have quotes
-      .replace(/(https?:\/\/[^\s"]+)\s+target="_blank"[^>]*>([^<\n]+?)(?=\s*\n|\s*$|<)/g, '[$2]($1)')
-      // Clean up any remaining HTML attribute fragments
-      .replace(/\s*target="_blank"[^>]*>/g, '')
-      .replace(/"\s*class="[^"]*"/g, '')
-      .replace(/"\s*rel="[^"]*"/g, '');
+      // Remove malformed HTML attributes that shouldn't be there
+      .replace(/"\s+target="_blank"\s+rel="noopener noreferrer"\s+class="[^"]*"/g, '')
+      .replace(/target="_blank"[^>]*>/g, '')
+      .replace(/class="[^"]*"\s*>/g, '')
+      .replace(/rel="[^"]*"\s*>/g, '');
     
+    // Now apply proper markdown to HTML conversion
     return cleanedText
-      // NOW do HTML escaping
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      // Clean up markdown formatting around URLs first (fix the Google Calendar link issue)
-      .replace(/\*\*\[([^\]]+)\]\(([^)]+)\)\*\*/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 underline break-all transition-colors">$1</a>')
-      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 underline break-all transition-colors">$1</a>')
-      // Clean up stray ** around URLs but be more careful
-      .replace(/\*\*(https?:\/\/[^\s*]+)\*\*/g, '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 underline break-all transition-colors">$1</a>')
-      // Apply basic formatting
+      // Handle markdown links FIRST (most important for the bug fix)
+      .replace(/\*\*\[([^\]]+)\]\(([^)]+)\)\*\*/g, '<strong><a href="$2" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 underline">$1</a></strong>')
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 underline">$1</a>')
+      // Handle section headers (### Header or ## Header) - BEFORE other formatting
+      .replace(/^###\s*(.+)$/gm, '<h3 class="text-lg font-bold text-blue-400 dark:text-blue-300 mt-3 mb-2">$1</h3>')
+      .replace(/^##\s*(.+)$/gm, '<h2 class="text-xl font-bold text-blue-400 dark:text-blue-300 mt-4 mb-2">$1</h2>')
+      .replace(/^#\s*(.+)$/gm, '<h1 class="text-2xl font-bold text-blue-400 dark:text-blue-300 mt-4 mb-3">$1</h1>')
+      // Apply text formatting
       .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-white">$1</strong>')
       .replace(/\*(.*?)\*/g, '<em class="italic text-zinc-200">$1</em>')
       .replace(/`(.*?)`/g, '<code class="bg-zinc-800 dark:bg-zinc-700 px-1 py-0.5 rounded text-sm font-mono text-yellow-300">$1</code>')
-      // Handle remaining plain URLs
-      .replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 underline break-all transition-colors">$1</a>')
-      // Handle line breaks last
-      .replace(/\n/g, '<br />');
+      // Handle list items with bullet points
+      .replace(/^[\s]*[-•]\s*(.+)$/gm, '<div class="ml-4 mb-1 text-zinc-200 dark:text-zinc-300">• $1</div>')
+      // Handle numbered lists
+      .replace(/^[\s]*(\d+)\.\s*(.+)$/gm, '<div class="ml-4 mb-1 text-zinc-200 dark:text-zinc-300">$1. $2</div>')
+      // Handle plain URLs that aren't already in markdown links
+      .replace(/(^|[^"])https?:\/\/[^\s<)]+(?![^<]*<\/a>)/g, '$1<a href="$&" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 underline">$&</a>')
+      // Handle line breaks - tighter spacing
+      .replace(/\n\n+/g, '<br class="my-2">')
+      .replace(/\n/g, '<br>');
   };
 
   if (isSystemMessage) {
@@ -88,10 +87,24 @@ export const RichContentRenderer = ({
     const lines = text.split('\n');
     
     return lines.map((line, index) => {
-      // Headers with emojis (🔍 **Research Results:**)
-      if (line.match(/^[🔍📋✅🔄❌🕐📅📊📄📍🌐❓⚠️]\s?\*\*.*\*\*:?\s*$/)) {
+      // Markdown headers (### Header)
+      if (line.match(/^#{1,3}\s+/)) {
+        const level = line.match(/^(#{1,3})/)?.[1].length || 3;
+        const headerText = line.replace(/^#{1,3}\s+/, '');
+        const headerClass = level === 1 ? "text-xl font-bold mt-4 mb-2" :
+                           level === 2 ? "text-lg font-bold mt-3 mb-2" :
+                           "text-base font-bold mt-2 mb-1";
         return (
-          <div key={index} className="font-bold text-lg mb-2 text-blue-400 dark:text-blue-300">
+          <div key={index} className={`${headerClass} text-blue-400 dark:text-blue-300`}>
+            {headerText}
+          </div>
+        );
+      }
+      
+      // Headers with emojis (🔍 **Research Results:**)
+      if (line.match(/^[🔍📋✅🔄❌🕐📅📊📄📍🌐❓⚠️💰🚀]\s?\*\*.*\*\*:?\s*$/)) {
+        return (
+          <div key={index} className="font-bold text-lg mb-2 mt-3 text-blue-400 dark:text-blue-300">
             {line.replace(/\*\*/g, '')}
           </div>
         );
@@ -106,8 +119,17 @@ export const RichContentRenderer = ({
         );
       }
       
-      // Bullet points or list items
-      if (line.match(/^[📊📄📍🌐❌✅]\s/)) {
+      // Numbered list items (1. Item)
+      if (line.match(/^\d+\.\s+/)) {
+        return (
+          <div key={index} className="ml-4 mb-1 text-zinc-200 dark:text-zinc-300">
+            {renderFormattedLine(line)}
+          </div>
+        );
+      }
+      
+      // Bullet points or list items with dashes/bullets
+      if (line.match(/^[\s]*[-•]\s+/) || line.match(/^[📊📄📍🌐❌✅]\s/)) {
         return (
           <div key={index} className="ml-4 mb-1 text-zinc-300 dark:text-zinc-400">
             {renderFormattedLine(line)}
@@ -115,12 +137,12 @@ export const RichContentRenderer = ({
         );
       }
       
-      // Empty lines for spacing
+      // Empty lines for minimal spacing
       if (line.trim() === '') {
-        return <div key={index} className="h-2" />;
+        return <div key={index} className="h-1" />;
       }
       
-      // Regular lines
+      // Regular lines with tighter spacing
       return (
         <div key={index} className="mb-1 text-zinc-200 dark:text-zinc-300">
           {renderFormattedLine(line)}
@@ -130,55 +152,72 @@ export const RichContentRenderer = ({
   }
     
   function renderFormattedLine(line: string): React.ReactNode {
-    // Clean up malformed HTML anchor tags from n8n workflow responses
+    // Clean up any malformed HTML that might come from processing
     let cleanedLine = line
-      // Handle the specific pattern: URL" target="_blank" rel="noopener noreferrer" class="...">Link Text
-      .replace(/(https?:\/\/[^\s"]+)"\s+target="_blank"\s+rel="noopener noreferrer"\s+class="[^"]*"[^>]*>([^<\n]+?)(?=\s*\n|\s*$|<|$)/g, '[$2]($1)')
-      // Handle variations with different attribute orders
-      .replace(/(https?:\/\/[^\s"]+)"\s+[^>]*target="_blank"[^>]*>([^<\n]+?)(?=\s*\n|\s*$|<|$)/g, '[$2]($1)')
-      // Handle cases where the URL might not have quotes
-      .replace(/(https?:\/\/[^\s"]+)\s+target="_blank"[^>]*>([^<\n]+?)(?=\s*\n|\s*$|<|$)/g, '[$2]($1)')
-      // Clean up any remaining HTML attribute fragments
-      .replace(/\s*target="_blank"[^>]*>/g, '')
+      // Remove any HTML attributes and tags that shouldn't be there
+      .replace(/<a[^>]*href="([^"]*)"[^>]*>([^<]*)<\/a>/g, '[$2]($1)')
+      .replace(/"\s*target="_blank"[^>]*>/g, '')
       .replace(/"\s*class="[^"]*"/g, '')
       .replace(/"\s*rel="[^"]*"/g, '')
-      // First clean up markdown formatting around URLs to fix Google Calendar link issues
-      .replace(/\*\*(https?:\/\/[^\s*]+)\*\*/g, '$1')
-      // Handle markdown links [text](url) wrapped in **
-      .replace(/\*\*\[([^\]]+)\]\(([^)]+)\)\*\*/g, '[$1]($2)')
-      // Clean up any trailing ** after URLs
-      .replace(/(https?:\/\/[^\s]+)\*\*/g, '$1');
+      // Fix malformed anchor patterns like: url" target="_blank"...>text
+      .replace(/(https?:\/\/[^\s"]+)"\s+[^>]*>([^<\s]+(?:\s+[^<]*)?)/g, '[$2]($1)');
     
-    // Process markdown links first [text](url)
-    const markdownLinkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
-    let processedLine = cleanedLine.replace(markdownLinkRegex, (match, text, url) => {
-      return `__MARKDOWN_LINK_START__${text}__MARKDOWN_LINK_MID__${url}__MARKDOWN_LINK_END__`;
-    });
+    // Parse markdown and other elements in sequence
+    const elements: React.ReactNode[] = [];
+    let remainingText = cleanedLine;
+    let elementIndex = 0;
     
-    // Process URLs
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-    const urlParts = processedLine.split(urlRegex);
-
-    return urlParts.map((part, i) => {
-      // Handle processed markdown links
-      if (part.includes('__MARKDOWN_LINK_START__')) {
-        const linkMatch = part.match(/__MARKDOWN_LINK_START__([^_]+)__MARKDOWN_LINK_MID__([^_]+)__MARKDOWN_LINK_END__/);
-        if (linkMatch) {
-          return (
-            <a
-              key={i}
-              href={linkMatch[2]}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-400 hover:text-blue-300 underline break-all transition-colors"
-            >
-              {linkMatch[1]}
-            </a>
+    // Process the line character by character to find markdown links
+    while (remainingText.length > 0) {
+      // Look for markdown links [text](url)
+      const markdownMatch = remainingText.match(/\[([^\]]+)\]\(([^)]+)\)/);
+      
+      if (markdownMatch && markdownMatch.index !== undefined) {
+        // Add text before the markdown link
+        if (markdownMatch.index > 0) {
+          const beforeText = remainingText.substring(0, markdownMatch.index);
+          elements.push(
+            <Fragment key={elementIndex++}>
+              {processTextFormatting(beforeText)}
+            </Fragment>
           );
         }
+        
+        // Add the markdown link
+        elements.push(
+          <a
+            key={elementIndex++}
+            href={markdownMatch[2]}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-400 hover:text-blue-300 underline transition-colors"
+          >
+            {markdownMatch[1]}
+          </a>
+        );
+        
+        // Continue with remaining text
+        remainingText = remainingText.substring(markdownMatch.index + markdownMatch[0].length);
+      } else {
+        // No more markdown links, process remaining text
+        elements.push(
+          <Fragment key={elementIndex++}>
+            {processTextFormatting(remainingText)}
+          </Fragment>
+        );
+        break;
       }
-      
-      // Handle plain URLs
+    }
+    
+    return elements.length > 1 ? elements : elements[0] || null;
+  }
+  
+  function processTextFormatting(text: string): React.ReactNode {
+    // Handle plain URLs first
+    const urlRegex = /(https?:\/\/[^\s)+]+)/g;
+    const urlParts = text.split(urlRegex);
+    
+    return urlParts.map((part, i) => {
       if (part.match(urlRegex)) {
         return (
           <a
@@ -186,14 +225,14 @@ export const RichContentRenderer = ({
             href={part}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-400 hover:text-blue-300 underline break-all transition-colors"
+            className="text-blue-400 hover:text-blue-300 underline transition-colors"
           >
             {part}
           </a>
         );
       }
       
-      // Apply text formatting to regular text parts
+      // Apply text formatting to non-URL parts
       return <Fragment key={i}>{applyTextFormatting(part)}</Fragment>;
     });
   }

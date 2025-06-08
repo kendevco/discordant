@@ -1,0 +1,882 @@
+{
+  "name": "Enhanced Business Intelligence AI Agent v2.8",
+  "nodes": [
+    {
+      "parameters": {
+        "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Search_Query', 'The search query for web research', 'string') }}",
+        "options": {
+          "topic": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Search_Topic', 'Search topic: general, news, or finance', 'string') || 'general' }}",
+          "days": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Time_Range_Days', 'Number of days to search back (for news/recent info)', 'number') || 30 }}"
+        }
+      },
+      "id": "f7c46f29-103f-4874-ac82-655714c3e392",
+      "name": "Tavily_AI_Tool",
+      "type": "@tavily/n8n-nodes-tavily.tavilyTool",
+      "typeVersion": 1,
+      "position": [
+        640,
+        360
+      ],
+      "credentials": {
+        "tavilyApi": {
+          "id": "ZcrGNEPykVcMHrHn",
+          "name": "Tavily account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "discordant-ai-services",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "https://discordant.kendev.co,http://localhost:3001,http://localhost:3000,*"
+        }
+      },
+      "id": "d14aeb4d-3e92-4d07-8b30-89992158b2f4",
+      "name": "Discordant Chat Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -780,
+        -180
+      ],
+      "webhookId": "e7e3c8f2-a8b8-4e7e-3c8f-2a8be7e3c8f2"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "53271e85-be9c-4d45-8f78-58d2e993c1b7",
+      "name": "Chat Test Interface",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -780,
+        20
+      ],
+      "webhookId": "ae314dfc-4b90-44e1-ba9e-80ffce4ef260"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Enhanced Input Processing with robust debugging\nconsole.log('=== ENHANCED INPUT PROCESSOR DEBUG ===');\n\nconst input = $input.first();\nconsole.log('Input keys:', Object.keys(input?.json || {}));\nconsole.log('Full input data:', JSON.stringify(input?.json || {}, null, 2));\n\n// Check different possible locations for webhook data\nconsole.log('input.json.body:', input?.json?.body);\nconsole.log('input.json.params:', input?.json?.params);\nconsole.log('input.json.query:', input?.json?.query);\n\nlet normalizedData = {};\n\ntry {\n  if (input.json.chatInput) {\n    // Test interface mode\n    const testSessionId = require('crypto').randomBytes(16).toString('hex');\n    normalizedData = {\n      input: input.json.chatInput || '',\n      userId: 'test-user',\n      channelId: 'test-channel',\n      sessionId: testSessionId,\n      platform: 'n8n-chat-test',\n      timestamp: new Date().toISOString(),\n      isTestMode: true\n    };\n    console.log('Processing chat test input');\n  } else {\n    // Discordant webhook mode - try different payload locations\n    let payload = {};\n    \n    // Try multiple locations where webhook data might be\n    if (input.json.body && typeof input.json.body === 'object') {\n      payload = input.json.body;\n      console.log('Found payload in input.json.body');\n    } else if (input.json.body && typeof input.json.body === 'string') {\n      try {\n        payload = JSON.parse(input.json.body);\n        console.log('Found and parsed payload from input.json.body string');\n      } catch (e) {\n        console.log('Failed to parse input.json.body as JSON:', e.message);\n        payload = input.json || {};\n      }\n    } else if (input.json && Object.keys(input.json).length > 0) {\n      payload = input.json;\n      console.log('Using input.json directly as payload');\n    }\n    \n    console.log('Final payload keys:', Object.keys(payload));\n    console.log('Final payload data:', JSON.stringify(payload, null, 2));\n    console.log('Message:', payload.message);\n    console.log('UserId:', payload.userId);\n    console.log('ChannelId:', payload.channelId);\n    \n    normalizedData = {\n      input: payload.message || payload.content || '',\n      userId: payload.userId || 'unknown-user',\n      channelId: payload.channelId || 'unknown-channel',\n      sessionId: `${payload.userId || 'unknown'}-${payload.channelId || 'unknown'}`,\n      platform: 'discordant',\n      timestamp: payload.timestamp || new Date().toISOString(),\n      isTestMode: false,\n      userName: payload.userName || 'Unknown User',\n      serverId: payload.serverId || 'unknown-server'\n    };\n    console.log('Processing Discordant webhook input');\n  }\n  \n  console.log('=== INPUT PROCESSOR SUCCESS ===');\n  console.log('Normalized data:', JSON.stringify(normalizedData, null, 2));\n  console.log('Input message length:', normalizedData.input.length);\n  console.log('Session ID:', normalizedData.sessionId);\n  console.log('Channel ID:', normalizedData.channelId);\n  \n  return normalizedData;\n  \n} catch (error) {\n  console.error('=== INPUT PROCESSOR ERROR ===');\n  console.error('Error details:', error.message);\n  console.error('Error stack:', error.stack);\n  \n  // Provide fallback data\n  return {\n    input: 'Error processing input: ' + error.message,\n    userId: 'error-user',\n    channelId: 'error-channel',\n    sessionId: 'error-session',\n    platform: 'error',\n    timestamp: new Date().toISOString(),\n    isTestMode: false,\n    errorOccurred: true,\n    errorMessage: error.message\n  };\n}"
+      },
+      "id": "a70e5fb6-d104-445a-911c-4d8dff08bf8e",
+      "name": "Enhanced Input Processor",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -480,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=SELECT content, memberId as user_id, createdAt as timestamp, 'user' as role FROM message WHERE channelId = '{{ $json.channelId }}' ORDER BY createdAt DESC LIMIT 20"
+      },
+      "id": "0ca36cd5-9515-4214-86b8-1353f8edecac",
+      "name": "Load Channel History",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 1,
+      "position": [
+        -280,
+        -80
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "TvnUCP0CFWmGulQM",
+          "name": "MySQL account"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "dataToSave": {
+          "values": [
+            {
+              "key": "channel_id",
+              "value": "={{ $('Enhanced Input Processor').first().json.channelId }}"
+            },
+            {
+              "key": "channel_history_count",
+              "value": "={{ $('Load Channel History').all().length }}"
+            },
+            {
+              "key": "channel_history_preview",
+              "value": "={{ JSON.stringify($('Load Channel History').all().slice(0, 3)) }}"
+            },
+            {
+              "key": "last_message_timestamp",
+              "value": "={{ $('Load Channel History').all().length > 0 ? $('Load Channel History').all()[0].json.timestamp : 'No messages' }}"
+            },
+            {
+              "key": "conversation_participants",
+              "value": "={{ [...new Set($('Load Channel History').all().map(item => item.json.user_id))].join(', ') }}"
+            },
+            {
+              "key": "input_message",
+              "value": "={{ $('Enhanced Input Processor').first().json.input }}"
+            },
+            {
+              "key": "debug_timestamp",
+              "value": "={{ new Date().toISOString() }}"
+            }
+          ]
+        }
+      },
+      "id": "e638ceaa-482b-4bfa-8977-ccbd87e843fc",
+      "name": "Channel History Debug Data",
+      "type": "n8n-nodes-base.executionData",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Enhanced Format Context with cold start resilience\nconsole.log('=== FORMAT CONTEXT NODE DEBUG ===');\nconst startTime = Date.now();\n\ntry {\n  // Get channel history from Discordant message table\n  const channelHistory = $('Load Channel History').all();\n  const inputData = $('Enhanced Input Processor').first().json;\n  \n  console.log('Channel history items:', channelHistory.length);\n  console.log('Input data keys:', Object.keys(inputData));\n  console.log('Processing time so far:', Date.now() - startTime, 'ms');\n  \n  // Handle cold start scenarios gracefully\n  if (!channelHistory || channelHistory.length === 0) {\n    console.log('WARNING: No channel history found for channel:', inputData.channelId);\n    console.log('This might be due to cold start delays or empty channel');\n  } else {\n    console.log('Sample channel history:', JSON.stringify(channelHistory.slice(0, 2), null, 2));\n  }\n  \n  // Format conversation history from Discordant messages with better error handling\n  let conversationHistory = 'No previous conversation in this channel';\n  \n  try {\n    if (channelHistory && channelHistory.length > 0) {\n      const validMessages = channelHistory.filter(item => {\n        return item.json && \n               item.json.content && \n               typeof item.json.content === 'string' && \n               item.json.content.trim().length > 0;\n      });\n      \n      if (validMessages.length > 0) {\n        conversationHistory = validMessages\n          .reverse()\n          .map(item => `${item.json.user_id}: ${item.json.content}`)\n          .join('\\n\\n');\n      }\n    }\n  } catch (historyError) {\n    console.error('Error processing conversation history:', historyError.message);\n    conversationHistory = 'Error loading conversation history (cold start recovery)';\n  }\n  \n  const now = new Date();\n  const currentDate = now.toISOString().split('T')[0];\n  const currentTime = now.toLocaleTimeString('en-US', { timeZone: 'America/New_York' });\n  \n  const messageCount = channelHistory ? channelHistory.filter(item => item.json && item.json.content && item.json.content.trim()).length : 0;\n  \n  const result = {\n    ...inputData,\n    conversationHistory,\n    currentDate,\n    currentTime,\n    messageCount,\n    processingTime: Date.now() - startTime,\n    coldStartRecovery: messageCount === 0 && channelHistory && channelHistory.length === 0\n  };\n  \n  console.log('=== FORMAT CONTEXT SUCCESS ===');\n  console.log('Result keys:', Object.keys(result));\n  console.log('Message count:', result.messageCount);\n  console.log('Channel:', inputData.channelId);\n  console.log('Conversation history length:', result.conversationHistory.length);\n  console.log('Total processing time:', result.processingTime, 'ms');\n  \n  return result;\n  \n} catch (error) {\n  console.error('=== FORMAT CONTEXT ERROR ===');\n  console.error('Error details:', error.message);\n  console.error('Error stack:', error.stack);\n  console.error('Processing time before error:', Date.now() - startTime, 'ms');\n  \n  const inputData = $('Enhanced Input Processor').first().json;\n  return {\n    ...inputData,\n    conversationHistory: 'Channel history temporarily unavailable (cold start/initialization delay)',\n    currentDate: new Date().toISOString().split('T')[0],\n    currentTime: new Date().toLocaleTimeString('en-US', { timeZone: 'America/New_York' }),\n    messageCount: 0,\n    errorOccurred: true,\n    errorMessage: error.message,\n    processingTime: Date.now() - startTime,\n    coldStartIssue: true\n  };\n}"
+      },
+      "id": "e38d377b-5161-4ff6-a9cb-55ef467b86be",
+      "name": "Format Context",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -60,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {
+          "frequencyPenalty": 0,
+          "maxTokens": 2000,
+          "presencePenalty": 0,
+          "temperature": 0.3,
+          "timeout": 45000
+        }
+      },
+      "id": "af29d119-fc65-4f6d-8fcd-5aea02fe7d4d",
+      "name": "GPT-4o-Mini Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        160,
+        80
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "93xrPD7UUL9tV6EG",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.input }}\n\n{{ $json.conversationHistory !== 'No previous conversation in this channel' ? 'Previous conversation:\\n' + $json.conversationHistory + '\\n\\n' : '' }}",
+        "options": {
+          "systemMessage": "You are Kenneth's Enhanced Business Intelligence Assistant with personality! 🤖\n\n⏰ Current Context:\n- Date: {{ $json.currentDate }}\n- Time: {{ $json.currentTime }} Eastern\n- Conversation Messages: {{ $json.messageCount }}\n- Channel: {{ $json.channelId }}\n\n🎯 Personality:\n- Be helpful, insightful, and engaging\n- Add humor when appropriate (especially when asked!)\n- Be conversational and personable\n- Show enthusiasm for helping\n- When asked for something funny, actually be funny with jokes, puns, or witty observations\n\n🛠️ Your Available Tools:\n\n📅 **Calendar Management**:\n- View_Calendar_Events - Show calendar events\n- Smart_Event_Search - Find specific events by date/title to get proper Event IDs\n- Create_New_Event - Schedule NEW meetings\n- Update_Existing_Event - Modify EXISTING events (requires proper Event ID)\n- Delete_Event - Cancel events\n\n🔍 **Calendar Tool Usage Guidelines**:\n\n🆕 **Create_New_Event** - Use when:\n• User wants to schedule a NEW meeting\n• No existing event is mentioned\n• User says 'schedule', 'book', 'create meeting'\n• Copying meeting info from external sources (Teams, emails)\n\n🔍 **Smart_Event_Search** - Use BEFORE updating when:\n• User mentions updating an existing meeting\n• You need to find the proper Event ID\n• User provides date/time or partial meeting name\n• You need to confirm which event to modify\n\n✏️ **Update_Existing_Event** - Use ONLY when:\n• You have found the proper Google Event ID from Smart_Event_Search\n• User explicitly mentions an EXISTING event to modify\n• User says 'reschedule', 'change', 'update' an existing meeting\n• ALWAYS search first using Smart_Event_Search to get real Event ID\n\n⚠️ **Critical Calendar Rules**:\n1. **Default to CREATE for new meeting requests**\n2. **Use Smart_Event_Search BEFORE any UPDATE attempts**\n3. **Google Event IDs are long strings like '5fahaDcwtu2se4bnqdg5hsi4e6ek4'**\n4. **NEVER use date/time as Event ID**\n5. **When in doubt, CREATE instead of UPDATE**\n6. **Search → Get Real Event ID → Then Update**\n\n🔍 **Data & Search**:\n- Enhanced_MySQL_Search - Find recent conversations and messages\n\n🌐 **Web Research**:\n- Tavily_AI_Tool - Advanced AI-powered web search with current information\n\n🎬 **YouTube Video Analysis**:\n- YouTube_Transcript_Service - Extract and analyze YouTube video content\n  • Provide YouTube URL to extract transcript with timestamps\n  • Analyzes video content for insights and learning\n  • Creates searchable knowledge base from video content\n  • Perfect for research, learning, and content analysis\n\n📧 **Email Communication**:\n- Gmail - Send professional emails via Kenneth's Gmail account\n  • Compose and send emails dynamically\n  • Perfect for follow-ups, meeting confirmations, and business communications\n  • Use for client outreach, internal communications, and scheduling\n\n🏛️ **GSA Research Protocol**:\nWhen asked about GSA qualification for any company:\n1. Use Tavily_AI_Tool to research the company thoroughly\n2. Focus search on: business type, industry, size, government contracts\n3. Provide GSA-specific analysis including:\n   • Recommended GSA Schedule categories\n   • NAICS code suggestions\n   • Decision maker identification\n   • Value proposition development\n   • Next steps for engagement\n\nExample GSA research queries for Tavily:\n- \"Acme Corporation business profile government contracting GSA Schedule eligibility\"\n- \"TechCorp federal contracts NAICS codes GSA qualification requirements\"\n\n💼 **Your Role**:\nYou serve as Kenneth's Chief Intelligence Officer for National Registration Group, specializing in GSA Schedule consulting. Provide strategic business insights, data-driven recommendations, and professional analysis with actionable next steps.\n\n🎯 **Tool Usage Guidelines**:\n\n**📧 Gmail Usage**:\n• Use for sending follow-up emails after meetings\n• Client communications and proposals\n• Meeting confirmations and scheduling\n• Business development outreach\n• Internal team communications\n\n**🎬 YouTube Analysis Usage**:\n• When user shares YouTube link: Extract transcript automatically\n• For educational content: Process for key insights and takeaways\n• For business videos: Analyze for strategies and best practices\n• For tutorials: Extract step-by-step instructions and tips\n• For competitive intelligence: Analyze competitor presentations\n\n**🏛️ GSA Research Usage**:\nWhen someone asks about a company for GSA purposes, use the gsa_client_research tool to:\n- Assess GSA eligibility and qualification status\n- Identify key decision makers and contact information\n- Develop value proposition talking points\n- Prepare strategic questions for sales calls\n- Highlight GSA Schedule benefits specific to their business\n\n🎪 **When asked for humor**:\n- Tell actual jokes, puns, or funny observations\n- Use clever wordplay\n- Make light-hearted comments about business life\n- Be genuinely entertaining while staying professional\n\n⚡ **Performance Guidelines**:\n- Respond quickly and efficiently\n- Use tools only when necessary\n- If a tool fails, continue with available information\n- Always provide a helpful response even if tools timeout\n- Account for cold start delays when system has been idle\n- For GSA research, always suggest next steps like scheduling specialist consultations\n- **For calendar updates: Always Search → Get Event ID → Then Update**\n- **For YouTube videos: Always extract transcript first, then provide analysis**\n- **For emails: Be professional but personable, matching Kenneth's communication style**\n\nBe professional but personable, and don't be afraid to show your wit!",
+          "maxIterations": 5
+        }
+      },
+      "id": "4dbf979d-adc8-4233-a724-f80c341aedf5",
+      "name": "Enhanced AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        160,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "kenneth.courtney@gmail.com",
+          "mode": "list",
+          "cachedResultName": "kenneth.courtney@gmail.com"
+        },
+        "returnAll": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Return_All', `Should return all events? Usually true for viewing calendar.`, 'boolean') }}",
+        "limit": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Limit', `Maximum number of events to return (e.g., 50)`, 'number') }}",
+        "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start_Time', `Start date/time in ISO format (e.g., 2025-06-01T00:00:00Z for today)`, 'string') }}",
+        "timeMax": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End_Time', `End date/time in ISO format (e.g., 2025-06-08T23:59:59Z for next week)`, 'string') }}",
+        "options": {}
+      },
+      "id": "735b8591-b248-47d8-be90-44eadd08011e",
+      "name": "View_Calendar_Events",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        500,
+        160
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "jttch4cJRgIrcZfh",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "kenneth.courtney@gmail.com",
+          "mode": "list",
+          "cachedResultName": "kenneth.courtney@gmail.com"
+        },
+        "returnAll": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Return_All_Events', `Set to true to find all matching events`, 'boolean') }}",
+        "limit": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Search_Limit', `Maximum number of events to return (e.g., 10)`, 'number') }}",
+        "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Search_Start_Time', `Start date/time to search from (e.g., 2025-05-01T00:00:00Z)`, 'string') }}",
+        "timeMax": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Search_End_Time', `End date/time to search to (e.g., 2025-05-01T23:59:59Z)`, 'string') }}",
+        "options": {}
+      },
+      "id": "84812bea-9c22-4eb0-a1d9-60a87ac5d7a7",
+      "name": "Smart_Event_Search",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        1140,
+        160
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "jttch4cJRgIrcZfh",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "calendar": {
+          "__rl": true,
+          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Calendar', ``, 'string') }}",
+          "mode": "id",
+          "__regex": "(^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*)"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID_Or_Search', `Event ID (long string like '5fahaDcwtu2se4bnqdg5hsi4e6ek4') OR search criteria like date/time. If providing date/time, I will search for events first.`, 'string') }}",
+        "updateFields": {
+          "description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('New_Event_Description', `Updated description or notes for the event (optional)`, 'string') }}",
+          "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('New_End_DateTime', `New end date and time in ISO format (e.g., 2025-06-02T17:00:00-04:00)`, 'string') }}",
+          "location": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('New_Event_Location', `Updated location of the event (optional)`, 'string') }}",
+          "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('New_Start_DateTime', `New start date and time in ISO format (e.g., 2025-06-02T16:00:00-04:00)`, 'string') }}",
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('New_Event_Title', `Updated title/name of the event (optional)`, 'string') }}"
+        }
+      },
+      "id": "02c0fce3-2d1d-4fed-a2fc-3fb11b15a9e3",
+      "name": "Update_Existing_Event",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        820,
+        160
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "jttch4cJRgIrcZfh",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "calendar": {
+          "__rl": true,
+          "value": "kenneth.courtney@gmail.com",
+          "mode": "list",
+          "cachedResultName": "kenneth.courtney@gmail.com"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID_To_Delete', `The ID of the event to delete`, 'string') }}",
+        "options": {}
+      },
+      "id": "496184bb-bc58-4c73-b882-9ef80079df37",
+      "name": "Delete_Event",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        980,
+        160
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "jttch4cJRgIrcZfh",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "gsa_client_research",
+        "description": "Researches ANY company for GSA Schedule qualification and value proposition development. Evaluates whether a business could benefit from federal contracting opportunities through GSA schedules. Analyzes industry fit across ALL GSA schedule categories, identifies key decision makers, and creates targeted value propositions for federal market entry. Works with any business type - from medical supplies to IT services, staffing to construction, security to training companies. Returns detailed qualification analysis and actionable next steps. Use this tool when asked to qualify ANY company for GSA, identify decision makers, or develop talking points for federal contracting.",
+        "jsCode": "// Enhanced GSA Client Research Tool - FIXED VARIABLE SCOPING\nconst startTime = Date.now();\n\ntry {\n  const inputCompany = $input.item.json.query || '';\n  const focus = $input.item.json.focus || 'complete';\n  \n  console.log(`[GSA_REAL_SEARCH] Analyzing business: ${inputCompany}`);\n  \n  if (!inputCompany || inputCompany.trim() === '') {\n    throw new Error('Company name or URL is required');\n  }\n  \n  // Hard-coded API credentials (secure on your server)\n  const GOOGLE_API_KEY = 'AIzaSyB0rv0QDGWy7Gno284IybZVNB9BDJzSEPs';\n  const SEARCH_ENGINE_ID = '16331af4b4dc043f5';\n  \n  // Real Google search function\n  const searchCompanyInfo = async (companyName) => {\n    try {\n      const searchQuery = encodeURIComponent(`${companyName} company about contact`);\n      const searchUrl = `https://www.googleapis.com/customsearch/v1?key=${GOOGLE_API_KEY}&cx=${SEARCH_ENGINE_ID}&q=${searchQuery}&num=5`;\n      \n      console.log(`[GSA_SEARCH] Querying: ${searchQuery}`);\n      \n      const response = await fetch(searchUrl);\n      \n      if (!response.ok) {\n        throw new Error(`HTTP ${response.status}: ${response.statusText}`);\n      }\n      \n      const data = await response.json();\n      \n      if (data.error) {\n        console.error('[GSA_SEARCH] API Error:', data.error);\n        throw new Error(`Google API Error: ${data.error.message}`);\n      }\n      \n      if (data.items && data.items.length > 0) {\n        console.log(`[GSA_SEARCH] Found ${data.items.length} results`);\n        const firstResult = data.items[0];\n        return {\n          title: firstResult.title,\n          snippet: firstResult.snippet,\n          link: firstResult.link,\n          displayLink: firstResult.displayLink\n        };\n      }\n      \n      console.log('[GSA_SEARCH] No search results found');\n      return null;\n    } catch (error) {\n      console.error('[GSA_SEARCH] Error:', error.message);\n      return null;\n    }\n  };\n  \n  // Perform real search\n  console.log('[GSA_SEARCH] Starting Google search...');\n  const searchResults = await searchCompanyInfo(inputCompany);\n  \n  // Company extraction logic\n  let extractedCompany = inputCompany.trim();\n  let companyDomain = null;\n  let realBusinessInfo = null;\n  \n  if (searchResults) {\n    extractedCompany = searchResults.title.split(' - ')[0].split(' | ')[0] || extractedCompany;\n    companyDomain = searchResults.displayLink;\n    realBusinessInfo = searchResults.snippet;\n    console.log(`[GSA_SEARCH] Found company: ${extractedCompany} at ${companyDomain}`);\n  } else {\n    console.log('[GSA_SEARCH] No search results, using template analysis');\n  }\n  \n  // Enhanced business type detection using real search data\n  const detectBusinessType = (companyName, searchInfo) => {\n    const searchText = (searchInfo || '').toLowerCase();\n    const name = companyName.toLowerCase();\n    const types = [];\n    \n    const serviceKeywords = {\n      'staffing': ['staffing', 'recruiting', 'employment', 'workforce', 'personnel', 'talent'],\n      'medical': ['medical', 'health', 'healthcare', 'pharma', 'surgical', 'care', 'hospital'],\n      'technology': ['tech', 'software', 'IT', 'cyber', 'computer', 'digital', 'ai', 'cloud'],\n      'security': ['security', 'protection', 'guard', 'safety', 'surveillance'],\n      'consulting': ['consulting', 'advisory', 'solutions', 'services', 'professional'],\n      'manufacturing': ['manufacturing', 'factory', 'production', 'industrial', 'materials'],\n      'retail': ['retail', 'store', 'shopping', 'consumer', 'sales', 'franchise'],\n      'finance': ['financial', 'bank', 'investment', 'insurance', 'lending'],\n      'construction': ['construction', 'building', 'engineering', 'contractor'],\n      'logistics': ['logistics', 'shipping', 'transport', 'delivery', 'supply chain']\n    };\n    \n    for (const [type, keywords] of Object.entries(serviceKeywords)) {\n      if (keywords.some(keyword => name.includes(keyword) || searchText.includes(keyword))) {\n        types.push(type);\n      }\n    }\n    \n    if (types.length === 0) {\n      types.push('services');\n    }\n    \n    return types;\n  };\n  \n  const businessTypes = detectBusinessType(extractedCompany, realBusinessInfo);\n  const primaryType = businessTypes[0] || 'services';\n  \n  // GSA schedule mapping\n  const gsaScheduleOpportunities = {\n    'consulting': { schedule: 'OASIS+', naics: ['541611', '541618'], opportunity: 'High' },\n    'staffing': { schedule: 'Schedule 02', naics: ['561320', '561330'], opportunity: 'Very High' },\n    'technology': { schedule: 'Schedule 70', naics: ['541511', '541512'], opportunity: 'Very High' },\n    'medical': { schedule: 'Schedule 65', naics: ['621100', '423450'], opportunity: 'Excellent' },\n    'security': { schedule: 'Schedule 84', naics: ['561612', '561621'], opportunity: 'Very High' },\n    'manufacturing': { schedule: 'Schedule 56', naics: ['331000', '332000'], opportunity: 'High' },\n    'retail': { schedule: 'Schedule 75', naics: ['447000', '448000'], opportunity: 'Moderate' },\n    'finance': { schedule: 'OASIS+', naics: ['522000', '523000'], opportunity: 'High' },\n    'construction': { schedule: 'Schedule 36', naics: ['236000', '237000'], opportunity: 'Very High' },\n    'logistics': { schedule: 'Schedule 48', naics: ['484000', '493000'], opportunity: 'High' },\n    'services': { schedule: 'Multiple Options', naics: ['561000', '541000'], opportunity: 'Moderate' }\n  };\n  \n  const scheduleInfo = gsaScheduleOpportunities[primaryType] || gsaScheduleOpportunities['services'];\n  \n  // Generate realistic contact info using real domain\n  const generateContacts = (companyName, domain) => {\n    const realDomain = domain || `${companyName.replace(/[^a-zA-Z0-9]/g, '').toLowerCase()}.com`;\n    \n    return [\n      {\n        title: 'President/CEO',\n        email_formats: [`president@${realDomain}`, `ceo@${realDomain}`, `info@${realDomain}`],\n        priority: 'Primary Decision Maker'\n      },\n      {\n        title: 'Business Development Director', \n        email_formats: [`bizdev@${realDomain}`, `sales@${realDomain}`, `bd@${realDomain}`],\n        priority: 'Key Contact'\n      }\n    ];\n  };\n  \n  const contacts = generateContacts(extractedCompany, companyDomain);\n  \n  // Format enhanced response with real data\n  let response = `🔍 **Real-Time GSA Analysis: ${extractedCompany}**\\n\\n`;\n  \n  if (searchResults) {\n    response += `**🌐 Company Website**: ${searchResults.link}\\n`;\n    response += `**📄 Business Profile**: ${realBusinessInfo}\\n\\n`;\n  }\n  \n  response += `**✅ GSA Status**: POTENTIAL CANDIDATE\\n` +\n              `**📊 Opportunity Level**: ${scheduleInfo.opportunity}\\n` +\n              `**🏭 Business Type**: ${primaryType.toUpperCase()}\\n` +\n              `**📋 Recommended Schedule**: ${scheduleInfo.schedule}\\n` +\n              `**🔢 NAICS Codes**: ${scheduleInfo.naics.join(', ')}\\n\\n` +\n              `**👥 KEY DECISION MAKERS**:\\n` +\n              contacts.map(dm => `• **${dm.title}**: ${dm.email_formats[0]}`).join('\\n') +\n              `\\n\\n**💰 GSA VALUE PROPOSITION**:\\n` +\n              `• **Market Size**: $600+ billion federal marketplace\\n` +\n              `• **Payment Terms**: Guaranteed 30-day payment\\n` +\n              `• **Growth Potential**: 25-200% revenue increase\\n` +\n              `• **Contract Duration**: Multi-year agreements available\\n\\n` +\n              `**🚀 NEXT STEPS**: Schedule consultation with NRG GSA specialists`;\n  \n  const processingTime = Date.now() - startTime;\n  console.log(`[GSA_REAL_SEARCH] Analysis complete for ${extractedCompany} in ${processingTime}ms`);\n  \n  return response;\n  \n} catch (error) {\n  console.error('[GSA_REAL_SEARCH] Error:', error.message);\n  console.error('[GSA_REAL_SEARCH] Stack:', error.stack);\n  \n  const currentTime = new Date().toLocaleTimeString('en-US', { timeZone: 'America/New_York' });\n  const safeCompanyName = typeof inputCompany !== 'undefined' ? inputCompany : 'Unknown Company';\n  \n  return `🚨 **GSA Research Error**\\n\\nError analyzing \"${safeCompanyName}\": ${error.message}\\n\\n**Time**: ${currentTime}\\n**Status**: Check Google API quotas or try again`;\n}"
+      },
+      "id": "336f2394-8d75-4c17-b54d-361c50305098",
+      "name": "GSA Client Research Tool",
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1.1,
+      "position": [
+        1320,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "dataToSave": {
+          "values": [
+            {
+              "key": "user_message",
+              "value": "={{ $('Enhanced Input Processor').first().json.input }}"
+            },
+            {
+              "key": "user_input",
+              "value": "={{ $('Enhanced Input Processor').first().json.input }}"
+            },
+            {
+              "key": "ai_agent_output",
+              "value": "={{ $('Enhanced AI Agent').first().json.output }}"
+            },
+            {
+              "key": "ai_agent_full",
+              "value": "={{ JSON.stringify($('Enhanced AI Agent').first().json) }}"
+            },
+            {
+              "key": "tools_called",
+              "value": "={{ $('Enhanced AI Agent').first().json.toolCalls ? JSON.stringify($('Enhanced AI Agent').first().json.toolCalls) : ($('Enhanced AI Agent').first().json.intermediateSteps ? JSON.stringify($('Enhanced AI Agent').first().json.intermediateSteps) : ($('Enhanced AI Agent').first().json.steps ? JSON.stringify($('Enhanced AI Agent').first().json.steps) : \"Tools called but debug data not captured\")) }}"
+            },
+            {
+              "key": "session_id",
+              "value": "={{ $('Enhanced Input Processor').first().json.sessionId }}"
+            },
+            {
+              "key": "conversation_history",
+              "value": "={{ $('Format Context').first().json.conversationHistory || \"No history available\" }}"
+            },
+            {
+              "key": "message_count",
+              "value": "={{ $('Format Context').first().json.messageCount || 0 }}"
+            },
+            {
+              "key": "platform",
+              "value": "={{ $('Enhanced Input Processor').first().json.platform }}"
+            },
+            {
+              "key": "execution_timestamp",
+              "value": "={{ new Date().toISOString() }}"
+            }
+          ]
+        }
+      },
+      "id": "d7f91a54-f29f-45f3-a5b8-626092bd33dd",
+      "name": "Execution Data",
+      "type": "n8n-nodes-base.executionData",
+      "typeVersion": 1,
+      "position": [
+        500,
+        -280
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Enhanced Format Response with comprehensive debugging and fallback\nconsole.log('=== FORMAT RESPONSE NODE DEBUG ===');\nconst startTime = Date.now();\n\ntry {\n  const aiResponse = $('Enhanced AI Agent').first().json;\n  const contextData = $('Format Context').first().json;\n  \n  console.log('AI Response keys:', Object.keys(aiResponse || {}));\n  console.log('AI Response data:', JSON.stringify(aiResponse, null, 2));\n  console.log('Context Data keys:', Object.keys(contextData || {}));\n  \n  // Enhanced response extraction with multiple fallbacks\n  let responseText = null;\n  \n  // Try primary response fields\n  const responseFields = ['output', 'text', 'content', 'message', 'result', 'answer', 'response'];\n  \n  for (const field of responseFields) {\n    if (aiResponse && aiResponse[field]) {\n      responseText = aiResponse[field];\n      console.log(`Found response in field '${field}':`, responseText.substring(0, 100));\n      break;\n    }\n  }\n  \n  // Check for nested OpenAI-style responses\n  if (!responseText && aiResponse?.choices?.[0]?.message?.content) {\n    responseText = aiResponse.choices[0].message.content;\n    console.log('Found OpenAI-style response:', responseText.substring(0, 100));\n  }\n  \n  // Check if entire response is a string\n  if (!responseText && typeof aiResponse === 'string' && aiResponse.length > 10) {\n    responseText = aiResponse;\n    console.log('Using entire response as string');\n  }\n  \n  // If still no response, check for error indicators\n  const hasError = aiResponse?.error || aiResponse?.errorOccurred;\n  const errorMessage = aiResponse?.errorMessage || aiResponse?.error;\n  \n  // Generate fallback response if needed\n  if (!responseText || responseText.trim().length === 0) {\n    console.log('=== NO RESPONSE FOUND - GENERATING FALLBACK ===');\n    console.log('AI Response structure:', JSON.stringify(aiResponse, null, 2));\n    \n    const userMessage = contextData?.input || 'your request';\n    const currentTime = new Date().toLocaleTimeString('en-US', { timeZone: 'America/New_York' });\n    \n    if (hasError) {\n      responseText = `⚠️ **Processing Issue Detected**\n\nI encountered a technical issue while processing \"${userMessage}\".\n\n**Error Details**: ${errorMessage || 'Unknown processing error'}\n**Time**: ${currentTime}\n\n**Recommended Actions**:\n1. Try rephrasing your request\n2. Wait 30 seconds and try again\n3. Contact support if issue persists\n\n**Note**: Advanced workflow tools are temporarily experiencing issues`;\n    } else {\n      // Generate contextual fallback based on message content\n      const messageType = userMessage.toLowerCase();\n      \n      if (messageType.includes('calendar') || messageType.includes('meeting') || messageType.includes('schedule')) {\n        responseText = `📅 **Calendar Assistant Response**\n\nI received your calendar request: \"${userMessage}\"\n\nHowever, I'm experiencing connectivity issues with the calendar tools right now.\n\n**Alternative Options**:\n• Check your calendar directly in your preferred app\n• Try the request again in 1-2 minutes\n• Use the /test-ai interface for testing\n\n**Time**: ${currentTime}\n**Status**: Calendar tools temporarily unavailable`;\n      } else if (messageType.includes('search') || messageType.includes('find') || messageType.includes('message')) {\n        responseText = `🔍 **Search Assistant Response**\n\nI received your search request: \"${userMessage}\"\n\nThe message search tools are currently experiencing processing delays.\n\n**Try These Alternatives**:\n• Use the Discord search feature directly\n• Retry your request in a few moments\n• Check recent conversation history manually\n\n**Time**: ${currentTime}\n**Status**: Search tools temporarily delayed`;\n      } else if (messageType.includes('research') || messageType.includes('web') || messageType.includes('find')) {\n        responseText = `🌐 **Research Assistant Response**\n\nI received your research request: \"${userMessage}\"\n\nWeb research tools are currently experiencing connection issues.\n\n**Manual Research Suggestions**:\n• Try searching directly on Yahoo Finance or Bloomberg\n• Check company websites for latest information\n• Retry the automated research in a few minutes\n\n**Time**: ${currentTime}\n**Status**: Research tools temporarily offline`;\n      } else {\n        responseText = `🤖 **AI Assistant Response**\n\nI received your request: \"${userMessage}\"\n\nI'm experiencing technical difficulties with the advanced processing tools right now.\n\n**What I Can Still Help With**:\n• General questions and conversation\n• Basic business analysis\n• Strategic recommendations\n• System status updates\n\n**Time**: ${currentTime}\n**Status**: Core AI operational, advanced tools temporarily unavailable\n\n**Tip**: Try the /test-ai interface for direct AI interaction`;\n      }\n    }\n  }\n  \n  console.log('Final response text length:', responseText?.length || 0);\n  console.log('Is test mode:', contextData?.isTestMode);\n  \n  let result;\n  \n  if (contextData?.isTestMode) {\n    result = { \n      output: responseText,\n      testMode: true,\n      timestamp: new Date().toISOString(),\n      processingTime: Date.now() - startTime\n    };\n  } else {\n    result = {\n      content: responseText,\n      metadata: {\n        userId: contextData?.userId || 'unknown',\n        channelId: contextData?.channelId || 'unknown',\n        sessionId: contextData?.sessionId || 'unknown',\n        platform: contextData?.platform || 'discordant',\n        messageCount: contextData?.messageCount || 0,\n        timestamp: new Date().toISOString(),\n        responseSource: 'n8n-workflow',\n        processingTime: Date.now() - startTime,\n        hadFallback: !aiResponse?.output && !aiResponse?.text,\n        debugInfo: {\n          aiResponseKeys: Object.keys(aiResponse || {}),\n          contextKeys: Object.keys(contextData || {}),\n          responseFound: !!responseText\n        }\n      }\n    };\n  }\n  \n  console.log('=== FORMAT RESPONSE SUCCESS ===');\n  console.log('Final result content length:', result.content?.length || result.output?.length || 0);\n  console.log('Processing time:', Date.now() - startTime, 'ms');\n  \n  return result;\n  \n} catch (error) {\n  console.error('=== FORMAT RESPONSE ERROR ===');\n  console.error('Error details:', error.message);\n  console.error('Error stack:', error.stack);\n  console.error('Processing time before error:', Date.now() - startTime, 'ms');\n  \n  // Provide comprehensive error response\n  const currentTime = new Date().toLocaleTimeString('en-US', { timeZone: 'America/New_York' });\n  \n  return {\n    content: `🚨 **Workflow Processing Error**\n\nA critical error occurred while formatting your response.\n\n**Error**: ${error.message}\n**Time**: ${currentTime}\n**Processing Duration**: ${Date.now() - startTime}ms\n\n**Recovery Options**:\n1. **Retry** your request immediately\n2. **Simplify** your request and try again\n3. **Contact** system administrator with this error code\n\n**Error Code**: FORMAT_RESPONSE_FAILURE\n**Timestamp**: ${new Date().toISOString()}`,\n    metadata: {\n      userId: 'error-handler',\n      channelId: 'error-channel',\n      timestamp: new Date().toISOString(),\n      errorOccurred: true,\n      errorMessage: error.message,\n      responseSource: 'n8n-workflow-error',\n      processingTime: Date.now() - startTime\n    }\n  };\n}"
+      },
+      "id": "8adf733f-8f59-4497-849b-4bf3fe5cf3ba",
+      "name": "Format Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        700,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {}
+      },
+      "id": "2aad38c3-bb55-4918-9d2e-4dd0be3bdb9b",
+      "name": "Webhook Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1100,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=INSERT INTO message (content, channelId, memberId, createdAt) VALUES ('{{ $('Enhanced AI Agent').first().json.output || $('Enhanced AI Agent').first().json.text }}', '{{ $('Enhanced Input Processor').first().json.channelId }}', 'ai-assistant-bot', NOW())"
+      },
+      "id": "db148b0f-d4b0-434a-b601-d1d212802a82",
+      "name": "Save AI Response to Channel",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 1,
+      "position": [
+        500,
+        -80
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "TvnUCP0CFWmGulQM",
+          "name": "MySQL account"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "kenneth.courtney@gmail.com",
+          "mode": "list",
+          "cachedResultName": "kenneth.courtney@gmail.com"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start_DateTime', `Start date and time in ISO format (e.g., 2025-06-02T15:00:00-04:00)`, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End_DateTime', `End date and time in ISO format (e.g., 2025-06-02T16:00:00-04:00)`, 'string') }}",
+        "additionalFields": {
+          "description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_Description', `Optional description or notes for the event`, 'string') }}",
+          "location": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_Location', `The location of the event (e.g., \"Enterprise Dog Park, Clearwater, FL\")`, 'string') }}",
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_Title', `The title/name of the event (e.g., \"Enterprise Dog Park Meeting\")`, 'string') }}"
+        }
+      },
+      "id": "29562c6f-6aee-4a15-bca1-c8d49c003e62",
+      "name": "Create_New_Event",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        660,
+        160
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "jttch4cJRgIrcZfh",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "table": {
+          "__rl": true,
+          "value": "message",
+          "mode": "list",
+          "cachedResultName": "message"
+        },
+        "limit": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Result_Limit', 'Maximum number of results to return (default 20)', 'number') || 20 }}",
+        "where": {
+          "values": [
+            {
+              "column": "content",
+              "condition": "like",
+              "value": "{{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Search_Term', 'Text to search for in message content', 'string') }}"
+            },
+            {
+              "column": "channelId",
+              "value": "{{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Channel_ID', 'Channel ID to search within', 'string') }}"
+            }
+          ]
+        },
+        "sort": {
+          "values": [
+            {
+              "column": "createdAt",
+              "direction": "DESC"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "77e6328a-ab66-4faf-966e-0e81fa92b7ca",
+      "name": "Enhanced_MySQL_Search",
+      "type": "n8n-nodes-base.mySqlTool",
+      "typeVersion": 2.4,
+      "position": [
+        340,
+        220
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "TvnUCP0CFWmGulQM",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', `Recipient email address`, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', `Email subject line`, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', `Email message content`, 'string') }}",
+        "options": {
+          "bccList": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('BCC', `BCC recipients (comma separated)`, 'string', true) }}",
+          "ccList": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('CC', `CC recipients (comma separated)`, 'string', true) }}",
+          "replyTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('ReplyTo', `Reply-to email address`, 'string', true) }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        480,
+        380
+      ],
+      "id": "7b21f0b9-72fe-4ac1-bdef-925e50d6fc8f",
+      "name": "Gmail",
+      "webhookId": "72bc52c4-2dfb-46ce-b53a-c3762b87b624",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "TFVptUViBL54Sw6O",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "Extract and analyze transcripts from YouTube videos using the dedicated YouTube Transcript Service workflow. Provide YouTube URL to get full transcript with timestamps and analysis capabilities. Perfect for processing educational content, business presentations, tutorials, and competitive intelligence.",
+        "jsCode": "// YouTube Transcript Service via Execute Workflow\nconst startTime = Date.now();\n\ntry {\n  const inputData = $input.item.json;\n  const youtubeUrl = inputData.youtube_url || inputData.url || inputData.video_url || '';\n  \n  console.log(`[YOUTUBE_EXECUTE] Processing: ${youtubeUrl}`);\n  \n  if (!youtubeUrl || (!youtubeUrl.includes('youtube.com') && !youtubeUrl.includes('youtu.be'))) {\n    throw new Error('Valid YouTube URL is required. Please provide a YouTube video URL.');\n  }\n  \n  // Execute the YouTube Transcript Service workflow\n  const executeResult = await $execution.execute('vkCJIQ3P17JlfSKI', {\n    youtube_url: youtubeUrl,\n    operation: 'extract',\n    source: 'enhanced-ai-agent'\n  });\n  \n  if (!executeResult || executeResult.error) {\n    throw new Error(`Workflow execution failed: ${executeResult?.error || 'Unknown error'}`);\n  }\n  \n  const result = executeResult.data;\n  const processingTime = Date.now() - startTime;\n  \n  console.log(`[YOUTUBE_EXECUTE] Success in ${processingTime}ms`);\n  \n  // Format comprehensive response\n  let response_text = `🎬 **YouTube Video Analysis Complete**\\n\\n`;\n  \n  if (result?.success) {\n    response_text += `**📹 Video**: ${result.data?.videoTitle || 'Video processed'}\\n`;\n    response_text += `**📺 Channel**: ${result.data?.channelName || 'Unknown Channel'}\\n`;\n    response_text += `**📊 Stats**: ${result.data?.segmentCount || 0} segments, ${result.data?.transcriptLength || 0} characters\\n`;\n    response_text += `**⚡ Processing**: ${result.data?.cached ? 'Cached (instant)' : 'Real-time extraction'} - ${processingTime}ms\\n\\n`;\n    \n    if (result.data?.transcript) {\n      response_text += `**📝 Transcript Preview**:\\n`;\n      const preview = result.data.transcript.substring(0, 800);\n      response_text += preview + (result.data.transcript.length > 800 ? '...\\n\\n[Full transcript available for detailed analysis]' : '');\n    }\n    \n    response_text += `\\n\\n**🎯 Available Analysis Options**:\\n`;\n    response_text += `• **Key Insights**: Extract main points and takeaways\\n`;\n    response_text += `• **Action Items**: Identify specific tasks or recommendations\\n`;\n    response_text += `• **Competitive Intel**: Analyze strategies and approaches\\n`;\n    response_text += `• **Learning Summary**: Create educational summaries\\n`;\n    response_text += `• **Quote Search**: Find specific quotes or statements\\n\\n`;\n    response_text += `**💡 Next Steps**: Ask me specific questions about this video content for detailed analysis!`;\n  } else {\n    response_text += `**❌ Error**: ${result?.error || 'Failed to process video'}\\n\\n`;\n    response_text += `**🔧 Troubleshooting**:\\n`;\n    response_text += `• Check that the YouTube URL is valid and publicly accessible\\n`;\n    response_text += `• Verify the YouTube Transcript Service workflow is active\\n`;\n    response_text += `• Ensure the video has captions or auto-generated subtitles`;\n  }\n  \n  return response_text;\n  \n} catch (error) {\n  console.error('[YOUTUBE_EXECUTE] Error:', error.message);\n  return `❌ **YouTube Workflow Error**\\n\\n${error.message}\\n\\n**Troubleshooting**:\\n• Verify YouTube Transcript Service workflow (vkCJIQ3P17JlfSKI) is active\\n• Check workflow permissions and execution settings\\n• Try with a different YouTube URL to test connectivity`;\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1.2,
+      "position": [
+        800,
+        360
+      ],
+      "id": "c9ef8a30-fa40-444d-881f-9b6e0885f34c",
+      "name": "YouTube_Execute_Workflow"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "table": {
+          "__rl": true,
+          "value": "message",
+          "mode": "list",
+          "cachedResultName": "message"
+        },
+        "limit": "{{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Result_Limit', 'Maximum number of results to return (default 50)', 'number') || 50 }}",
+        "where": {
+          "values": [
+            {
+              "column": "channelId",
+              "value": "{{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Channel_ID', 'Channel ID to search within', 'string') }}"
+            },
+            {
+              "column": "fileUrl",
+              "condition": "isNotNull"
+            },
+            {
+              "column": "fileUrl",
+              "condition": "like",
+              "value": "%.jpg%"
+            },
+            {
+              "column": "fileUrl",
+              "condition": "like",
+              "value": "%.png%"
+            },
+            {
+              "column": "fileUrl",
+              "condition": "like",
+              "value": "%.gif%"
+            },
+            {
+              "column": "fileUrl",
+              "condition": "like",
+              "value": "%.jpeg%"
+            },
+            {
+              "column": "fileUrl",
+              "condition": "like",
+              "value": "%.webp%"
+            },
+            {
+              "column": "createdAt",
+              "condition": ">=",
+              "value": "{{ $now.minus({days: 20}).toSQL() }}"
+            }
+          ]
+        },
+        "sort": {
+          "values": [
+            {
+              "column": "createdAt",
+              "direction": "DESC"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b65f1839-1b09-409f-ac9b-85a7caba2cd0",
+      "name": "Enhanced_MySQL_Search_Images_Only",
+      "type": "n8n-nodes-base.mySqlTool",
+      "typeVersion": 2.4,
+      "position": [
+        180,
+        -360
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "TvnUCP0CFWmGulQM",
+          "name": "MySQL account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Discordant Chat Webhook": {
+      "main": [
+        [
+          {
+            "node": "Enhanced Input Processor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat Test Interface": {
+      "main": [
+        [
+          {
+            "node": "Enhanced Input Processor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enhanced Input Processor": {
+      "main": [
+        [
+          {
+            "node": "Load Channel History",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Channel History": {
+      "main": [
+        [
+          {
+            "node": "Format Context",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Channel History Debug Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Context": {
+      "main": [
+        [
+          {
+            "node": "Enhanced AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT-4o-Mini Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Enhanced AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enhanced AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Save AI Response to Channel",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Execution Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "View_Calendar_Events": {
+      "ai_tool": [
+        [
+          {
+            "node": "Enhanced AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Smart_Event_Search": {
+      "ai_tool": [
+        [
+          {
+            "node": "Enhanced AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update_Existing_Event": {
+      "ai_tool": [
+        [
+          {
+            "node": "Enhanced AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete_Event": {
+      "ai_tool": [
+        [
+          {
+            "node": "Enhanced AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GSA Client Research Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "Enhanced AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execution Data": {
+      "main": [
+        [
+          {
+            "node": "Format Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Response": {
+      "main": [
+        [
+          {
+            "node": "Webhook Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save AI Response to Channel": {
+      "main": [
+        [
+          {
+            "node": "Format Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create_New_Event": {
+      "ai_tool": [
+        [
+          {
+            "node": "Enhanced AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tavily_AI_Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "Enhanced AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enhanced_MySQL_Search": {
+      "ai_tool": [
+        [
+          {
+            "node": "Enhanced AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "Enhanced AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YouTube_Execute_Workflow": {
+      "ai_tool": [
+        [
+          {
+            "node": "Enhanced AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "7f28ab1f-595d-4b7e-afb9-9955032ad462",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "136461ac021bda65593ed5d2f70798d0433ed7859abfc9e2ca43aa4b9c0b779e"
+  },
+  "id": "dE6qEB7GQCQoqXVa",
+  "tags": []
+}

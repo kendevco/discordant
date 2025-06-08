@@ -22,13 +22,13 @@ export async function POST(request: NextRequest) {
       filters: {
         startDate: body.startDate ? new Date(body.startDate) : undefined,
         endDate: body.endDate ? new Date(body.endDate) : undefined,
-        channelIds: body.channelIds,
+        channelIds: body.channelId ? [body.channelId] : body.channelIds,
         userIds: body.userIds,
-        fileTypes: body.fileTypes,
+        fileTypes: body.filters?.fileTypes || body.fileTypes,
         messageTypes: body.messageTypes
       },
       options: {
-        maxResults: body.maxResults || 10,
+        maxResults: body.maxResults || 20,
         includeContext: body.includeContext || false,
         searchDepth: body.searchDepth || 'medium'
       }
