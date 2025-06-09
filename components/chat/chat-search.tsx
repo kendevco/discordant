@@ -9,8 +9,69 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DatePicker } from "@/components/ui/date-picker";
 import { useDebounce } from "@/hooks/use-debounce";
-import { DeepSearchEngine, SearchResultWithActivity, EnhancedSearchFilters } from "@/lib/system/deep-search";
 import { FileType, ActivityType, OnlineStatus } from "@prisma/client";
+
+// Define the types locally to avoid importing server-side code
+interface SearchResultWithActivity {
+  id: string;
+  type: 'message' | 'file' | 'calendar' | 'document' | 'external';
+  content: string;
+  excerpt?: string;
+  metadata: {
+    channelId?: string;
+    userId?: string;
+    userName?: string;
+    timestamp: string | Date;
+    relevanceScore: number;
+    source: string;
+    [key: string]: any;
+  };
+  context?: {
+    before?: string;
+    after?: string;
+  };
+  channelId?: string;
+  conversationId?: string;
+  channelName?: string;
+  author?: {
+    name: string;
+    imageUrl?: string;
+  };
+  timestamp: string | Date;
+  fileUrl?: string;
+  fileType?: string;
+  memberActivity?: {
+    lastActivity: string | Date;
+    onlineStatus: OnlineStatus;
+    isCurrentlyOnline: boolean;
+    recentActivities: ActivityType[];
+  };
+  channelActivity?: {
+    recentMessages: number;
+    activeMembers: number;
+    lastActivity: string | Date;
+  };
+}
+
+interface EnhancedSearchFilters {
+  query?: string;
+  channelIds?: string[];
+  fileTypes?: FileType[];
+  dateRange?: {
+    from: Date;
+    to: Date;
+  };
+  memberActivity?: {
+    activityTypes?: ActivityType[];
+    onlineStatus?: OnlineStatus[];
+    activeMembers?: boolean;
+    recentActivity?: number;
+  };
+  presence?: {
+    includeOfflineMembers?: boolean;
+    sortByActivity?: boolean;
+  };
+}
 
 interface ChatSearchProps {
   isOpen: boolean;
@@ -106,7 +167,22 @@ export function ChatSearch({ isOpen, onClose, channelId, conversationId, onResul
         },
       };
 
-      const searchResults = await DeepSearchEngine.searchWithActivity(filters, 20);
+      const response = await fetch('/api/search', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          filters,
+          limit: 20
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Search failed: ${response.status}`);
+      }
+
+      const searchResults = await response.json();
       setResults(searchResults);
     } catch (error) {
       console.error("Search error:", error);
@@ -157,16 +233,17 @@ export function ChatSearch({ isOpen, onClose, channelId, conversationId, onResul
     selectedOnlineStatus.length > 0 ||
     dateFrom || dateTo || onlyActiveMembers || !includeOfflineMembers || sortByActivity;
 
-  const formatTimestamp = (date: Date) => {
+  const formatTimestamp = (date: string | Date) => {
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
     const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
+    const diffMs = now.getTime() - dateObj.getTime();
     const diffHours = diffMs / (1000 * 60 * 60);
     const diffDays = diffMs / (1000 * 60 * 60 * 24);
 
     if (diffHours < 1) return "Just now";
     if (diffHours < 24) return `${Math.floor(diffHours)}h ago`;
     if (diffDays < 7) return `${Math.floor(diffDays)}d ago`;
-    return date.toLocaleDateString();
+    return dateObj.toLocaleDateString();
   };
 
   const getStatusColor = (status: OnlineStatus) => {

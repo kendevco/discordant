@@ -1,6 +1,6 @@
 // /hooks/use-chat-scroll.ts
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 type ChatScrollProps = {
   chatRef: React.RefObject<HTMLDivElement>;
@@ -20,29 +20,35 @@ export const useChatScroll = ({
   const [hasInitialized, setHasInitialized] = useState(false);
   const [userScrolled, setUserScrolled] = useState(false);
   const [lastMessageCount, setLastMessageCount] = useState(0);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const savedScrollHeightRef = useRef<number>(0);
 
   useEffect(() => {
     const topDiv = chatRef?.current;
 
     const handleScroll = () => {
-      const scrollTop = topDiv?.scrollTop;
+      if (!topDiv) return;
 
-      // Load more messages when scrolling to top
-      if (scrollTop === 0 && shouldLoadMore) {
+      const scrollTop = topDiv.scrollTop;
+      const scrollHeight = topDiv.scrollHeight;
+      const clientHeight = topDiv.clientHeight;
+
+      // Load more messages when scrolling to top (with small threshold)
+      if (scrollTop <= 50 && shouldLoadMore && !isLoadingMore) {
+        setIsLoadingMore(true);
+        // Save current scroll height before loading more
+        savedScrollHeightRef.current = scrollHeight;
         loadMore();
       }
 
-      // Enhanced scroll tracking - be more permissive for auto-scrolling
-      if (topDiv) {
-        const distanceFromBottom = topDiv.scrollHeight - topDiv.scrollTop - topDiv.clientHeight;
-        
-        // More aggressive auto-scroll for recent activity
-        // If user is within 100px of bottom, consider them "at bottom"
-        if (distanceFromBottom > 100) {
-          setUserScrolled(true);
-        } else {
-          setUserScrolled(false);
-        }
+      // Track if user has scrolled away from bottom
+      const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+      
+      // Consider user scrolled if they're more than 100px from bottom
+      if (distanceFromBottom > 100) {
+        setUserScrolled(true);
+      } else {
+        setUserScrolled(false);
       }
     };
 
@@ -50,99 +56,77 @@ export const useChatScroll = ({
     return () => {
       topDiv?.removeEventListener("scroll", handleScroll);
     };
-  }, [shouldLoadMore, loadMore, chatRef]);
+  }, [shouldLoadMore, loadMore, chatRef, isLoadingMore]);
 
+  // Handle initial scroll to bottom on first load
   useEffect(() => {
-    const bottomDiv = bottomRef?.current;
-    const topDiv = chatRef?.current;
-
-    const shouldAutoScroll = () => {
-      // Always scroll on first load
-      if (!hasInitialized && bottomDiv) {
+    if (!hasInitialized && bottomRef.current && count > 0) {
+      setTimeout(() => {
+        bottomRef.current?.scrollIntoView({ behavior: "instant" });
         setHasInitialized(true);
-        return true;
-      }
+      }, 100);
+    }
+  }, [hasInitialized, bottomRef, count]);
 
-      if (!topDiv) {
-        return false;
-      }
+  // Handle new messages (scroll to bottom) vs loading more messages (maintain position)
+  useEffect(() => {
+    const topDiv = chatRef?.current;
+    if (!topDiv) return;
 
-      // Enhanced logic for new messages
-      const messageCountChanged = count !== lastMessageCount;
+    const isNewMessagesLoaded = count > lastMessageCount;
+    const messagesAdded = count - lastMessageCount;
+
+    if (isNewMessagesLoaded) {
+      if (isLoadingMore) {
+        // Loading older messages - maintain scroll position
+        const newScrollHeight = topDiv.scrollHeight;
+        const heightDifference = newScrollHeight - savedScrollHeightRef.current;
+        
+        // Adjust scroll position to maintain view
+        if (heightDifference > 0) {
+          topDiv.scrollTop += heightDifference;
+        }
+        
+        setIsLoadingMore(false);
+      } else {
+        // New messages arriving - scroll to bottom if user is close to bottom
+        const shouldAutoScroll = () => {
+          if (!hasInitialized) return true;
+          
+          const distanceFromBottom = topDiv.scrollHeight - topDiv.scrollTop - topDiv.clientHeight;
+          
+          // Auto-scroll if user is close to bottom (within 150px) or hasn't scrolled away
+          return !userScrolled || distanceFromBottom <= 150;
+        };
+
+        if (shouldAutoScroll()) {
+          // Use requestAnimationFrame for smooth scrolling
+          requestAnimationFrame(() => {
+            bottomRef.current?.scrollIntoView({
+              behavior: "smooth",
+              block: "end"
+            });
+          });
+        }
+      }
+    }
+
+    setLastMessageCount(count);
+  }, [count, lastMessageCount, isLoadingMore, hasInitialized, userScrolled, chatRef, bottomRef]);
+
+  // Reset user scrolled state when they scroll back to bottom
+  useEffect(() => {
+    const topDiv = chatRef?.current;
+    if (!topDiv || !userScrolled) return;
+
+    const checkIfAtBottom = () => {
       const distanceFromBottom = topDiv.scrollHeight - topDiv.scrollTop - topDiv.clientHeight;
-      
-      // Auto-scroll if:
-      // 1. User hasn't scrolled significantly up (within 100px of bottom)
-      // 2. OR this is a new message and user is within 200px of bottom (more permissive)
-      // 3. OR user is exactly at bottom (distance <= 10px)
-      
       if (distanceFromBottom <= 10) {
-        // User is essentially at the bottom
-        return true;
+        setUserScrolled(false);
       }
-      
-      if (!userScrolled && distanceFromBottom <= 100) {
-        // User is close to bottom and hasn't actively scrolled away
-        return true;
-      }
-      
-      if (messageCountChanged && distanceFromBottom <= 200) {
-        // New message arrived and user is reasonably close to bottom
-        return true;
-      }
-
-      return false;
     };
 
-    if (shouldAutoScroll()) {
-      // Enhanced scrolling with multiple attempts for better reliability
-      const scrollToBottom = () => {
-        bottomRef.current?.scrollIntoView({
-          behavior: "smooth",
-          block: "end",
-          inline: "nearest"
-        });
-      };
-
-      // Immediate scroll attempt
-      scrollToBottom();
-
-      // Use requestAnimationFrame for better timing with DOM updates
-      requestAnimationFrame(() => {
-        scrollToBottom();
-        
-        // Additional scroll attempts for complex renders (system messages, etc.)
-        setTimeout(() => {
-          scrollToBottom();
-        }, 50);
-        
-        // Final fallback scroll for slow renders
-        setTimeout(() => {
-          scrollToBottom();
-        }, 150);
-      });
-    }
-
-    // Update last message count
-    setLastMessageCount(count);
-  }, [bottomRef, chatRef, count, hasInitialized, userScrolled, lastMessageCount]);
-
-  // Reset scroll tracking when count changes (new messages)
-  useEffect(() => {
-    if (count !== lastMessageCount) {
-      // Briefly reset scroll tracking for new messages to ensure they're visible
-      const timer = setTimeout(() => {
-        const topDiv = chatRef?.current;
-        if (topDiv) {
-          const distanceFromBottom = topDiv.scrollHeight - topDiv.scrollTop - topDiv.clientHeight;
-          // Only reset if user is close to bottom
-          if (distanceFromBottom <= 150) {
-            setUserScrolled(false);
-          }
-        }
-      }, 100);
-
-      return () => clearTimeout(timer);
-    }
-  }, [count, lastMessageCount, chatRef]);
+    const timer = setInterval(checkIfAtBottom, 500);
+    return () => clearInterval(timer);
+  }, [userScrolled, chatRef]);
 };

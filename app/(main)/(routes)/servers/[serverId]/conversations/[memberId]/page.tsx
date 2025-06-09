@@ -1,8 +1,7 @@
 // /app/(main)/(routes)/servers/[serverId]/conversations/[memberId]/page.tsx
 
-import ChatHeader from "@/components/chat/chat-header";
-import { ChatInput } from "@/components/chat/chat-input";
-import { ChatMessages } from "@/components/chat/chat-messages";
+import { ConversationChatWrapper } from "@/components/chat/conversation-chat-wrapper";
+import { ChatHeader } from "@/components/chat/chat-header";
 import { MediaRoom } from "@/components/media-room";
 import { getOrCreateConversation } from "@/lib/conversation";
 import { currentProfile } from "@/lib/current-profile";
@@ -56,6 +55,11 @@ const MemberIdPage = async ({ params, searchParams }: MemberIdPageProps) => {
       profile: true,
     },
   });
+  const server = await db.server.findUnique({
+    where: {
+      id: serverId,
+    },
+  });
   if (!currentMember) {
     return redirect("/");
   }
@@ -81,43 +85,75 @@ const MemberIdPage = async ({ params, searchParams }: MemberIdPageProps) => {
   if (!currentMember) {
     return redirect("/");
   }
+
   return (
     <div className="bg-white dark:bg-[#313338] flex flex-col h-full">
-      <ChatHeader
-        imageUrl={otherMember?.profile.imageUrl || undefined}
-        name={otherMember?.profile.name || ""}
-        serverId={serverId}
-        type="conversation"
-        conversationId={conversation.id}
-      />
-      {video && (
-        <MediaRoom chatId={conversation.id} video={true} audio={true} />
-      )}
-      {!video && (
-        <>
-          <ChatMessages
+      {/* Fixed Header */}
+      <div className="flex-shrink-0">
+        <ChatHeader
+          imageUrl={otherMember?.profile.imageUrl || undefined}
+          name={otherMember?.profile.name || ""}
+          serverId={serverId}
+          type="conversation"
+          conversationId={conversation.id}
+          serverImageUrl={server?.imageUrl}
+          serverName={server?.name}
+        />
+      </div>
+      
+      {/* Scrollable Content Area */}
+      <div className="flex-1 min-h-0">
+        {video && (
+          <MediaRoom chatId={conversation.id} video={true} audio={true} />
+        )}
+        {!video && (
+          <ConversationChatWrapper
             member={currentMember}
-            name={otherMember?.profile.name || ""}
-            chatId={conversation.id}
-            type="conversation"
-            apiUrl="/api/direct-messages"
-            paramKey="conversationId"
-            paramValue={conversation.id}
-            socketUrl="/api/socket/direct-messages"
-            socketQuery={{
-              conversationId: conversation.id,
+            conversation={{
+              id: conversation.id,
+              memberOne: memberOne.id === currentMember.id ? {
+                id: currentMember.id,
+                profile: {
+                  id: currentMember.profile.id,
+                  name: currentMember.profile.name,
+                  imageUrl: currentMember.profile.imageUrl || "",
+                },
+              } : {
+                id: otherMember!.id,
+                profile: {
+                  id: otherMember!.profile.id,
+                  name: otherMember!.profile.name,
+                  imageUrl: otherMember!.profile.imageUrl || "",
+                },
+              },
+              memberTwo: memberTwo.id === currentMember.id ? {
+                id: currentMember.id,
+                profile: {
+                  id: currentMember.profile.id,
+                  name: currentMember.profile.name,
+                  imageUrl: currentMember.profile.imageUrl || "",
+                },
+              } : {
+                id: otherMember!.id,
+                profile: {
+                  id: otherMember!.profile.id,
+                  name: otherMember!.profile.name,
+                  imageUrl: otherMember!.profile.imageUrl || "",
+                },
+              },
             }}
-          />
-          <ChatInput
-            name={otherMember?.profile.name || ""}
-            type="conversation"
-            apiUrl="/api/socket/direct-messages"
-            query={{
-              conversationId: conversation.id,
+            otherMember={{
+              id: otherMember!.id,
+              profile: {
+                id: otherMember!.profile.id,
+                name: otherMember!.profile.name,
+                imageUrl: otherMember!.profile.imageUrl || "",
+              },
             }}
+            serverId={serverId}
           />
-        </>
-      )}
+        )}
+      </div>
     </div>
   );
 };

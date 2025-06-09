@@ -34,6 +34,11 @@ model Server {
   members    Member[]
   channels   Channel[]
   activities ServerActivity[]
+  
+  // Workflow configuration
+  workflowEnabled  Boolean?  @default(true)
+  selectedWorkflow String?
+  
   createdAt  DateTime  @default(now())
   updatedAt  DateTime
 
@@ -105,6 +110,11 @@ model Channel {
   server    Server      @relation(fields: [serverId], references: [id], onDelete: Cascade)
   messages  Message[]
   activities ChannelActivity[]
+  
+  // Workflow configuration
+  workflowEnabled  Boolean?  @default(true)
+  selectedWorkflow String?
+  
   createdAt DateTime   @default(now())
   updatedAt DateTime
 
@@ -134,6 +144,9 @@ model Message {
   
   // Enhanced file metadata relation
   fileMetadata FileMetadata?
+  
+  // Shared message relation
+  sharedMessages SharedMessage[]
 
   @@index([channelId], map: "Message_channelId_idx")
   @@index([memberId], map: "Message_memberId_idx")
@@ -168,6 +181,9 @@ model DirectMessage {
   
   // Enhanced file metadata relation
   fileMetadata   FileMetadata?
+  
+  // Shared message relation
+  sharedMessages SharedMessage[]
 
   @@index([conversationId], map: "DirectMessage_conversationId_idx")
   @@index([memberId], map: "DirectMessage_memberId_idx")
@@ -291,6 +307,21 @@ enum ProcessingStatus {
   @@map("processing_status")
 }
 
+enum AIContentCategory {
+  RESEARCH_REPORT
+  DOCUMENT_ANALYSIS
+  BUSINESS_INTELLIGENCE
+  TECHNICAL_ANALYSIS
+  MARKET_INSIGHTS
+  DATA_VISUALIZATION
+  AI_RECOMMENDATION
+  CODE_ANALYSIS
+  MEETING_SUMMARY
+  GENERAL_AI_RESPONSE
+
+  @@map("ai_content_category")
+}
+
 model FileMetadata {
   id               String           @id @default(uuid())
   messageId        String?          @unique
@@ -344,4 +375,55 @@ model FileMetadata {
   @@index([messageId], map: "FileMetadata_messageId_idx")
   @@index([directMessageId], map: "FileMetadata_directMessageId_idx")
   @@map("file_metadata")
+}
+
+model SharedMessage {
+  id                String            @id @default(uuid())
+  shareId           String            @unique
+  messageId         String?
+  directMessageId   String?
+  message           Message?          @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  directMessage     DirectMessage?    @relation(fields: [directMessageId], references: [id], onDelete: Cascade)
+  
+  // Sharing configuration
+  title             String            @db.Text
+  description       String?           @db.Text
+  category          AIContentCategory @default(GENERAL_AI_RESPONSE)
+  isPublic          Boolean           @default(true)
+  allowComments     Boolean           @default(false)
+  
+  // AI content specific fields
+  isAIGenerated     Boolean           @default(false)
+  sourceUrl         String?           @db.Text
+  confidenceScore   Float?
+  processingTime    Int?              // milliseconds
+  
+  // Enhanced sharing options
+  includeMetadata   Boolean           @default(false)
+  enhanceForSharing Boolean           @default(false)
+  executiveSummary  String?           @db.Text
+  keyInsights       String?           @db.Text // JSON array
+  
+  // Sharing metadata
+  sharedBy          String            // Profile ID
+  viewCount         Int               @default(0)
+  lastViewed        DateTime?
+  sharedAt          DateTime          @default(now())
+  
+  // Access control
+  expiresAt         DateTime?
+  passwordProtected Boolean           @default(false)
+  
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  @@index([shareId], map: "SharedMessage_shareId_idx")
+  @@index([category], map: "SharedMessage_category_idx")
+  @@index([isAIGenerated], map: "SharedMessage_isAIGenerated_idx")
+  @@index([isPublic], map: "SharedMessage_isPublic_idx")
+  @@index([sharedBy], map: "SharedMessage_sharedBy_idx")
+  @@index([sharedAt], map: "SharedMessage_sharedAt_idx")
+  @@index([messageId], map: "SharedMessage_messageId_idx")
+  @@index([directMessageId], map: "SharedMessage_directMessageId_idx")
+  @@map("shared_message")
 }

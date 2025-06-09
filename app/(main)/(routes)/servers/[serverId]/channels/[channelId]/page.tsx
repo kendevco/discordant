@@ -1,9 +1,8 @@
 // /app/(main)/(routes)/servers/[serverId]/channels/[channelId]/page.tsx
 
 import { Metadata } from "next";
-import ChatHeader from "@/components/chat/chat-header";
-import { ChatInput } from "@/components/chat/chat-input";
-import { ChatMessages } from "@/components/chat/chat-messages";
+import { ChannelChatWrapper } from "@/components/chat/channel-chat-wrapper";
+import { ChatHeader } from "@/components/chat/chat-header";
 import { MediaRoom } from "@/components/media-room";
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
@@ -54,6 +53,11 @@ const ChannelIdPage = async ({ params }: ChannelIdPageProps) => {
       profileId: profile.id,
     },
   });
+  const server = await db.server.findUnique({
+    where: {
+      id: serverId,
+    },
+  });
 
   if (!member || !channel) {
     redirect("/");
@@ -61,42 +65,37 @@ const ChannelIdPage = async ({ params }: ChannelIdPageProps) => {
 
   return (
     <div className="bg-white dark:bg-[#313338] flex flex-col h-full">
-      <ChatHeader
-        name={channel.name}
-        serverId={channel.serverId}
-        type="channel"
-        channelId={channel.id}
-      />
-      {channel.type === ChannelType.TEXT && (
-        <>
-          <ChatMessages
+      {/* Fixed Header */}
+      <div className="flex-shrink-0">
+        <ChatHeader
+          name={channel.name}
+          serverId={channel.serverId}
+          type="channel"
+          channelId={channel.id}
+          serverImageUrl={server?.imageUrl}
+          serverName={server?.name}
+        />
+      </div>
+      
+      {/* Scrollable Content Area */}
+      <div className="flex-1 min-h-0">
+        {channel.type === ChannelType.TEXT && (
+          <ChannelChatWrapper
             member={member}
-            name={channel.name}
-            chatId={channel.id}
-            type="channel"
-            apiUrl="/api/messages"
-            socketUrl="/api/socket/messages"
-            socketQuery={{
-              channelId: channel.id,
+            channel={{
+              id: channel.id,
+              name: channel.name,
               serverId: channel.serverId,
             }}
-            paramKey="channelId"
-            paramValue={channel.id}
           />
-          <ChatInput
-            apiUrl="/api/socket/messages"
-            name={channel.name}
-            type="channel"
-            query={{ channelId: channel.id, serverId: channel.serverId }}
-          />
-        </>
-      )}
-      {channel.type === ChannelType.AUDIO && (
-        <MediaRoom chatId={channel.id} video={false} audio={true} />
-      )}
-      {channel.type === ChannelType.VIDEO && (
-        <MediaRoom chatId={channel.id} video={true} audio={true} />
-      )}
+        )}
+        {channel.type === ChannelType.AUDIO && (
+          <MediaRoom chatId={channel.id} video={false} audio={true} />
+        )}
+        {channel.type === ChannelType.VIDEO && (
+          <MediaRoom chatId={channel.id} video={true} audio={true} />
+        )}
+      </div>
     </div>
   );
 };

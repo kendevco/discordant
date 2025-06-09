@@ -1,7 +1,8 @@
 // /hooks/use-modal-store.ts
 
-import { Channel, ChannelType, Server } from "@prisma/client";
+import { Channel, ChannelType, Server, Message, DirectMessage } from "@prisma/client";
 import { create } from "zustand";
+
 export type ModalType =
   | "createServer"
   | "invite"
@@ -13,13 +14,17 @@ export type ModalType =
   | "deleteChannel"
   | "editChannel"
   | "messageFile"
-  | "deleteMessage";
+  | "deleteMessage"
+  | "shareAIResponse";
+
 interface ModalData {
   server?: Server;
   channel?: Channel;
   channelType?: ChannelType;
   apiUrl?: string;
   query?: Record<string, any>;
+  message?: Message;
+  directMessage?: DirectMessage;
 }
 interface ModalStore {
   type: ModalType | null;

@@ -3,6 +3,7 @@ import { currentProfilePages } from "@/lib/current-profile-pages";
 import { db } from "@/lib/db";
 import { MemberRole } from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
+import { deleteUploadThingFile } from "@/lib/utils/uploadthing-cleanup";
 
 export default async function handler(
   req: NextApiRequest,
@@ -74,6 +75,11 @@ export default async function handler(
       return res.status(401).json({ error: "Unauthorized" });
     }
     if (req.method === "DELETE") {
+      // Delete file from UploadThing if it exists
+      if (message.fileUrl) {
+        await deleteUploadThingFile(message.fileUrl, "MESSAGE_DELETE");
+      }
+
       message = await db.message.update({
         where: {
           id: messageId as string,

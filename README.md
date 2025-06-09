@@ -11,12 +11,14 @@ Each client receives a **white-labeled portal** (like a private Discord server) 
 - Chat-first interface for backend automation
 - Fully self-hosted & isolated per client or tenant
 - Token-based secure communication with n8n
+- Configure workflows per server or channel with intelligent routing
 
 ### 💬 Real-Time Communication
 - Multi-channel server layout (like Discord)
 - Live **video, audio, and screen sharing** via LiveKit
 - Secure **file uploads** using UploadThing
 - Auth with **Clerk** (scalable, production-grade)
+- Advanced message search with filters and member activity tracking
 
 ### 🛠️ Infrastructure & Stack
 - Backend: **Prisma + MySQL**
@@ -24,6 +26,32 @@ Each client receives a **white-labeled portal** (like a private Discord server) 
 - Real-time: **LiveKit WebRTC**
 - Auth: **Clerk.dev**
 - DevOps-ready and deployable in **private environments**
+
+---
+
+## ✨ New Features
+
+### 🤖 AI & Content Management
+- **Share AI Generated Content** - Share AI responses with public links and enhanced formatting
+- **Extensible Message Format** - Messages support both string and JSON formats for rich metadata
+- **Perfect Markdown Rendering** - Flawless code blocks, tables, and formatting with proper syntax highlighting
+
+### 🔍 Enhanced Search & Navigation
+- **Advanced Message Search** (Ctrl+S) - Search by content, type, member, date range, and activity
+- **Member Activity Tracking** - Real-time presence, online status, and activity history
+- **Smart Content Collapse** - Long messages (40+ lines) auto-collapse with "Show More" button
+
+### ⚙️ Workflow Integration
+- **Server-Level Workflows** - Configure n8n workflows for entire servers
+- **Channel-Specific Automation** - Override server settings with channel-specific workflows
+- **Workflow Inheritance** - Channels can inherit server workflows or define their own
+- **Message Pattern Detection** - Workflows automatically filter by message pattern support
+
+### 💬 Communication Enhancements
+- **Enhanced Message Editor** - Rich text editing with emoji picker and keyboard shortcuts
+- **Improved File Display** - Better handling of images, PDFs, and document previews
+- **Seamless Scrolling** - Optimized message list with proper scroll position management
+- **Presence Indicators** - See who's online, typing, or active in real-time
 
 ---
 
@@ -72,6 +100,10 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 N8N_API_URL=http://localhost:5678
 N8N_API_TOKEN=your_n8n_api_token
 DATABASE_URL=mysql://user:password@localhost:3306/discordant
+
+# Optional: For enhanced features
+NEXT_PUBLIC_SOCKET_URL=http://localhost:3000
+NEXT_PUBLIC_AI_SHARE_ENABLED=true
 ```
 
 ### 4. Setup the Database
@@ -89,6 +121,13 @@ npm run dev
 ### 6. Launch the App
 
 Visit [http://localhost:3000](http://localhost:3000)
+
+### 7. Key Commands & Shortcuts
+
+- **Ctrl+S** - Open advanced message search
+- **Enter** - Send message (in editor)
+- **Shift+Enter** - New line in message
+- **Escape** - Cancel editing/close modals
 
 ---
 

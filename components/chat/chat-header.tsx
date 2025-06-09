@@ -1,10 +1,8 @@
-// src/components/chat/chat-header.tsx
 import { Hash } from "lucide-react";
 import { MobileToggle } from "@/components/mobile-toggle";
 import { UserAvatar } from "@/components/user-avatar";
 import { SocketIndicator } from "@/components/socket-indicator";
 import { ChatVideoButton } from "@/components/chat-video-button";
-import { ChatHeaderSearch } from "@/components/chat/chat-header-search";
 
 interface ChatHeaderProps {
   serverId: string;
@@ -13,19 +11,32 @@ interface ChatHeaderProps {
   imageUrl?: string;
   channelId?: string;
   conversationId?: string;
+  serverImageUrl?: string | null;
+  serverName?: string;
 }
 
-const ChatHeader = ({ 
+export const ChatHeader = ({ 
   serverId, 
   name, 
   type, 
   imageUrl, 
   channelId, 
-  conversationId 
+  conversationId,
+  serverImageUrl,
+  serverName
 }: ChatHeaderProps) => {
   return (
     <div className="text-md font-semibold px-3 flex items-center h-12 border-neutral-200 dark:border-neutral-800 border-b-2 bg-gradient-to-br from-[#7364c0] to-[#02264a] dark:from-[#000C2F] dark:to-[#003666]">
       <MobileToggle serverId={serverId} />
+      
+      {/* Server Icon - Mobile Only */}
+      {serverImageUrl && (
+        <UserAvatar 
+          src={serverImageUrl} 
+          className="h-6 w-6 mr-2 ring-2 ring-white/20 md:hidden" 
+        />
+      )}
+      
       {type === "channel" && (
         <Hash className="mr-2 w-5 h-5 text-white dark:text-zinc-400" />
       )}
@@ -34,15 +45,9 @@ const ChatHeader = ({
       )}
       <p className="font-semibold text-md text-white">{name}</p>
       <div className="ml-auto flex items-center gap-x-2">
-        <ChatHeaderSearch
-          channelId={channelId}
-          conversationId={conversationId}
-        />
         {type === "conversation" && <ChatVideoButton />}
         <SocketIndicator />
       </div>
     </div>
   );
-};
-
-export default ChatHeader;
+}; 

@@ -41,6 +41,13 @@ export const ServerHeader = ({ server, role }: ServerHeaderProps) => {
           hover:from-[#7364c0]/20 hover:to-[#02264a]/20 
           dark:hover:from-[#000C2F]/20 dark:hover:to-[#003666]/20 
           transition">
+          {server.imageUrl && (
+            <img 
+              src={server.imageUrl} 
+              alt={server.name}
+              className="h-6 w-6 rounded-full mr-2 object-cover ring-2 ring-white/20"
+            />
+          )}
           {server.name}
           <ChevronDown className="h-5 w-5 ml-auto" />
         </button>
@@ -60,7 +67,7 @@ export const ServerHeader = ({ server, role }: ServerHeaderProps) => {
             className="text-zinc-200 hover:bg-zinc-700/50 text-sm cursor-pointer px-3 py-2 transition"
             onClick={() => onOpen("editServer", { server })}
           >
-            Edit Server
+            Server Settings
             <Edit className="h-4 w-4 ml-auto" />
           </DropdownMenuItem>
         )}

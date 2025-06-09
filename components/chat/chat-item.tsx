@@ -4,9 +4,9 @@
 import { Member, MemberRole, Profile } from "@prisma/client";
 import { UserAvatar } from "@/components/user-avatar";
 import { ActionTooltip } from "@/components/action-tooltip";
-import { Edit, FileIcon, ShieldAlert, ShieldCheck, Trash, Check, CheckCheck, Clock, AlertCircle } from "lucide-react";
+import { Edit, FileIcon, ShieldAlert, ShieldCheck, Trash, Check, CheckCheck, Clock, AlertCircle, Share2, Bot, Send } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useState, Fragment } from "react";
+import { useEffect, useState, Fragment, memo } from "react";
 import { cn } from "@/lib/utils";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import * as z from "zod";
@@ -15,13 +15,16 @@ import qs from "query-string";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { EmojiPicker } from "@/components/emoji-picker";
 import { useModal } from "@/hooks/use-modal-store";
 import { useRouter, useParams } from "next/navigation";
 import { useSocket } from "@/hooks/use-socket";
 import { MessageStatus } from "@/lib/system/types/messagestatus";
 import { ImageDialog } from "./image-dialog";
 import { RichContentRenderer } from "./rich-content-renderer";
+import { detectAIContent } from "@/lib/utils/ai-detection";
 
 const roleIconMap = {
   GUEST: null,
@@ -78,7 +81,7 @@ const MessageStatusIndicator = ({ messageId, isLast }: MessageStatusIndicatorPro
   }
 };
 
-export const ChatItem = ({
+const ChatItemComponent = ({
   id,
   content,
   member,
@@ -161,6 +164,44 @@ export const ChatItem = ({
                           content.includes("❌ **DUTY OFFICER") ||
                           content.includes("🕐 **DUTY OFFICER") ||
                           content.includes("📅 **DUTY OFFICER");
+
+  // Detect AI content for sharing - create a minimal message object for detection
+  const messageForDetection = {
+    id,
+    content,
+    fileUrl,
+    deleted,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    memberId: member.id,
+    // Add required fields based on context
+    ...(socketQuery.channelId ? {
+      channelId: socketQuery.channelId,
+      role: "user" as const
+    } : {
+      conversationId: socketQuery.conversationId || ""
+    })
+  };
+  
+  // Create proper message object for modal
+  const messageForModal = {
+    id,
+    content,
+    fileUrl,
+    deleted,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    memberId: member.id,
+    ...(socketQuery.channelId ? {
+      channelId: socketQuery.channelId,
+      role: "user" as const
+    } : {
+      conversationId: socketQuery.conversationId || ""
+    })
+  } as any; // Cast to satisfy TypeScript
+  
+  const aiDetection = detectAIContent(messageForDetection, member.profile);
+  const canShareAI = aiDetection.isAIGenerated && !deleted;
 
   return (
     <div className="relative group flex items-center hover:bg-black/5 p-4 transition w-full">
@@ -250,7 +291,7 @@ export const ChatItem = ({
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className="flex items-center gap-x-2 w-full pt-2"
+                className="w-full pt-2"
               >
                 <FormField
                   control={form.control}
@@ -258,30 +299,66 @@ export const ChatItem = ({
                   render={({ field }) => (
                     <FormItem className="flex-1">
                       <FormControl>
-                        <div className="relative w-full">
-                          <Input
-                            disabled={form.formState.isSubmitting}
-                            className="p-2 bg-zinc-200/90 dark:bg-zinc-700/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-200"
-                            placeholder="Edited message"
-                            {...field}
-                          />
+                        <div className="relative p-4 pb-6 bg-gradient-to-br from-[#7364c0] to-[#02264a] dark:from-[#000C2F] dark:to-[#003666] rounded-lg">
+                          <div className="px-4 pr-20">
+                            <Textarea
+                              placeholder="Edit your message..."
+                              disabled={form.formState.isSubmitting}
+                              className="min-h-[48px] max-h-32 resize-none bg-zinc-200/90 dark:bg-zinc-700/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-200 placeholder:text-zinc-500 dark:placeholder:text-zinc-400"
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter" && !e.shiftKey) {
+                                  e.preventDefault();
+                                  form.handleSubmit(onSubmit)();
+                                }
+                              }}
+                              {...field}
+                            />
+                          </div>
+
+                          <div className="absolute top-7 right-16">
+                            <EmojiPicker
+                              onChange={(emoji: string) =>
+                                field.onChange(`${field.value}${emoji}`)
+                              }
+                            />
+                          </div>
+
+                          <Button
+                            type="submit"
+                            disabled={form.formState.isSubmitting || !field.value.trim()}
+                            size="sm"
+                            variant="ghost"
+                            className="absolute top-7 right-8 h-[24px] w-[24px] p-0 hover:bg-zinc-600 dark:hover:bg-zinc-300 transition rounded-full flex items-center justify-center"
+                          >
+                            <Send className="h-4 w-4 text-zinc-400 hover:text-zinc-300 transition" />
+                          </Button>
                         </div>
                       </FormControl>
                     </FormItem>
                   )}
                 />
-                <Button disabled={form.formState.isSubmitting} size="sm" variant="primary">
-                  Save
-                </Button>
               </form>
               <span className="text-[10px] mt-1 text-zinc-400">
-                Press escape to cancel, enter to save
+                Press escape to cancel, enter to save, shift+enter for new line
               </span>
             </Form>
           )}
         </div>
-        {canDeleteMessage && !isSystemMessage && (
+        {((canDeleteMessage && !isSystemMessage) || canShareAI) && (
           <div className="hidden group-hover:flex items-center gap-x-2 absolute p-1 -top-2 right-5 bg-white dark:bg-zinc-800 border rounded-sm">
+            {canShareAI && (
+              <ActionTooltip label="Share AI Analysis">
+                <Share2
+                  onClick={() => onOpen("shareAIResponse", {
+                    ...(socketQuery.channelId ? 
+                      { message: messageForModal } : 
+                      { directMessage: messageForModal }
+                    )
+                  })}
+                  className="cursor-pointer ml-auto w-4 h-4 text-purple-500 hover:text-purple-600 dark:hover:text-purple-300 transition"
+                />
+              </ActionTooltip>
+            )}
             {canEditMessage && (
               <ActionTooltip label="Edit">
                 <Edit
@@ -290,18 +367,22 @@ export const ChatItem = ({
                 />
               </ActionTooltip>
             )}
-            <ActionTooltip label="Delete">
-              <Trash
-                onClick={() => onOpen("deleteMessage", {
-                  apiUrl: `${socketUrl}/${id}`,
-                  query: socketQuery,
-                })}
-                className="cursor-pointer ml-auto w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition"
-              />
-            </ActionTooltip>
+            {canDeleteMessage && !isSystemMessage && (
+              <ActionTooltip label="Delete">
+                <Trash
+                  onClick={() => onOpen("deleteMessage", {
+                    apiUrl: `${socketUrl}/${id}`,
+                    query: socketQuery,
+                  })}
+                  className="cursor-pointer ml-auto w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition"
+                />
+              </ActionTooltip>
+            )}
           </div>
         )}
       </div>
     </div>
   );
 };
+
+export const ChatItem = memo(ChatItemComponent);
