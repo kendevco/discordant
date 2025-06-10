@@ -1,6 +1,22 @@
 # Discord Clone Project Rules
 # This file defines the rules and processes for our Discord-like chat application
 
+# Documentation Organization
+documentation:
+  structure:
+    - "/docs/workflows" - n8n workflow configurations and automations
+    - "/docs/transcripts" - YouTube video transcripts and summaries
+    - "/docs/sql" - Database queries, schemas, and SQL-related documentation
+    - "/docs/misc" - General documentation that doesn't fit other categories
+    - "/docs/voice-ai" - VAPI and voice assistant configurations
+    - "/docs/integrations" - External API integrations and setups
+  placement_rules:
+    - "Use specific directories when content clearly belongs there"
+    - "Default to /docs/misc for general documentation"
+    - "Create new subdirectories only for substantial categories"
+    - "Keep documentation close to relevant code when possible"
+    - "Never modify next.config.js for any reason"
+
 # Theme Rules
 theme:
   gradients:

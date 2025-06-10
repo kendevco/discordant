@@ -18,6 +18,12 @@ model Profile {
   members   Member[]
   channels  Channel[]
   sessions  UserSession[]
+  
+  // External Integration Relations
+  apiTokens     ApiToken[]
+  agentProfile  AgentProfile?
+  visitorSessions VisitorSession[]
+  
   createdAt DateTime @default(now())
   updatedAt DateTime
 
@@ -38,6 +44,9 @@ model Server {
   // Workflow configuration
   workflowEnabled  Boolean?  @default(true)
   selectedWorkflow String?
+  
+  // External Integration
+  apiTokens  ApiToken[]
   
   createdAt  DateTime  @default(now())
   updatedAt  DateTime
@@ -426,4 +435,186 @@ model SharedMessage {
   @@index([messageId], map: "SharedMessage_messageId_idx")
   @@index([directMessageId], map: "SharedMessage_directMessageId_idx")
   @@map("shared_message")
+}
+
+// External Integration System
+
+enum ApiTokenType {
+  SERVICE_ACCOUNT
+  WEBHOOK_INTEGRATION
+  WIDGET_EMBED
+  AGENT_BOT
+
+  @@map("api_token_type")
+}
+
+enum AgentType {
+  AI_ASSISTANT
+  VAPI_TRANSCRIBER
+  SYSTEM_NOTIFIER
+  PORTFOLIO_VISITOR
+  WORKFLOW_RESPONDER
+  EXTERNAL_SERVICE
+
+  @@map("agent_type")
+}
+
+model ApiToken {
+  id               String          @id @default(uuid())
+  name             String          // Human readable name
+  token            String          @unique // The actual API token
+  type             ApiTokenType
+  profileId        String          // Owner of the token
+  profile          Profile         @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  
+  // Permissions and scope
+  serverId         String?         // Scope to specific server
+  server           Server?         @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  channelIds       String?         @db.Text // JSON array of allowed channel IDs
+  permissions      String          @db.Text // JSON object of permissions
+  
+  // External integration metadata
+  sourceOrigin     String?         // Portfolio site origin URL
+  webhookUrl       String?         @db.Text // Callback webhook URL
+  metadata         String?         @db.Text // JSON metadata for integration
+  
+  // Token lifecycle
+  isActive         Boolean         @default(true)
+  expiresAt        DateTime?
+  lastUsed         DateTime?
+  usageCount       Int             @default(0)
+  
+  // Rate limiting
+  rateLimit        Int             @default(100) // requests per hour
+  rateLimitWindow  Int             @default(3600) // window in seconds
+  
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  
+  // Relations
+  agentProfile     AgentProfile?
+  externalMessages ExternalMessage[]
+
+  @@index([profileId], map: "ApiToken_profileId_idx")
+  @@index([serverId], map: "ApiToken_serverId_idx")
+  @@index([type], map: "ApiToken_type_idx")
+  @@index([token], map: "ApiToken_token_idx")
+  @@index([isActive], map: "ApiToken_isActive_idx")
+  @@map("api_token")
+}
+
+model AgentProfile {
+  id              String          @id @default(uuid())
+  profileId       String          @unique // Links to main Profile
+  profile         Profile         @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  apiTokenId      String          @unique
+  apiToken        ApiToken        @relation(fields: [apiTokenId], references: [id], onDelete: Cascade)
+  
+  agentType       AgentType
+  displayName     String          // e.g., "AI Assistant", "VAPI Transcriber"
+  avatarUrl       String?         @db.Text
+  description     String?         @db.Text
+  
+  // Agent capabilities
+  canImpersonate  Boolean         @default(false) // Can send messages as other users
+  canCreateUsers  Boolean         @default(false) // Can create new profiles
+  systemBot       Boolean         @default(false) // System-level permissions
+  
+  // Integration settings
+  sourceConfig    String?         @db.Text // JSON config for external source
+  responseConfig  String?         @db.Text // JSON config for response formatting
+  
+  // Activity tracking
+  isOnline        Boolean         @default(false)
+  lastActive      DateTime?
+  messageCount    Int             @default(0)
+  
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([profileId], map: "AgentProfile_profileId_idx")
+  @@index([apiTokenId], map: "AgentProfile_apiTokenId_idx")
+  @@index([agentType], map: "AgentProfile_agentType_idx")
+  @@index([systemBot], map: "AgentProfile_systemBot_idx")
+  @@map("agent_profile")
+}
+
+model ExternalMessage {
+  id               String          @id @default(uuid())
+  apiTokenId       String
+  apiToken         ApiToken        @relation(fields: [apiTokenId], references: [id], onDelete: Cascade)
+  
+  // Message data
+  content          String          @db.Text
+  channelId        String?         // Target channel
+  conversationId   String?         // Target conversation
+  
+  // External source data
+  sourceType       String          // contact-form, vapi-call, chat-widget, etc
+  sourceId         String?         // External ID from source system
+  visitorData      String?         @db.Text // JSON visitor/session data
+  
+  // Processing status
+  processed        Boolean         @default(false)
+  messageId        String?         // Created Discordant message ID
+  directMessageId  String?         // Created direct message ID
+  error            String?         @db.Text
+  
+  // Metadata
+  ipAddress        String?
+  userAgent        String?         @db.Text
+  referrer         String?         @db.Text
+  sessionData      String?         @db.Text // JSON session information
+  
+  createdAt        DateTime        @default(now())
+  processedAt      DateTime?
+
+  @@index([apiTokenId], map: "ExternalMessage_apiTokenId_idx")
+  @@index([channelId], map: "ExternalMessage_channelId_idx")
+  @@index([sourceType], map: "ExternalMessage_sourceType_idx")
+  @@index([processed], map: "ExternalMessage_processed_idx")
+  @@index([createdAt], map: "ExternalMessage_createdAt_idx")
+  @@map("external_message")
+}
+
+model VisitorSession {
+  id              String          @id @default(uuid())
+  sessionId       String          @unique // External session ID
+  
+  // Visitor identification
+  email           String?
+  name            String?
+  profileId       String?         // If they become a real user
+  profile         Profile?        @relation(fields: [profileId], references: [id], onDelete: SetNull)
+  
+  // Session metadata
+  origin          String          // Portfolio site URL
+  ipAddress       String?
+  userAgent       String?         @db.Text
+  referrer        String?         @db.Text
+  
+  // Activity tracking
+  pageViews       Int             @default(0)
+  messagesCount   Int             @default(0)
+  lastActivity    DateTime        @default(now())
+  
+  // Session data
+  customData      String?         @db.Text // JSON custom fields
+  tags            String?         @db.Text // JSON tags array
+  notes           String?         @db.Text // Admin notes
+  
+  // Integration
+  channelId       String?         // Associated channel for this visitor
+  conversationId  String?         // Associated conversation
+  
+  isActive        Boolean         @default(true)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([sessionId], map: "VisitorSession_sessionId_idx")
+  @@index([profileId], map: "VisitorSession_profileId_idx")
+  @@index([email], map: "VisitorSession_email_idx")
+  @@index([isActive], map: "VisitorSession_isActive_idx")
+  @@index([lastActivity], map: "VisitorSession_lastActivity_idx")
+  @@map("visitor_session")
 }

@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:https": "next dev --experimental-https --experimental-https-key ./certs/localhost-key.pem --experimental-https-cert ./certs/localhost.pem",
+    "dev:https-auto": "next dev --experimental-https",
     "build": "prisma generate && next build",
     "start": "next start"
   },
@@ -44,14 +46,12 @@
     "emoji-mart": "^5.6.0",
     "exifreader": "^4.26.0",
     "framer": "^2.4.1",
-    "googleapis": "^144.0.0",
     "groq-sdk": "^0.9.1",
     "livekit-client": "^2.6.0",
     "livekit-server-sdk": "^2.8.1",
     "lucide-react": "^0.456.0",
     "next": "15.0.3",
     "next-themes": "^0.4.3",
-    "nodemailer": "^6.10.1",
     "openai": "^4.77.0",
     "prisma": "^6.8.2",
     "prisma-client": "^0.0.0",
@@ -75,7 +75,6 @@
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
-    "@types/nodemailer": "^6.4.17",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@types/uuid": "^10.0.0",

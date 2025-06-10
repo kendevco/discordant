@@ -1,0 +1,322 @@
+{
+  "name": "VAPI AI Assistant Processor",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "vapi-conversation",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "8215d499-f931-4e8a-a945-f1e8795b0e60",
+      "name": "VAPI Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1140,
+        60
+      ],
+      "webhookId": "vapi-conversation-hook"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse the AI response and clean it up\nlet response = items[0].json.text || items[0].json.choices?.[0]?.message?.content || '';\n\n// Extract JSON from response if it's wrapped in markdown\nconst jsonMatch = response.match(/```json\\s*([\\s\\S]*?)\\s*```/) || response.match(/{[\\s\\S]*}/);\nif (jsonMatch) {\n  response = jsonMatch[1] || jsonMatch[0];\n}\n\ntry {\n  const analysis = JSON.parse(response);\n  return [{ json: analysis }];\n} catch (error) {\n  // Fallback if JSON parsing fails\n  return [{\n    json: {\n      action: 'INFO',\n      summary: 'Unable to parse conversation analysis',\n      userDetails: {\n        name: null,\n        email: null,\n        phone: null,\n        preferredTime: null\n      },\n      priority: 'LOW',\n      nextSteps: 'Manual review required'\n    }\n  }];\n}"
+      },
+      "id": "cfcb44c7-3bdc-4d15-90c6-d8dcacce5de7",
+      "name": "Parse Analysis",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -700,
+        60
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "schedule-condition",
+              "leftValue": "={{ $json.action }}",
+              "rightValue": "SCHEDULE",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "90f6afe5-7a68-4db0-bbf9-0334ed84f27c",
+      "name": "Check if Scheduling",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -480,
+        -40
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "dc59a0f5-4dbd-49df-aab8-fd0fc5261a03",
+      "name": "Create Calendar Event",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 2,
+      "position": [
+        -260,
+        -140
+      ],
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "email-condition",
+              "leftValue": "={{ $('Parse Analysis').item(0).json.action }}",
+              "rightValue": "EMAIL",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "schedule-condition",
+              "leftValue": "={{ $('Parse Analysis').item(0).json.action }}",
+              "rightValue": "SCHEDULE",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "11f88575-b56d-4e2e-ae1e-29272ddaeb72",
+      "name": "Check if Email Needed",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -480,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "noreply@kendev.co",
+        "toEmail": "={{ $('Parse Analysis').item(0).json.userDetails.email || 'kenneth.courtney@gmail.com' }}",
+        "subject": "{{ $('Parse Analysis').item(0).json.action === 'SCHEDULE' ? 'Consultation Scheduled - KenDev.Co' : 'Thank you for contacting KenDev.Co' }}",
+        "emailFormat": "html",
+        "options": {}
+      },
+      "id": "555cf21c-d7da-448e-af26-a065e948504c",
+      "name": "Send Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        -260,
+        160
+      ],
+      "webhookId": "ace2dcd4-3ede-41c3-b5c8-d1597737c41e",
+      "credentials": {
+        "smtp": {
+          "id": "6PDacSttonHzteJq",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "guildId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "options": {}
+      },
+      "id": "22323af9-e07d-437b-acb4-c7c52513440c",
+      "name": "Discord System Notification",
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        -40,
+        60
+      ],
+      "webhookId": "fdd1bbb1-154b-41d2-9aa8-084970e07bbe"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"toolCallId\": \"={{ $('VAPI Webhook').item(0).json.toolCallId || $('VAPI Webhook').item(0).json.tool_call_id || 'conversation_processed' }}\",\n  \"result\": \"={{ \n    $('Parse Analysis').item(0).json.action === 'SCHEDULE' ? \n      'Perfect! I\\\\'ve scheduled your consultation and you\\\\'ll receive a calendar invitation shortly. A detailed follow-up email has also been sent with next steps. Looking forward to speaking with you!' :\n    $('Parse Analysis').item(0).json.action === 'EMAIL' ?\n      'Thank you for your inquiry! I\\\\'ve sent you a detailed email with information about our services. I\\\\'ll follow up personally within 24 hours.' :\n    $('Parse Analysis').item(0).json.action === 'FOLLOWUP' ?\n      'I\\\\'ve noted your request for a follow-up call. You\\\\'ll receive an email confirmation, and I\\\\'ll reach out to schedule a convenient time to speak.' :\n    $('Parse Analysis').item(0).json.action === 'SUPPORT' ?\n      'I\\\\'ve forwarded your technical question to our support team. You should receive a detailed response via email within a few hours.' :\n      'Thank you for your interest in KenDev.Co! I\\\\'ve saved your inquiry and will follow up with relevant information via email.'\n  }}\"\n}",
+        "options": {}
+      },
+      "id": "2da852ee-b50a-4d6d-8e23-f9a1c3eff1ba",
+      "name": "VAPI Tool Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        180,
+        60
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "chat",
+        "model": "gpt-4.1-mini",
+        "options": {},
+        "requestOptions": {}
+      },
+      "id": "c08727ef-daf6-4f37-9dc5-527c22cefb6d",
+      "name": "Analyze Conversation",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [
+        -920,
+        60
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "93xrPD7UUL9tV6EG",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "VAPI Webhook": {
+      "main": [
+        [
+          {
+            "node": "Analyze Conversation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Analysis": {
+      "main": [
+        [
+          {
+            "node": "Check if Scheduling",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Check if Email Needed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if Scheduling": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Discord System Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if Email Needed": {
+      "main": [
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Discord System Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email": {
+      "main": [
+        [
+          {
+            "node": "Discord System Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Discord System Notification": {
+      "main": [
+        [
+          {
+            "node": "VAPI Tool Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze Conversation": {
+      "main": [
+        [
+          {
+            "node": "Parse Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "108957c6-8ae0-4047-a927-fb0e30320e6d",
+  "meta": {
+    "instanceId": "136461ac021bda65593ed5d2f70798d0433ed7859abfc9e2ca43aa4b9c0b779e"
+  },
+  "id": "IpV2zeK5T3OFAiUP",
+  "tags": [
+    {
+      "name": "VAPI",
+      "id": "WVG87aPfVF1k70I8",
+      "createdAt": "2025-06-09T15:20:49.511Z",
+      "updatedAt": "2025-06-09T15:20:49.511Z"
+    },
+    {
+      "name": "AI",
+      "id": "mDhQYU6t9llzt6iv",
+      "createdAt": "2025-06-09T15:20:49.521Z",
+      "updatedAt": "2025-06-09T15:20:49.521Z"
+    },
+    {
+      "name": "Automation",
+      "id": "tN8PThS3gEqZUylH",
+      "createdAt": "2025-06-09T15:20:49.565Z",
+      "updatedAt": "2025-06-09T15:20:49.565Z"
+    }
+  ]
+}

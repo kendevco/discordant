@@ -1,0 +1,1237 @@
+
+Build Anything With Lovable + n8n AI Agents (No-Code)
+
+SoftwareGent
+2.62K subscribers
+
+Join
+
+Subscribe
+
+74
+
+
+Share
+
+Ask
+
+Download
+
+2,374 views  May 25, 2025
+📃Join the Waitlist of my Skool Community: https://www.skool.com/ai-saas-builder...
+
+
+🚀 We launch in 1 week 
+
+🤖 n8n: https://bit.ly/3FywU8T (Helps the channel)
+
+🎥 Build Anything With Lovable + n8n AI Agents (No-Code) – Ready to build smarter, faster, and without writing a single line of code? In this video, I’ll show you how to build anything using Lovable + n8n + AI agents, combining the power of no-code UI with powerful backend automation and intelligence.
+
+Links:
+
+We’ll walk through how to connect Lovable for front-end app creation with n8n to automate workflows and integrate AI agents that handle tasks, decisions, and even client interactions. If you want to launch real apps, services, or tools using no-code + AI, this is your blueprint.
+
+🚀 From MVPs to full 
+
+ systems, it’s never been easier to go from idea to launch.
+
+✨ LIKE, SUBSCRIBE & COMMENT if you're ready to build with zero limits.
+
+Transcript
+
+
+Search in video
+0:00
+this is how you can build anything with
+0:02
+Lovable and NN in this video we're going
+0:04
+to build a custom AI voice assistant app
+0:07
+that can handle simple everyday tasks
+0:09
+like sending emails scheduling event
+0:11
+your calendar and adding items in your
+0:13
+to-do list we will use Lovable to build
+0:16
+a front end which is basically the
+0:17
+visual interface people interact with
+0:19
+and we will use N to build a back end
+0:22
+which is basically what is happening
+0:23
+behind the interface and gives us the
+0:25
+actual results of our app now the first
+0:27
+thing we need to do is to create a road
+0:29
+map for our app so we know exactly what
+0:31
+steps we should take to actually start
+0:33
+building it so I will come over to chip
+0:35
+and type I want to build a voice
+0:37
+assistant app with lovable and n in
+0:39
+which I will be able to send a voice
+0:41
+message in lovable interface and then it
+0:44
+will go over to n where the automation
+0:46
+will decide whether it should send an
+0:48
+email schedule an event my calendar or
+0:50
+add something to my to-do list give me
+0:52
+the exact road map of how I can do that
+0:54
+and click on enter and guys the reason
+0:56
+we're doing that is so we know the exact
+0:58
+process we need to follow because
+1:00
+sometimes we might have something in our
+1:02
+mind but we actually might need to do
+1:04
+more steps in order to be able to
+1:06
+achieve it and it would be better for us
+1:08
+to be prepared so we prompt Lovable
+1:10
+accordingly at the start rather than us
+1:12
+trying to troubleshoot after Lovable has
+1:15
+already made the vast majority of the
+1:16
+app and as you can see Tajib gave us an
+1:19
+exact road map of what we need to do and
+1:21
+the reason we use such a guys is because
+1:23
+as you guys can see step one basically
+1:26
+create the lovable interface step two
+1:28
+set up n automation which is fine but
+1:30
+then step three we have a problem there
+1:33
+is no module in n which can actually
+1:35
+recognize voice and transcribe it into
+1:38
+text and also lovable cannot by itself
+1:40
+recognize speech and transcribe it into
+1:42
+text so we'll need to adding something
+1:45
+in between those two so our voice
+1:47
+actually gets transcribed and then sent
+1:49
+in N which is actually pretty simple to
+1:51
+do but it is a step that a lot of people
+1:53
+actually get stuck on never complete and
+1:55
+that's why you will be able to
+1:56
+differentiate yourself by building this
+1:58
+app but let's first start with step
+2:01
+number one which is none other than
+2:03
+building the actual interface to do that
+2:05
+I will simply ask hey give me a prompt I
+2:08
+can give to lovable to build me an
+2:10
+interface for this app exactly as I want
+2:12
+and I will simply click on enter and now
+2:15
+will literally give me the exact prompt
+2:17
+i can use Lovable to build me this
+2:18
+interface so SJ gave me this prompt i
+2:21
+will simply come over here copy it come
+2:23
+back over to Lovable paste it and simply
+2:26
+click on enter so while Lovable is
+2:28
+actually building our interface let's
+2:30
+actually build the back end of our app
+2:32
+so I will go over to N i will leave a
+2:34
+link for it in the description below if
+2:36
+you don't have an account you can just
+2:37
+simply create one it's super simple and
+2:39
+we'll simply come over here and click on
+2:41
+create workflow so right now we have a
+2:43
+brand new workflow and now the first
+2:45
+thing that we need to do is to actually
+2:47
+come over here click on add first step
+2:49
+and over here we have the triggers which
+2:51
+is how workflow will actually start and
+2:53
+we will search for web hook now what is
+2:55
+a web hook exactly it is a module which
+2:58
+will connect a front end interface in
+3:00
+lovable with a backend automation that
+3:02
+we're going to create in it so basically
+3:05
+think of it as the connector between the
+3:06
+two so we will click it and over here we
+3:09
+have this URL we will click it and the
+3:11
+only thing we need to do in this module
+3:13
+is simply to come over here in the HTTP
+3:16
+method and simply change it from get to
+3:18
+post and now we'll just simply come over
+3:20
+here click on top of it to copy the link
+3:22
+and we'll come over to Lovable which
+3:24
+actually finish building the app which
+3:26
+is great and we'll just simply paste it
+3:28
+over here and say this is the link for
+3:30
+the web hook from N make sure to connect
+3:33
+it so it's able to receive a post
+3:35
+request and now because I would want a
+3:37
+text box as well underneath the mic so I
+3:39
+can also manually type what I want my
+3:42
+app to do in addition to speaking i will
+3:44
+also say also add in a text box in which
+3:46
+I can also type my props underneath the
+3:48
+microphone in addition to speaking and I
+3:50
+will simply click on enter and now
+3:52
+Lovable will make both of these changes
+3:54
+and I will be back with you once it is
+3:56
+done and boom guys Lovable just finished
+3:58
+making the changes and as you can see it
+4:00
+successfully added this text box
+4:02
+underneath the microphone so we can also
+4:04
+type if we don't want to speak at that
+4:06
+moment so now let's actually test it to
+4:08
+see if it actually is able to send the
+4:10
+data inside N but before we say anything
+4:13
+we first need to go over to N double
+4:15
+click on the web hook and make sure we
+4:17
+click on laser for test event so our web
+4:20
+hook is actively listening and it's
+4:22
+waiting for data to come in from Lovable
+4:24
+and now we simply come back to Lovable
+4:26
+and type hey can you send an email to
+4:28
+Mark and I will simply come over here
+4:30
+and click on enter and we will click on
+4:32
+send command was sent successfully now
+4:34
+if we go back to NN we can actually see
+4:37
+the message we sent as you can see over
+4:38
+here guys message hey can you send an
+4:41
+email to Mark this is simply amazing so
+4:44
+that's great we successfully managed to
+4:45
+connect our web hook in Lovable and now
+4:47
+it's actually time to build the
+4:49
+automation so we'll click off the web
+4:51
+hook module and now it's time to add in
+4:53
+an AI agent so I will simply click on
+4:55
+add i will click on AI and I will click
+4:57
+on AI agent and now just to explain it
+5:00
+what this AI agent will do it will
+5:02
+basically receive the message from
+5:03
+Lovable it will analyze it and then it
+5:06
+will decide whether it wants to send an
+5:08
+email it wants to schedule an event in a
+5:10
+calendar or it wants to add something in
+5:12
+our to-do list always based on the
+5:14
+message we gave it inside Lovable so the
+5:17
+first thing that we need to do is to
+5:18
+come over here where it says source for
+5:20
+prompt click on it and we'll click on
+5:22
+define below since we're not using a
+5:25
+trigger nor we're actually using a web
+5:26
+cook so we'll click on define below and
+5:28
+over here we will actually scroll all
+5:30
+the way down here to where it says
+5:32
+message which is basically the message
+5:34
+that we sent from lovable to NNN and we
+5:36
+simply drag and drop this all the way
+5:38
+over here and we could say something
+5:40
+like this is what you should do and now
+5:43
+the only other thing we have to do in
+5:45
+our AI agent is to simply come over here
+5:48
+to options click on add option and click
+5:50
+on system message and here we'll
+5:52
+basically need to describe in our AI
+5:54
+agent exactly what it needs to do based
+5:57
+on the message it receives so I wrote
+6:00
+you are an assistant that receives user
+6:01
+request decides whether the user wants
+6:04
+to send an email schedule a calendar
+6:06
+event or add a to-do list item choose
+6:08
+the correct action and provide the
+6:10
+necessary details for that action so how
+6:12
+I created this prompt was basically I
+6:14
+came over to AI assistant i basically
+6:17
+explained exactly what I want the AI
+6:19
+agent to do and literally gave me the
+6:21
+prompt that I simply copy pasted this is
+6:23
+a very underrated feature i don't know
+6:25
+why a lot of people not using it it
+6:27
+literally saves you so much time so now
+6:29
+that we finished our prompt we'll simply
+6:31
+click off of it and we'll click on save
+6:33
+always make sure you're saving your
+6:35
+progress because N doesn't automatically
+6:37
+save it and now it's time to add in the
+6:39
+model the AI agent will use so we'll
+6:42
+simply come over here and click on the
+6:43
+plus icon and over here we can select
+6:46
+from all these models you can pick each
+6:48
+one that you want i will personally
+6:50
+select Google Gemini for this video
+6:52
+since it is also free and everyone can
+6:54
+use it so if this box is actually empty
+6:56
+for you because you haven't actually
+6:58
+created any API keys over here you will
+7:00
+simply click on create new credential
+7:02
+and over here it will ask you for the
+7:04
+API key now how you can find this key
+7:06
+simple you come over to Google AI
+7:08
+studio/ API keys and you will simply
+7:10
+come over here and click on create API
+7:12
+key i will also leave the link for this
+7:14
+in the description below over here we
+7:16
+simply select the Google project i will
+7:19
+select this one for example and I will
+7:21
+click on create API key this will give
+7:23
+you your API key you will simply click
+7:25
+on copy come back to NN and simply paste
+7:28
+over here in the API key box and then
+7:31
+simply click on save and now as you can
+7:33
+see credential successfully was created
+7:35
+now we can click off of this and now we
+7:37
+simply need to select the model i will
+7:39
+select Gemini 2.5 plus you can select
+7:42
+which model you want doesn't really
+7:44
+matter we will not do anything else we
+7:46
+simply click off of it and now we have
+7:48
+successfully add in our AI model now
+7:50
+what we need to do is to actually add in
+7:52
+some memory so I will click on add over
+7:54
+here i will add some simple memory and I
+7:56
+will make the context window 10 you can
+7:58
+leave it at five it is fine what that
+8:00
+basically is is how many past
+8:02
+interactions you will remember so I will
+8:04
+leave it at 10 and why we add memory is
+8:06
+because if we actually give insufficient
+8:09
+information to the AI agent it will
+8:11
+actually be able to send us a message
+8:12
+back to ask for more information so it
+8:15
+can actually complete the task which is
+8:16
+very important that's the reason we
+8:18
+actually added the memory so now we
+8:20
+actually need to add in the tools so
+8:21
+let's add in our first tool which will
+8:23
+be none other than Gmail so we'll simply
+8:26
+come over here click on the plus icon
+8:28
+and we will come over here and simply
+8:29
+search for Gmail as you can see Gmail 2
+8:32
+the first thing you actually need to do
+8:33
+if you have not created your Gmail
+8:35
+account is to actually create it so you
+8:37
+will come over here and click on update
+8:39
+credentials and over here if you haven't
+8:41
+actually created your account you will
+8:42
+see O2 login you will simply click on it
+8:46
+so you will basically sign in the Gmail
+8:48
+account you want the emails to be sent
+8:49
+from it is a very simple process you
+8:51
+simply click on sign in with Google you
+8:53
+select your account you will simply
+8:55
+allow it and then what it needs you to
+8:57
+allow and you click on continue and you
+9:00
+will see this message where it says
+9:01
+connection successful so after you see
+9:04
+that message it means that you
+9:05
+successfully connected your Google
+9:06
+account so then you will be able to
+9:08
+click off here and now that you have
+9:10
+done that all of the settings are
+9:12
+exactly as we want them we want to set
+9:15
+automatically we want the res to be a
+9:17
+message and operation to be to send we
+9:19
+don't want to do anything else so all
+9:21
+these three things were by default
+9:23
+exactly what we wanted and now in this
+9:25
+box we select which person we're going
+9:27
+to send the message to we'll simply come
+9:29
+over here in the magic button and click
+9:31
+it to let the AI model define it we can
+9:34
+also add in a description if we want
+9:36
+there's no need to add an actual
+9:38
+description we'll do the same with
+9:40
+subject and we will also do the exact
+9:42
+same with message and we'll change the
+9:45
+email type from HTML to text and we're
+9:48
+basically done with the Gmail module so
+9:50
+we just need to click off of here and
+9:52
+let's actually test it so I will first
+9:54
+come over to the web hook make sure it
+9:56
+listens for test event don't forget that
+9:58
+guys it is very important it will not be
+10:00
+able to bring the data from lovable and
+10:02
+I will go back to Lovable and we will
+10:04
+type and I said "Hey send an email to
+10:07
+NFT average owner gmail.com this is my
+10:10
+actual fake email subject should be
+10:12
+hello description should be please like
+10:15
+this video." And we simply click over
+10:17
+here and send this request command was
+10:19
+sent successfully and now if we go back
+10:21
+to N you can see over here we did
+10:23
+receive it and if we come back over to
+10:26
+the AI agent here we click it we can see
+10:28
+Arbor okay I have sent the email great
+10:31
+and now we go to our email you can see
+10:33
+over here to NFT average owner please
+10:36
+like this video exactly as we prompted
+10:39
+the AI to do that's great so that means
+10:42
+that the Gmail module actually works now
+10:44
+it's time to add in the next function
+10:46
+which will be scheduling Google calendar
+10:48
+events so we'll come back over to NN and
+10:51
+we'll simply come over here to tool and
+10:52
+click on the plus icon and now we will
+10:54
+search for Google calendar we will click
+10:57
+on the Google calendar tool and over
+10:59
+here if you connected your Google
+11:00
+account before you will also have it
+11:03
+connect over here so simply select it
+11:05
+then the tool description we will leave
+11:07
+it on set automatically on the resource
+11:09
+leave it on event operation we will
+11:11
+leave it on create since we want to
+11:13
+create an event we don't want to do any
+11:15
+of these other functions and over here
+11:17
+in the calendar we can either select a
+11:20
+calendar or we can let the AI decide for
+11:22
+us but if we want to let the AI decide
+11:25
+for us we'll need to give it information
+11:26
+about which calendar to use basically so
+11:29
+I would suggest you simply select the
+11:31
+one that you want so basically your main
+11:33
+one i will select my main one over here
+11:35
+and over here in the start we will leave
+11:38
+it as it is and on the end we will leave
+11:40
+it as it is as well so to test it we
+11:42
+will click on test workflow i will come
+11:45
+over to Lovable and say add in my Google
+11:47
+calendar at the 18th of May 2025 at 7
+11:51
+p.m for 1 hour the task walk my dog and
+11:55
+we come over here click on send and we
+11:57
+click on send again command was sent
+11:59
+successfully boom guys as you can see
+12:01
+the workflow was executed successfully
+12:04
+and if we go over to our calendar you
+12:06
+guys can see at the 18th of May at 7 p.m
+12:10
+the task walk my dog was added for
+12:12
+exactly one hour which is amazing and
+12:14
+means that the Google calendar module
+12:16
+works exactly as it should now let's add
+12:18
+in the third module in our automation so
+12:21
+I will come back to NN and I will come
+12:23
+over here again and click on tool and
+12:25
+this time I will search for to-do list
+12:27
+and here it is i will simply click on it
+12:29
+and again over here we need to connect
+12:31
+our to-do list account if you don't have
+12:33
+one you can simply create one and in
+12:35
+order to connect it you will simply go
+12:37
+over to your to-do list you will come
+12:39
+over here on your profile and you will
+12:41
+click on settings and then you will come
+12:43
+all the way down here to where it says
+12:45
+integrations and you will go over here
+12:47
+to developer and as you guys can see
+12:50
+over here we have our API token we'll
+12:52
+simply click on copy API token and you
+12:55
+will come back to NN just so I show you
+12:57
+how it is you will click over here and
+12:59
+you will insert your API key over here
+13:02
+and click on save and your to-dul
+13:04
+account will be successfully integrated
+13:06
+with NN so now we'll click off of this
+13:09
+and now here on the tool description
+13:11
+we'll leave it on set automatically on
+13:12
+the resource we'll leave it on task
+13:14
+operations we will leave it on create
+13:16
+since we want to create a task in our
+13:19
+to-do list and not do something else and
+13:21
+over here project name or ID again you
+13:23
+have two options i will select a
+13:25
+specific project which is for example
+13:28
+reading and over here again we have
+13:30
+label names or IDs i will fill this in
+13:32
+with AI and over here in the content
+13:35
+we'll simply come over here to where it
+13:37
+says message and we'll drag this inside
+13:40
+here and we can also say like do this
+13:43
+for example all right and now that we
+13:45
+added everything we can just simply
+13:47
+click off of it and test it so I will
+13:49
+simply come down here click on test
+13:50
+workflow i will come back to lovable and
+13:53
+type so I said hey adding a task in my
+13:56
+to-do list i want to read Alex Hermos's
+13:59
+book a $100 million offers and I will
+14:02
+click on enter and I will click on send
+14:04
+so guys it did manage to send it i just
+14:06
+had a very small problem i want to show
+14:08
+you exactly how I fixed it so basically
+14:10
+in the to-do list module over here I had
+14:13
+to just specify the exact label name of
+14:16
+where I want to send it and once I did
+14:18
+that and I came back over here and
+14:20
+clicked on test tab again to run the
+14:22
+workflow again as you can see I have
+14:24
+added Alex Ramos's new book in your
+14:26
+to-do list and if we go over in the
+14:29
+to-do list you can see that we have read
+14:31
+a $100 million offers which is great
+14:34
+because it does mean that we
+14:36
+successfully added the to-do list module
+14:38
+as well all right and now that we did
+14:39
+that the last thing we need to do is to
+14:41
+add in a module in which N will report
+14:44
+back to Lovable for exactly what it did
+14:46
+so in order to do that we will come over
+14:48
+here and we click on the plus icon and
+14:50
+we'll search for web hook and we will
+14:53
+select respond to web hook this time and
+14:55
+over here we can select what we wanted
+14:58
+to respond with i will leave it off
+15:00
+first incoming item and if we click over
+15:02
+here on test app we can see that it will
+15:04
+report exactly this i've added this book
+15:06
+in our to-do list so that looks pretty
+15:08
+good so basically we're done with the N
+15:11
+automation the only thing we have to do
+15:13
+is to come over here and make it active
+15:15
+and we'll click on it and now we're
+15:17
+officially done with the backend
+15:19
+automation N and now it's time to fix
+15:21
+our interface in Lovable now that we're
+15:23
+back to Lovable the biggest problem we
+15:25
+currently have with our app is when we
+15:27
+click on the mic it actually cannot
+15:30
+record the audio and it obviously cannot
+15:32
+describe it as well so that is something
+15:33
+that we definitely need to fix so in
+15:35
+order to do that I will come over here
+15:37
+enable chat mode and type hey I cannot
+15:41
+record audio nor transcribe it let me
+15:43
+know how I can record and transcribe
+15:45
+audio if I need to use any external
+15:48
+tools jb said I will need to use
+15:50
+something else and to embed some code in
+15:53
+Lovable and we'll simply click on enter
+15:55
+so we also get Lovables suggestions on
+15:58
+our issue and guys that is exactly the
+16:00
+reason we made the road map before
+16:03
+because now we do know that we would
+16:05
+encounter this issue and we do know how
+16:07
+we can fix it well if we didn't make the
+16:10
+road map we would be literally stuck
+16:12
+here and we will try to troubleshoot and
+16:14
+we wouldn't know why we can record audio
+16:16
+but now we do have that information and
+16:18
+we're going to address it right now and
+16:20
+as you can see over here lovable give us
+16:23
+all these options option A is to use
+16:25
+level apps option two is to use Open AI
+16:27
+whisper and option three is to use an
+16:30
+alternative web API based on recording
+16:33
+so I will come over here and say I want
+16:35
+to use Open AI whisper let me know
+16:37
+exactly how I can do that step by step
+16:39
+and I will click on enter and now
+16:41
+Lovable will literally tell us exactly
+16:43
+how we can use it and what we need to do
+16:45
+step by step to integrate it inside the
+16:47
+app so we can actually record and
+16:49
+transcribe the audio so it gave us this
+16:51
+plan i actually went through it already
+16:54
+and I will simply click on implement the
+16:56
+plan and now Lovable will literally
+16:58
+implement this plan so we're able to
+17:00
+actually transcribe the audio i will be
+17:02
+back with you once it is done and boom
+17:04
+Lovable just finished making the changes
+17:06
+and over here it basically tells us that
+17:09
+it implement the plan and it integrated
+17:11
+OpenAI's whisper but in order for us to
+17:15
+make it work we actually need to give it
+17:16
+an API key you will come over to OpenAI/
+17:20
+API keys i will leave a link to it in
+17:22
+the description below and you will
+17:24
+simply come over here to where it says
+17:25
+create new secret key click on it name
+17:28
+your key i will say lovable project then
+17:31
+over here I will select default project
+17:33
+and I will click on create secret key
+17:35
+and this will give you your API key you
+17:37
+obviously copy it make sure you never
+17:39
+share this with anyone i will delete
+17:40
+mine before uploading this video come
+17:42
+back over to Lovable paste it over here
+17:45
+and say this is the Open AI API key make
+17:48
+sure you integrate it within the app and
+17:50
+simply click on enter and now Lovable
+17:52
+will integrate this key inside our app
+17:54
+for us and boom lovable just finished
+17:57
+making the changes so let's test it out
+17:59
+i will come over here on the mic and
+18:01
+click on it and say "Hey can you add in
+18:04
+a task in my calendar for the 19th of
+18:07
+May at 400 p.m which is me creating a
+18:10
+new YouTube video for 1 hour open API
+18:14
+key not please add in settings." And as
+18:16
+you guys can see we do have a problem
+18:18
+here so we'll need to fix this the open
+18:20
+API key seem to not be integrated within
+18:23
+the app so I will simply come over here
+18:25
+enable chat mode and say hey lovable
+18:27
+tells me that open AI API key is not
+18:30
+inside the app and there is an error why
+18:32
+is that how we can fix that and I will
+18:34
+simply click on enter and guys like you
+18:37
+will run into issues like this like this
+18:39
+is normal where you're vibe coding the
+18:41
+only thing you have to do is to simply
+18:43
+not give up and ask the AI how you can
+18:45
+fix it and it will literally tell you
+18:47
+exactly how you can fix it which is
+18:49
+exactly what we're doing now so it
+18:51
+basically told us that the issue is
+18:53
+because we have a web hook API key as
+18:55
+well and somehow these two cannot
+18:57
+coexist at the same exact place so
+18:59
+lovable needs to modify the code a
+19:01
+little bit basically so they both can
+19:03
+coexist i will simply click on implement
+19:06
+the plan and now lovable will make all
+19:08
+the changes for us and boom lovable
+19:10
+finish making the changes let's test
+19:12
+right now so I will come over here click
+19:13
+on the mic hey add in an event in my
+19:16
+Google calendar for May of 19th at 400
+19:20
+PM for 3 hours which is recording a
+19:24
+YouTube video and look at that guys it
+19:26
+literally transcribed it perfectly and
+19:29
+now the only thing we have to do is to
+19:30
+simply click on send command was sent
+19:32
+successfully and if I go over to my
+19:34
+calendar you can see on May of 19th at
+19:37
+400 p.m we have a 3-hour blog in which I
+19:40
+will record a YouTube video this is
+19:42
+simply amazing so our app is literally
+19:44
+working perfectly exactly as we wanted
+19:47
+now what we need to do is to actually
+19:48
+improve the way it looks and I have a
+19:50
+very good and nic hack in order for us
+19:52
+to do that which is basically to search
+19:54
+for a UI of an app we actually like so
+19:57
+for example I found this AI assistant UI
+20:00
+which I actually really like so I will
+20:02
+simply download it come back over to
+20:04
+Lovable upload it and type "Hey I want
+20:07
+you to make our app look just like the
+20:09
+way this app looks make sure you don't
+20:11
+change any of the features that we
+20:13
+currently have if you want to add in
+20:14
+some more features from the app feel
+20:16
+free to do so but don't change anything
+20:19
+we have already done guys always make
+20:21
+sure you specify that if you upload an
+20:23
+image always tell Lovable to don't
+20:25
+change anything you have already done
+20:27
+because if you don't it actually might
+20:29
+start changing features you have already
+20:31
+added which is something you definitely
+20:33
+don't want to deal with so I specified
+20:35
+it and I will simply come over here and
+20:37
+click on enter and now Lovable will
+20:39
+literally basically mimic the UI of this
+20:41
+app and make our app look just like it
+20:44
+so I will bug with you once it is done
+20:46
+and boom look at that guys this
+20:48
+literally looks amazing and it's exactly
+20:50
+like the UI of this app we just uploaded
+20:52
+like look how good this looks if we type
+20:55
+oh my god this is literally just perfect
+20:57
+so this is the front end of our app
+20:59
+which we managed to build with Lovable
+21:01
+and this is a back end which we built in
+21:03
+N we could make this way better if we
+21:06
+actually put in more time to that for
+21:08
+example we could like add in a chip
+21:10
+module here which would take the
+21:12
+information from the AI agent actually
+21:14
+craft us a professional email and then
+21:17
+send it to the Gmail module over here so
+21:19
+it actually gets sent and we could do
+21:21
+that with every other module in this
+21:23
+list and we could even add in more so we
+21:26
+could make like this app all in one app
+21:28
+for basically everything you need to do
+21:30
+that you can literally do with one
+21:31
+simple voice message which is simply
+21:33
+amazing now if you want to see me
+21:35
+building another app with Lovable and NN
+21:37
+similar to this make sure you click on
+21:39
+this video right here and I will see you
+21:41
+over
