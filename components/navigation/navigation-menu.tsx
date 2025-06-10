@@ -8,6 +8,9 @@ import {
   LogOut,
   User,
   RefreshCw,
+  Shield,
+  Crown,
+  Server,
 } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -24,15 +27,14 @@ import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
 import { SignOutButton } from "@clerk/nextjs";
 import { useUser } from "@clerk/nextjs";
+import { useUserRole } from "@/hooks/use-user-role";
 
 export function NavigationMenu() {
   const { setTheme, theme } = useTheme();
   const [isSyncing, setIsSyncing] = useState(false);
   const router = useRouter();
   const { user } = useUser();
-
-  // Check if user has admin role
-  const isAdmin = user?.publicMetadata?.role === "admin";
+  const { isHost, isAdmin, isModerator, isLoading, role } = useUserRole();
 
   const handleSync = async () => {
     try {
@@ -87,14 +89,39 @@ export function NavigationMenu() {
             </SignOutButton>
           </DropdownMenuItem>
         </DropdownMenuGroup>
-        <DropdownMenuGroup>
-          {isAdmin && (
-            <DropdownMenuItem onClick={handleSync} disabled={isSyncing}>
-              <RefreshCw className="mr-2 h-4 w-4" />
-              {isSyncing ? "Syncing..." : "Run Sync"}
-            </DropdownMenuItem>
-          )}
-        </DropdownMenuGroup>
+        {!isLoading && (
+          <DropdownMenuGroup>
+            {/* Host-only features */}
+            {isHost && (
+              <>
+                <DropdownMenuItem onClick={() => router.push("/host/settings")}>
+                  <Crown className="mr-2 h-4 w-4" />
+                  Host Settings
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push("/host/environment")}>
+                  <Server className="mr-2 h-4 w-4" />
+                  Environment Config
+                </DropdownMenuItem>
+              </>
+            )}
+            
+            {/* Admin+ features */}
+            {isAdmin && (
+              <DropdownMenuItem onClick={() => router.push("/admin/external-integrations")}>
+                <Shield className="mr-2 h-4 w-4" />
+                Admin Panel
+              </DropdownMenuItem>
+            )}
+            
+            {/* Moderator+ features */}
+            {isModerator && (
+              <DropdownMenuItem onClick={handleSync} disabled={isSyncing}>
+                <RefreshCw className="mr-2 h-4 w-4" />
+                {isSyncing ? "Syncing..." : "Run Sync"}
+              </DropdownMenuItem>
+            )}
+          </DropdownMenuGroup>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

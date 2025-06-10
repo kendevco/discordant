@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -37,6 +37,7 @@ interface ApiToken {
   rateLimit: number;
   expiresAt?: string;
   createdAt: string;
+  token?: string; // Only available when first created
 }
 
 interface Agent {
@@ -83,6 +84,7 @@ export function ExternalIntegrationsPanel() {
   const [showTokenValue, setShowTokenValue] = useState<string | null>(null);
   const [createTokenDialog, setCreateTokenDialog] = useState(false);
   const [createAgentDialog, setCreateAgentDialog] = useState(false);
+  const [newlyCreatedTokens, setNewlyCreatedTokens] = useState<Map<string, string>>(new Map());
 
   useEffect(() => {
     loadData();
@@ -356,7 +358,7 @@ export function ExternalIntegrationsPanel() {
                       <Label>Token:</Label>
                       <div className="flex items-center space-x-2 flex-1">
                         <Input
-                          value={showTokenValue === token.id ? `disc_${token.id}...` : '•'.repeat(20)}
+                          value={showTokenValue === token.id ? (newlyCreatedTokens.get(token.id) || `disc_${token.id}`) : '•'.repeat(32)}
                           readOnly
                           className="font-mono text-sm"
                         />
@@ -370,7 +372,7 @@ export function ExternalIntegrationsPanel() {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => copyToClipboard(`disc_${token.id}...`)}
+                          onClick={() => copyToClipboard(newlyCreatedTokens.get(token.id) || `disc_${token.id}`)}
                         >
                           <Copy className="w-4 h-4" />
                         </Button>
@@ -530,6 +532,273 @@ export function ExternalIntegrationsPanel() {
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Create Token Dialog */}
+      <Dialog open={createTokenDialog} onOpenChange={setCreateTokenDialog}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Create New API Token</DialogTitle>
+            <DialogDescription>
+              Generate a new API token for external integrations like n8n tools.
+            </DialogDescription>
+          </DialogHeader>
+          <CreateTokenForm onSuccess={(tokenData) => {
+            setCreateTokenDialog(false);
+            // Store the newly created token for display
+            setNewlyCreatedTokens(prev => new Map(prev.set(tokenData.id, tokenData.token)));
+            loadData();
+          }} />
+        </DialogContent>
+      </Dialog>
+
+      {/* Create Agent Dialog */}
+      <Dialog open={createAgentDialog} onOpenChange={setCreateAgentDialog}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Create New Agent</DialogTitle>
+            <DialogDescription>
+              Create a new AI agent for automated responses and integrations.
+            </DialogDescription>
+          </DialogHeader>
+          <CreateAgentForm onSuccess={() => {
+            setCreateAgentDialog(false);
+            loadData();
+          }} />
+        </DialogContent>
+      </Dialog>
     </div>
+  );
+}
+
+// Create Token Form Component
+interface CreateTokenFormProps {
+  onSuccess: (tokenData: { id: string; token: string; name: string }) => void;
+}
+
+function CreateTokenForm({ onSuccess }: CreateTokenFormProps) {
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    type: 'WEBHOOK_INTEGRATION' as const,
+    permissions: {
+      canSendMessages: true,
+      canCreateAgents: false,
+    },
+    rateLimit: 100,
+    sourceOrigin: ''
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const response = await fetch('/api/external/tokens', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        toast({
+          title: "Success",
+          description: `Token created: ${data.token.name}`,
+        });
+        onSuccess({
+          id: data.token.id,
+          token: data.token.token,
+          name: data.token.name
+        });
+      } else {
+        throw new Error('Failed to create token');
+      }
+    } catch (error) {
+      console.error('Error creating token:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create token",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <Label htmlFor="name">Token Name</Label>
+        <Input
+          id="name"
+          value={formData.name}
+          onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+          placeholder="e.g., n8n Tools Integration"
+          required
+        />
+      </div>
+
+      <div>
+        <Label htmlFor="type">Token Type</Label>
+        <Select
+          value={formData.type}
+          onValueChange={(value: any) => setFormData(prev => ({ ...prev, type: value }))}
+        >
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="WEBHOOK_INTEGRATION">Webhook Integration</SelectItem>
+            <SelectItem value="SERVICE_ACCOUNT">Service Account</SelectItem>
+            <SelectItem value="AGENT_BOT">Agent Bot</SelectItem>
+            <SelectItem value="WIDGET_EMBED">Widget Embed</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div>
+        <Label htmlFor="sourceOrigin">Source Origin (Optional)</Label>
+        <Input
+          id="sourceOrigin"
+          value={formData.sourceOrigin}
+          onChange={(e) => setFormData(prev => ({ ...prev, sourceOrigin: e.target.value }))}
+          placeholder="https://your-n8n-instance.com"
+        />
+      </div>
+
+      <div>
+        <Label htmlFor="rateLimit">Rate Limit (requests/hour)</Label>
+        <Input
+          id="rateLimit"
+          type="number"
+          value={formData.rateLimit}
+          onChange={(e) => setFormData(prev => ({ ...prev, rateLimit: parseInt(e.target.value) }))}
+          min="1"
+          max="10000"
+        />
+      </div>
+
+      <div className="flex items-center justify-between">
+        <Button type="submit" disabled={loading}>
+          {loading ? "Creating..." : "Create Token"}
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+// Create Agent Form Component  
+interface CreateAgentFormProps {
+  onSuccess: () => void;
+}
+
+function CreateAgentForm({ onSuccess }: CreateAgentFormProps) {
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    agentType: 'AI_ASSISTANT' as const,
+    displayName: '',
+    email: '',
+    description: '',
+    canImpersonate: false,
+    systemBot: false
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const response = await fetch('/api/external/agents', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Success",
+          description: `Agent created: ${formData.displayName}`,
+        });
+        onSuccess();
+      } else {
+        throw new Error('Failed to create agent');
+      }
+    } catch (error) {
+      console.error('Error creating agent:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create agent",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <Label htmlFor="displayName">Display Name</Label>
+        <Input
+          id="displayName"
+          value={formData.displayName}
+          onChange={(e) => setFormData(prev => ({ ...prev, displayName: e.target.value }))}
+          placeholder="e.g., n8n AI Assistant"
+          required
+        />
+      </div>
+
+      <div>
+        <Label htmlFor="email">Email</Label>
+        <Input
+          id="email"
+          type="email"
+          value={formData.email}
+          onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+          placeholder="agent@example.com"
+          required
+        />
+      </div>
+
+      <div>
+        <Label htmlFor="agentType">Agent Type</Label>
+        <Select
+          value={formData.agentType}
+          onValueChange={(value: any) => setFormData(prev => ({ ...prev, agentType: value }))}
+        >
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="AI_ASSISTANT">AI Assistant</SelectItem>
+            <SelectItem value="WORKFLOW_RESPONDER">Workflow Responder</SelectItem>
+            <SelectItem value="VAPI_TRANSCRIBER">VAPI Transcriber</SelectItem>
+            <SelectItem value="EXTERNAL_SERVICE">External Service</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div>
+        <Label htmlFor="description">Description</Label>
+        <Input
+          id="description"
+          value={formData.description}
+          onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+          placeholder="Brief description of agent purpose"
+        />
+      </div>
+
+      <div className="flex items-center justify-between">
+        <Button type="submit" disabled={loading}>
+          {loading ? "Creating..." : "Create Agent"}
+        </Button>
+      </div>
+    </form>
   );
 } 

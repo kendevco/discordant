@@ -14,6 +14,7 @@ model Profile {
   name      String
   imageUrl  String?  @db.Text
   email     String
+  role      UserRole @default(USER)
   servers   Server[]
   members   Member[]
   channels  Channel[]
@@ -27,6 +28,7 @@ model Profile {
   createdAt DateTime @default(now())
   updatedAt DateTime
 
+  @@index([role], map: "Profile_role_idx")
   @@map("profile")
 }
 
@@ -53,6 +55,15 @@ model Server {
 
   @@index([profileId], map: "Server_profileId_idx")
   @@map("server")
+}
+
+enum UserRole {
+  HOST
+  ADMIN
+  MODERATOR
+  USER
+
+  @@map("user_role")
 }
 
 enum MemberRole {
