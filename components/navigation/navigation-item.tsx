@@ -1,4 +1,3 @@
-
 // src/components/navigation/navigation-item.tsx
 "use client";
 
@@ -59,11 +58,11 @@ export const NavigationItem = ({
         >
           <Image
             fill
-            src={imageUrl}
+            src={imageUrl || "/placeholder.png"}
             alt={name}
             sizes="48px"
             onError={(e) => {
-              console.error(`[NAVIGATION_ITEM] Image error for ${name}:`, e);
+              console.warn(`[NAVIGATION_ITEM] Failed to load image for ${name}, using placeholder`);
               e.currentTarget.src = "/placeholder.png";
             }}
           />

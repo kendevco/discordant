@@ -90,7 +90,7 @@ export default async function handler(
       try {
         console.log(`[MESSAGES_API] Starting system message creation for channel: ${channelId}`);
         console.log(`[MESSAGES_API] Passing socket IO to system message handler: ${!!res?.socket?.server?.io}`);
-        await createSystemMessage(channelId, message, res?.socket?.server?.io);
+        await createSystemMessage(channelId, message, res?.socket?.server?.io, req);
         console.log(`[MESSAGES_API] ✅ System message creation completed`);
       } catch (error) {
         console.error("[SYSTEM_MESSAGE_ERROR]", error);

@@ -5,6 +5,7 @@ import { getAIResponse } from "./ai-interface";
 import { WorkflowRouter, WorkflowRoute, WorkflowPayload } from "./workflow-router";
 import { CalendarCommandDetector } from "@/lib/utils/calendar-command-detector";
 import OpenAI from "openai";
+import { getWorkflowProxyUrl } from "@/lib/utils/server-config";
 
 const SYSTEM_USER_ID = process.env.SYSTEM_USER_ID || "system-user-9000";
 
@@ -26,6 +27,7 @@ export interface HandlerContext {
   serverId?: string;
   socketIo?: any;
   context: any;
+  req?: any;
 }
 
 export type SystemMessageResult = any;
@@ -314,7 +316,7 @@ class WorkflowHandler implements SystemMessageHandler {
     return !message.asIs;
   }
 
-  async handle(message: MessageWithMember, { channelId, serverId, socketIo, context }: HandlerContext) {
+  async handle(message: MessageWithMember, { channelId, serverId, socketIo, context, req }: HandlerContext) {
     // Determine which workflow should handle this message
     const route = WorkflowRouter.getWorkflowRoute(message.content);
     
@@ -351,10 +353,8 @@ class WorkflowHandler implements SystemMessageHandler {
       serverId
     );
 
-    // Get the webhook URL
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 
-                   (process.env.NODE_ENV === 'production' ? "https://discordant.kendev.co" : "http://localhost:3000");
-    const proxyUrl = `${baseUrl}/api/workflow`;
+    // Get the webhook URL using dynamic detection
+    const proxyUrl = getWorkflowProxyUrl(req);
     
     console.log(`[WORKFLOW_HANDLER] Proxy URL: ${proxyUrl}`);
     console.log(`[WORKFLOW_HANDLER] Payload:`, JSON.stringify(payload, null, 2));
@@ -625,7 +625,8 @@ class ImageAnalysisHandler implements SystemMessageHandler {
 export async function createSystemMessage(
   channelId: string,
   message: MessageWithMember,
-  socketIo?: any
+  socketIo?: any,
+  req?: any
 ) {
   const context = await getSystemContext(channelId);
   
@@ -647,7 +648,8 @@ export async function createSystemMessage(
         channelId, 
         serverId: channel?.serverId,
         socketIo, 
-        context 
+        context,
+        req 
       });
     }
   }

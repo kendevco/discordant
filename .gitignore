@@ -51,3 +51,6 @@ next-env.d.ts
 # HTTPS development configuration
 localhost*.pem
 localhost*.key.env
+
+# Documentation misc folder (contains sensitive/draft documents)
+docs/misc/

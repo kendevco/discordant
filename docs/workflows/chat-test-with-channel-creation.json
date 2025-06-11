@@ -1,0 +1,97 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "dfa81b9b-ac3c-4a1e-bb05-d35af5fe58ef",
+      "name": "Chat Test Interface",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1080,
+        260
+      ],
+      "webhookId": "ae314dfc-4b90-44e1-ba9e-80ffce4ef260"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Enhanced Input Processor Update for v5.1 - Dynamic Channel Creation\n// This code handles external calls by creating dedicated channels per tool/workflow\n\nconst input = $input.first();\nlet normalizedData = {};\n\n// System server configuration - your dedicated System server\nconst SYSTEM_SERVER_ID = 'a90f1d41-12a9-4586-b9a4-a513d3bd01d9'; // Your system server ID\nconst DEFAULT_SYSTEM_CHANNEL_ID = 'clwtz9i7m0008n9n01vhep8zt'; // Fallback system channel\n\n// Channel naming function\nfunction getChannelName(source, toolName, workflowName, isSystemMessage = false) {\n  const prefix = 'sys-';\n  \n  if (isSystemMessage) return `${prefix}system-messages`;\n  if (source === 'vapi') return `${prefix}vapi-calls`;\n  if (source === 'external-api') return `${prefix}external-api`;\n  if (source === 'n8n-test' || source === 'n8n-chat-test') return `${prefix}workflow-test`;\n  if (source === 'discordant-folio') return `${prefix}folio-integration`;\n  if (toolName) return `${prefix}tool-${toolName.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;\n  if (workflowName) return `${prefix}${workflowName.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;\n  \n  return `${prefix}general`; // Fallback\n}\n\n// Detect if this is a system message\nfunction isSystemMessage(content) {\n  const systemPhrases = [\n    'hi system',\n    'system message',\n    'testing workflow',\n    'tool call',\n    'workflow execution',\n    'henceforth'\n  ];\n  \n  return systemPhrases.some(phrase => \n    content.toLowerCase().includes(phrase.toLowerCase())\n  );\n}\n\ntry {\n  if (input.json.chatInput) {\n    // Test interface mode\n    const testSessionId = require('crypto').randomBytes(16).toString('hex');\n    const channelName = getChannelName('n8n-test');\n    \n    normalizedData = {\n      input: input.json.chatInput || '',\n      userId: 'test-user',\n      channelName: channelName,\n      channelId: null, // Will be set after channel creation\n      sessionId: testSessionId,\n      platform: 'n8n-chat-test',\n      timestamp: new Date().toISOString(),\n      isTestMode: true,\n      isExternalCall: true,\n      userName: 'Test User',\n      serverId: SYSTEM_SERVER_ID,\n      needsChannelCreation: true\n    };\n  } else {\n    // Webhook mode\n    let payload = {};\n    \n    // Parse payload from various sources\n    if (input.json.body && typeof input.json.body === 'object') {\n      payload = input.json.body;\n    } else if (input.json.body && typeof input.json.body === 'string') {\n      try {\n        payload = JSON.parse(input.json.body);\n      } catch (e) {\n        payload = input.json || {};\n      }\n    } else {\n      payload = input.json || {};\n    }\n    \n    const messageContent = payload.message || payload.content || '';\n    const isSystemMsg = isSystemMessage(messageContent);\n    \n    // Detect if this is an external/unknown call\n    const isExternalCall = !payload.channelId || \n                          payload.channelId === 'unknown-channel' ||\n                          payload.channelId === 'unknown' ||\n                          payload.serverId === 'unknown-server' ||\n                          payload.platform === 'external-api' ||\n                          payload.platform === 'vapi' ||\n                          isSystemMsg;\n    \n    // Determine channel name based on source and content\n    let channelName;\n    let needsChannelCreation = false;\n    \n    if (isExternalCall) {\n      channelName = getChannelName(\n        payload.platform,\n        payload.toolName,\n        payload.workflowName,\n        isSystemMsg\n      );\n      needsChannelCreation = true;\n    } else {\n      // Use existing channel for internal calls\n      channelName = null; // Will use existing channelId\n    }\n    \n    // Build normalized data\n    normalizedData = {\n      input: messageContent,\n      userId: payload.userId || 'external-user',\n      channelName: channelName,\n      channelId: isExternalCall ? null : payload.channelId, // Will be set after channel creation for external calls\n      sessionId: payload.sessionId || `${payload.userId || 'external'}-${channelName || payload.channelId}`,\n      platform: payload.platform || 'discordant',\n      timestamp: payload.timestamp || new Date().toISOString(),\n      isTestMode: false,\n      isExternalCall: isExternalCall,\n      isSystemMessage: isSystemMsg,\n      needsChannelCreation: needsChannelCreation,\n      userName: payload.userName || (isExternalCall ? 'External API User' : 'Unknown User'),\n      serverId: isExternalCall ? SYSTEM_SERVER_ID : payload.serverId,\n      // Tool/workflow metadata\n      toolName: payload.toolName || null,\n      workflowName: payload.workflowName || null,\n      // Preserve original values for logging\n      originalChannelId: payload.channelId,\n      originalServerId: payload.serverId,\n      externalSource: isExternalCall ? (payload.platform || 'api') : null,\n      // Fallback channel for emergencies\n      fallbackChannelId: DEFAULT_SYSTEM_CHANNEL_ID\n    };\n    \n    console.log(`Processing ${isExternalCall ? 'EXTERNAL' : 'INTERNAL'} call`);\n    console.log(`Channel strategy: ${needsChannelCreation ? `CREATE \"${channelName}\"` : `USE EXISTING \"${payload.channelId}\"`}`);\n    console.log(`System message detected: ${isSystemMsg}`);\n  }\n  \n  normalizedData.processingStartTime = Date.now();\n  \n  return normalizedData;\n  \n} catch (error) {\n  console.error('Input processor error:', error.message);\n  \n  // Fallback to default system channel on error\n  return {\n    input: 'Error processing input: ' + error.message,\n    userId: 'error-user',\n    channelName: 'sys-error-handling',\n    channelId: null,\n    sessionId: 'error-session',\n    platform: 'error',\n    timestamp: new Date().toISOString(),\n    isTestMode: false,\n    isExternalCall: true,\n    needsChannelCreation: true,\n    errorOccurred: true,\n    errorMessage: error.message,\n    userName: 'Error Handler',\n    serverId: SYSTEM_SERVER_ID,\n    fallbackChannelId: DEFAULT_SYSTEM_CHANNEL_ID\n  };\n}"
+      },
+      "id": "d4b3a4e1-92c1-4f2a-8b3d-e5f6a7b8c9d0",
+      "name": "Enhanced Input Processor",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -780,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Channel Manager Node for n8n\n// Place this node right after the Enhanced Input Processor\n// This node ensures the required channel exists in the System server\n\nconst inputData = $input.first().json;\n\n// Discord API configuration\nconst DISCORD_BOT_TOKEN = $env.DISCORD_BOT_TOKEN; // Set this in n8n environment\nconst SYSTEM_SERVER_ID = 'a90f1d41-12a9-4586-b9a4-a513d3bd01d9';\n\nasync function createChannel(channelName, serverId = SYSTEM_SERVER_ID) {\n  try {\n    console.log(`Creating channel: ${channelName} in server: ${serverId}`);\n    \n    const response = await fetch(`https://discord.com/api/v10/guilds/${serverId}/channels`, {\n      method: 'POST',\n      headers: {\n        'Authorization': `Bot ${DISCORD_BOT_TOKEN}`,\n        'Content-Type': 'application/json'\n      },\n      body: JSON.stringify({\n        name: channelName,\n        type: 0, // Text channel\n        topic: `Auto-created channel for ${channelName.replace('sys-', '')} operations`,\n        permission_overwrites: [] // Inherit server permissions\n      })\n    });\n    \n    if (!response.ok) {\n      const error = await response.text();\n      console.error(`Discord API error:`, error);\n      throw new Error(`Discord API error: ${response.status} - ${error}`);\n    }\n    \n    const channel = await response.json();\n    console.log(`Channel created successfully: ${channel.id}`);\n    return channel;\n    \n  } catch (error) {\n    console.error('Channel creation error:', error.message);\n    throw error;\n  }\n}\n\nasync function findExistingChannel(channelName, serverId = SYSTEM_SERVER_ID) {\n  try {\n    const response = await fetch(`https://discord.com/api/v10/guilds/${serverId}/channels`, {\n      headers: {\n        'Authorization': `Bot ${DISCORD_BOT_TOKEN}`\n      }\n    });\n    \n    if (!response.ok) {\n      throw new Error(`Failed to fetch channels: ${response.status}`);\n    }\n    \n    const channels = await response.json();\n    const existingChannel = channels.find(ch => ch.name === channelName && ch.type === 0);\n    \n    if (existingChannel) {\n      console.log(`Found existing channel: ${existingChannel.id}`);\n      return existingChannel;\n    }\n    \n    return null;\n  } catch (error) {\n    console.error('Channel lookup error:', error.message);\n    return null;\n  }\n}\n\n// Main channel management logic\nasync function manageChannel() {\n  try {\n    // If no channel creation needed, pass through\n    if (!inputData.needsChannelCreation) {\n      console.log('Using existing channel:', inputData.channelId);\n      return {\n        ...inputData,\n        channelId: inputData.channelId,\n        channelCreated: false,\n        channelExists: true\n      };\n    }\n    \n    const channelName = inputData.channelName;\n    console.log(`Managing channel: ${channelName}`);\n    \n    // First, try to find existing channel\n    let channel = await findExistingChannel(channelName);\n    let channelCreated = false;\n    \n    // If not found, create it\n    if (!channel) {\n      console.log(`Channel ${channelName} not found, creating...`);\n      channel = await createChannel(channelName);\n      channelCreated = true;\n    }\n    \n    // Return updated data with channel ID\n    return {\n      ...inputData,\n      channelId: channel.id,\n      channelCreated: channelCreated,\n      channelExists: true,\n      channelData: {\n        id: channel.id,\n        name: channel.name,\n        topic: channel.topic,\n        type: channel.type\n      }\n    };\n    \n  } catch (error) {\n    console.error('Channel management failed:', error.message);\n    \n    // Fallback to default system channel\n    console.log('Falling back to default system channel');\n    return {\n      ...inputData,\n      channelId: inputData.fallbackChannelId,\n      channelCreated: false,\n      channelExists: true,\n      channelError: error.message,\n      usingFallback: true\n    };\n  }\n}\n\n// Execute and return result\nreturn manageChannel();"
+      },
+      "id": "e5c2d3f4-a1b2-4c5d-9e6f-012345678901",
+      "name": "Channel Manager",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -480,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "content": "✅ **Channel Setup Complete!**\\n\\n**Processing Details:**\\n- Input: {{ $json.input }}\\n- Channel: {{ $json.channelName }} ({{ $json.channelId }})\\n- Platform: {{ $json.platform }}\\n- User: {{ $json.userName }}\\n- Session: {{ $json.sessionId }}\\n\\n{{ $json.channelCreated ? '🆕 **New channel created!**' : '📁 **Using existing channel**' }}\\n\\n{{ $json.isSystemMessage ? '🤖 **System message detected**' : '💬 **Regular message**' }}\\n\\n---\\n\\n*Your message has been processed and routed to the appropriate channel in the System server. This workflow is now ready for AI processing and tool execution!*"
+      },
+      "id": "f6d7e8a9-b2c3-5d4e-8f9a-123456789012",
+      "name": "Channel Confirmation",
+      "type": "@n8n/n8n-nodes-langchain.toolText",
+      "typeVersion": 1,
+      "position": [
+        -180,
+        260
+      ]
+    }
+  ],
+  "connections": {
+    "Chat Test Interface": {
+      "main": [
+        [
+          {
+            "node": "Enhanced Input Processor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enhanced Input Processor": {
+      "main": [
+        [
+          {
+            "node": "Channel Manager",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Channel Manager": {
+      "main": [
+        [
+          {
+            "node": "Channel Confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "136461ac021bda65593ed5d2f70798d0433ed7859abfc9e2ca43aa4b9c0b779e"
+  }
+} 

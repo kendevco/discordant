@@ -2,108 +2,144 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('=== ASYNC WORKFLOW REQUEST ===');
+    const startTime = Date.now();
+    
     const body = await request.json();
     const workflowId = request.headers.get("X-Workflow-Id");
-    const webhookPath = request.headers.get("X-Webhook-Path");
+    const webhookPath = request.headers.get("X-Webhook-Path") || "discordant-ai-services";
     
-    if (!webhookPath) {
-      return NextResponse.json(
-        { error: "Missing webhook path" },
-        { status: 400 }
-      );
-    }
+    console.log('Request body keys:', Object.keys(body));
+    console.log('Message content:', body.message?.substring(0, 100));
+    console.log('Channel ID:', body.channelId);
+    console.log('User ID:', body.userId);
+    console.log('Workflow ID:', workflowId);
+    console.log('Webhook path:', webhookPath);
 
-    // Construct n8n webhook URL with sanitization
+    // Construct n8n webhook URL
     const rawN8nUrl = process.env.N8N_WEBHOOK_URL || "https://n8n.kendev.co/webhook";
-    // Sanitize the URL by removing quotes and semicolons
     const n8nBaseUrl = rawN8nUrl.replace(/[";]/g, '').trim();
     const webhookUrl = `${n8nBaseUrl}/${webhookPath}`;
     
-    console.log(`📤 Routing to n8n workflow: ${workflowId}`);
-    console.log(`📍 Raw N8N URL: ${rawN8nUrl}`);
-    console.log(`📍 Sanitized N8N URL: ${n8nBaseUrl}`);
     console.log(`📍 Final Webhook URL: ${webhookUrl}`);
-    console.log(`📦 Payload:`, JSON.stringify(body, null, 2));
-
-    // Forward request to n8n
-    const n8nResponse = await fetch(webhookUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "User-Agent": "Discordant-Workflow-Router/1.0",
-      },
-      body: JSON.stringify(body),
-    });
-
-    console.log(`📥 N8N Response status: ${n8nResponse.status}`);
-
-    if (!n8nResponse.ok) {
-      const errorText = await n8nResponse.text();
-      console.error(`❌ N8N Error: ${errorText}`);
-      
-      // Return a user-friendly error
-      return NextResponse.json({
-        message: "Workflow service temporarily unavailable. Please try again.",
-        type: "workflow_error",
-        timestamp: new Date().toISOString(),
-        metadata: {
-          workflowId,
-          error: "n8n_error",
-          statusCode: n8nResponse.status,
-        }
-      });
-    }
-
-    // Enhanced JSON parsing with fallback handling
-    let responseData;
-    const responseText = await n8nResponse.text();
     
-    console.log(`📝 N8N Raw Response:`, responseText);
-    console.log(`📏 N8N Response Length:`, responseText.length);
-
-    if (!responseText || responseText.trim() === '') {
-      console.log(`⚠️ N8N returned empty response`);
-      responseData = {
-        message: "Workflow completed but returned no data.",
-        type: "empty_response",
-        timestamp: new Date().toISOString(),
-        metadata: {
-          workflowId,
-          status: "completed_empty"
-        }
-      };
-    } else {
-      try {
-        responseData = JSON.parse(responseText);
-        console.log(`✅ N8N JSON Parsed Successfully:`, JSON.stringify(responseData, null, 2));
-      } catch (parseError) {
-        console.error(`❌ N8N JSON Parse Error:`, parseError);
-        console.log(`📄 Problematic response text:`, responseText.substring(0, 500));
-        
-        // If it's not valid JSON, treat the text as the message
-        responseData = {
-          message: responseText,
-          type: "text_response",
-          timestamp: new Date().toISOString(),
-          metadata: {
-            workflowId,
-            originalLength: responseText.length,
-            parseError: parseError instanceof Error ? parseError.message : "JSON parse failed"
-          }
-        };
+    // Immediate response to Discord
+    const immediateResponse = {
+      success: true,
+      status: 'processing',
+      message: '🤖 **AI Processing Started**\n\nYour request is being processed by the Enhanced Business Intelligence AI Agent.\n\n⏳ **Status**: Workflow initiated\n📊 **Processing**: Advanced AI tools activating\n🔄 **ETA**: Response incoming shortly\n\n*Your AI response will appear in this channel momentarily...*',
+      channelId: body.channelId,
+      timestamp: new Date().toISOString(),
+      processingTime: Date.now() - startTime,
+      metadata: {
+        workflowId,
+        webhookPath,
+        requestId: `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
       }
-    }
+    };
     
-    return NextResponse.json(responseData);
-
+    // Fire async request to n8n (don't await)
+    console.log('Starting async workflow execution...');
+    
+    fetch(webhookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'User-Agent': 'Discordant-Async/1.0',
+        'X-Source': 'discordant-async-workflow',
+        'X-Callback-URL': 'https://discordant.kendev.co/api/ai/workflow-complete',
+        'X-Workflow-Id': workflowId || 'discordant-agent-0001'
+      },
+      body: JSON.stringify({
+        ...body,
+        asyncMode: true,
+        callbackUrl: 'https://discordant.kendev.co/api/ai/workflow-complete',
+        requestId: immediateResponse.metadata.requestId,
+        workflowId: workflowId || 'discordant-agent-0001'
+      })
+    }).then(async (n8nResponse) => {
+      console.log('=== ASYNC WORKFLOW RESPONSE ===');
+      console.log('n8n Status:', n8nResponse.status);
+      console.log('n8n Headers:', Object.fromEntries(n8nResponse.headers.entries()));
+      
+      if (!n8nResponse.ok) {
+        const errorText = await n8nResponse.text();
+        console.error('n8n Async Error:', errorText);
+        console.error('n8n Status:', n8nResponse.status);
+        
+        // Send error callback
+        const errorCallbackUrl = 'https://discordant.kendev.co/api/ai/workflow-complete';
+        console.log('Sending error callback to:', errorCallbackUrl);
+        
+        await fetch(errorCallbackUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            content: `❌ **Workflow Error**\n\nThe AI processing encountered an issue:\n\n**Error**: ${errorText || 'Unknown error'}\n**Status**: ${n8nResponse.status}\n**Time**: ${new Date().toLocaleTimeString()}\n**Workflow**: ${workflowId || 'discordant-agent-0001'}\n\n**Recommendation**: Try your request again or contact support if the issue persists.`,
+            metadata: {
+              channelId: body.channelId,
+              userId: body.userId,
+              sessionId: body.sessionId,
+              errorOccurred: true,
+              errorStatus: n8nResponse.status,
+              errorText: errorText || 'Unknown error',
+              timestamp: new Date().toISOString(),
+              workflowId: workflowId || 'discordant-agent-0001'
+            }
+          })
+        }).catch(callbackError => {
+          console.error('Failed to send error callback:', callbackError);
+        });
+      } else {
+        const responseText = await n8nResponse.text();
+        console.log('n8n async workflow response:', responseText.substring(0, 200));
+        console.log('n8n workflow initiated successfully - awaiting callback');
+        // The workflow will handle its own callback via Async_Callback_Response node
+      }
+    }).catch((fetchError) => {
+      console.error('=== ASYNC FETCH ERROR ===');
+      console.error('Fetch error:', fetchError);
+      console.error('Webhook URL:', webhookUrl);
+      
+      // Send error callback for network issues
+      const errorCallbackUrl = 'https://discordant.kendev.co/api/ai/workflow-complete';
+      console.log('Sending network error callback to:', errorCallbackUrl);
+      
+      fetch(errorCallbackUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: `🚨 **Network Error**\n\nCouldn't connect to the AI workflow service.\n\n**Error**: ${fetchError.message}\n**Time**: ${new Date().toLocaleTimeString()}\n**Webhook**: ${webhookUrl}\n\n**Status**: Network connectivity issue detected\n**Action**: Please try again or contact support`,
+          metadata: {
+            channelId: body.channelId,
+            userId: body.userId,
+            sessionId: body.sessionId,
+            networkError: true,
+            fetchError: fetchError.message,
+            webhookUrl,
+            timestamp: new Date().toISOString(),
+            workflowId: workflowId || 'discordant-agent-0001'
+          }
+        })
+      }).catch(e => console.error('Failed to send network error callback:', e));
+    });
+    
+    // Return immediate response
+    console.log('=== IMMEDIATE RESPONSE SENT ===');
+    console.log('Response time:', Date.now() - startTime, 'ms');
+    console.log('Channel ID:', body.channelId);
+    
+    return NextResponse.json(immediateResponse);
+    
   } catch (error) {
-    console.error("Workflow proxy error:", error);
+    console.error('=== WORKFLOW REQUEST ERROR ===');
+    console.error('Error details:', error);
     
     return NextResponse.json({
-      message: "Failed to connect to workflow service",
-      type: "proxy_error",
+      error: 'Workflow request failed',
+      message: error instanceof Error ? error.message : 'Unknown error',
       timestamp: new Date().toISOString(),
-      error: error instanceof Error ? error.message : "Unknown error",
+      type: 'request_error'
     }, { status: 500 });
   }
 } 
