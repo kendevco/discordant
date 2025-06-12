@@ -6,7 +6,7 @@ import { useChatQuery } from "@/hooks/use-chat-query";
 import { useMessageFilter } from "@/hooks/use-message-filter";
 import { SearchBar } from "./search-bar";
 import { Loader2, ServerCrash } from "lucide-react";
-import { ElementRef, useRef, useState, useEffect } from "react";
+import React, { ElementRef, useRef, useState, useEffect } from "react";
 import { ChatItem } from "./chat-item";
 import { format } from "date-fns";
 import { useChatSocket } from "@/hooks/use-chat-socket";
@@ -98,15 +98,25 @@ export const ChatMessages = ({
     paramValue,
   });
 
-  // Flatten all messages from all pages
-  const allMessages = data?.pages?.flatMap((page) => page.items) ?? [];
+  // Flatten all messages from all pages and deduplicate by ID
+  const allMessages = React.useMemo(() => {
+    const messages = data?.pages?.flatMap((page) => page.items) ?? [];
+    // Deduplicate messages by ID to prevent duplicate keys
+    const uniqueMessages = messages.reduce((acc, message) => {
+      if (!acc.find((m: typeof message) => m.id === message.id)) {
+        acc.push(message);
+      }
+      return acc;
+    }, [] as typeof messages);
+    return uniqueMessages;
+  }, [data?.pages]);
 
   // Filter messages using our custom hook
   const { filteredMessages, totalCount, filteredCount, isFiltering } = useMessageFilter(
     allMessages,
     {
       query: searchFilters.query,
-      fileTypes: searchFilters.fileTypes as any[], // Type conversion needed
+      fileTypes: searchFilters.fileTypes, // Now properly typed as string[]
       dateRange: searchFilters.dateRange,
       hasFiles: searchFilters.hasFiles,
       fromCurrentUser: searchFilters.fromCurrentUser,
@@ -153,9 +163,9 @@ export const ChatMessages = ({
 
   return (
     <div className="relative h-full flex flex-col bg-gradient-to-br from-[#7364c0] to-[#02264a] dark:from-[#000C2F] dark:to-[#003666]">
-      {/* Search Bar positioned over the messages */}
+      {/* Search Bar positioned over the messages - mobile friendly */}
       {onSearchChange && onClearSearch && (
-        <div className="absolute top-4 left-4 right-4 z-10 flex justify-end">
+        <div className="absolute top-2 left-2 right-2 sm:top-4 sm:left-4 sm:right-4 z-10 flex justify-end">
           <SearchBar
             onSearchChange={onSearchChange}
             onClearSearch={onClearSearch}
@@ -201,7 +211,7 @@ export const ChatMessages = ({
         <div className="flex flex-col-reverse mt-auto">
           {messagesToDisplay.map((message: MessageWithMemberWithProfile, index: number) => (
             <ChatItem
-              key={message.id}
+              key={`${message.id}-${index}`}
               id={message.id}
               currentMember={member}
               member={message.member}

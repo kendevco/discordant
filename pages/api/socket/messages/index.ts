@@ -81,24 +81,47 @@ export default async function handler(
       console.error(`[MESSAGES_API] ❌ User message emission failed:`, emitError);
     }
     
-    // Send response to client immediately
+    // Send response to client immediately to prevent payload errors
     res.status(200).json(message);
 
-    // Process system message asynchronously
-    // Use process.nextTick for immediate execution after current operation
-    process.nextTick(async () => {
+    // Process system message asynchronously with proper error handling
+    // Use setImmediate instead of process.nextTick for better separation
+    setImmediate(async () => {
       try {
         console.log(`[MESSAGES_API] Starting system message creation for channel: ${channelId}`);
-        console.log(`[MESSAGES_API] Passing socket IO to system message handler: ${!!res?.socket?.server?.io}`);
-        await createSystemMessage(channelId, message, res?.socket?.server?.io, req);
+        
+        // Create a safe socket context that won't cause payload errors
+        const safeSocketIo = res?.socket?.server?.io;
+        console.log(`[MESSAGES_API] Safe socket IO available: ${!!safeSocketIo}`);
+        
+        // Create system message with error isolation
+        await createSystemMessage(channelId, message, safeSocketIo, req);
         console.log(`[MESSAGES_API] ✅ System message creation completed`);
       } catch (error) {
-        console.error("[SYSTEM_MESSAGE_ERROR]", error);
+        // Comprehensive error logging without crashing
+        console.error("[SYSTEM_MESSAGE_ERROR] Error details:", {
+          error: error instanceof Error ? error.message : 'Unknown error',
+          stack: error instanceof Error ? error.stack : undefined,
+          channelId,
+          messageId: message.id,
+          timestamp: new Date().toISOString()
+        });
+        
+        // Don't let system message errors affect the main response
+        // The user message was already sent successfully
       }
     });
 
   } catch (error) {
-    console.error("[MESSAGES_POST]", error);
-    return res.status(500).json({ error: "Internal Error" });
+    console.error("[MESSAGES_POST] Error details:", {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      timestamp: new Date().toISOString()
+    });
+    
+    // Only return error response if we haven't sent a response yet
+    if (!res.headersSent) {
+      return res.status(500).json({ error: "Internal Error" });
+    }
   }
 }

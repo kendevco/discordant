@@ -75,65 +75,96 @@ async function fetchSystemMember(channelId: string) {
 }
 
 async function getSystemContext(channelId: string) {
-  // Get active users and channels
-  const activeChannels = await db.channel.findMany({
-    where: {
-      messages: {
-        some: {
-          createdAt: {
-            gte: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2), // Last 48 hours
+  try {
+    // Get active users and channels - this query is safe as it doesn't include member relationships
+    const activeChannels = await db.channel.findMany({
+      where: {
+        messages: {
+          some: {
+            createdAt: {
+              gte: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2), // Last 48 hours
+            },
           },
         },
       },
-    },
-    include: {
-      _count: {
-        select: { messages: true },
+      include: {
+        _count: {
+          select: { messages: true },
+        },
       },
-    },
-    take: 50,
-  });
+      take: 50,
+    });
 
-  // Get recent messages for context
-  const recentMessages = await db.message.findMany({
-    where: {
+    // Use raw SQL to get recent messages with safe null handling for member relationships
+    const recentMessagesRaw = await db.$queryRaw`
+      SELECT 
+        m.id,
+        m.content,
+        m.createdAt,
+        m.role,
+        COALESCE(p.name, 'Unknown User') as authorName
+      FROM message m
+      LEFT JOIN member mb ON m.memberId = mb.id
+      LEFT JOIN profile p ON mb.profileId = p.id
+      WHERE m.channelId = ${channelId}
+      AND m.createdAt >= ${new Date(Date.now() - 1000 * 60 * 60 * 24)}
+      ORDER BY m.createdAt DESC
+      LIMIT 50
+    `;
+
+    // Process the raw query results with null safety
+    const processedRecentMessages = (recentMessagesRaw as any[]).map(msg => ({
+      content: String(msg.content || ''),
+      author: String(msg.authorName || 'Unknown User'),
+      timestamp: msg.createdAt instanceof Date ? msg.createdAt : new Date(msg.createdAt),
+      role: String(msg.role || 'user'),
+    }));
+
+    // Get unique online users safely
+    const onlineUsers = [...new Set(
+      processedRecentMessages
+        .map(m => m.author)
+        .filter(author => author && author !== 'Unknown User')
+    )];
+
+    return {
+      systemState: {
+        platform: "Multi-Workspace, Multi-Channel Chat Platform",
+        timestamp: new Date().toISOString(),
+      },
+      channelContext: {
+        activeChannels: activeChannels.map((c) => ({
+          name: c.name || 'Unknown Channel',
+          messageCount: c._count?.messages || 0,
+        })),
+      },
+      userContext: {
+        onlineUsers: onlineUsers.length > 0 ? onlineUsers : ['Kenneth Courtney'],
+      },
+      recentMessages: processedRecentMessages,
+    };
+  } catch (error) {
+    console.error("[GET_SYSTEM_CONTEXT] Error:", {
+      error: error instanceof Error ? error.message : 'Unknown error',
       channelId,
-      createdAt: {
-        gte: new Date(Date.now() - 1000 * 60 * 60 * 24), // Last 24 hours
-      },
-    },
-    include: {
-      member: {
-        include: { profile: true },
-      },
-    },
-    orderBy: { createdAt: "desc" },
-    take: 50,
-  });
+      timestamp: new Date().toISOString()
+    });
 
-  return {
-    systemState: {
-      platform: "Multi-Workspace, Multi-Channel Chat Platform",
-      timestamp: new Date().toISOString(),
-    },
-    channelContext: {
-      activeChannels: activeChannels.map((c) => ({
-        name: c.name,
-        messageCount: c._count.messages,
-      })),
-    },
-    userContext: {
-      onlineUsers: [
-        ...new Set(recentMessages.map((m) => m.member.profile.name)),
-      ],
-    },
-    recentMessages: recentMessages.map((m) => ({
-      content: m.content,
-      author: m.member.profile.name,
-      timestamp: m.createdAt,
-      role: m.role,
-    })),
-  };
+    // Return safe fallback context
+    return {
+      systemState: {
+        platform: "Multi-Workspace, Multi-Channel Chat Platform",
+        timestamp: new Date().toISOString(),
+      },
+      channelContext: {
+        activeChannels: [{ name: 'general', messageCount: 0 }],
+      },
+      userContext: {
+        onlineUsers: ['Kenneth Courtney'],
+      },
+      recentMessages: [],
+    };
+  }
 }
 
 // Enhanced Site AI Orchestrator - coordinates with n8n and provides intelligent formatting
@@ -147,27 +178,31 @@ async function getSiteAIResponse(
   try {
     console.log(`[SITE_AI_ORCHESTRATOR] Processing message: ${message.content.substring(0, 100)}`);
     
-    // Get recent conversation history for context
-    const conversationHistory = await db.message.findMany({
-      where: {
-        channelId,
-        createdAt: {
-          gte: new Date(Date.now() - 1000 * 60 * 60 * 2), // Last 2 hours
-        },
-      },
-      include: {
-        member: {
-          include: { profile: true },
-        },
-      },
-      orderBy: { createdAt: "desc" },
-      take: 20,
-    });
+    // Get recent conversation history for context using safe raw SQL
+    const conversationHistoryRaw = await db.$queryRaw`
+      SELECT 
+        m.content,
+        m.createdAt,
+        COALESCE(p.name, 'Unknown User') as authorName
+      FROM message m
+      LEFT JOIN member mb ON m.memberId = mb.id
+      LEFT JOIN profile p ON mb.profileId = p.id
+      WHERE m.channelId = ${channelId}
+      AND m.createdAt >= ${new Date(Date.now() - 1000 * 60 * 60 * 2)}
+      ORDER BY m.createdAt DESC
+      LIMIT 20
+    `;
 
-    // Format conversation history
+    // Format conversation history safely
+    const conversationHistory = (conversationHistoryRaw as any[]).map(msg => ({
+      content: String(msg.content || ''),
+      author: String(msg.authorName || 'Unknown User'),
+      createdAt: msg.createdAt instanceof Date ? msg.createdAt : new Date(msg.createdAt)
+    }));
+
     const historyText = conversationHistory
       .reverse()
-      .map(msg => `${msg.member.profile.name}: ${msg.content}`)
+      .map(msg => `${msg.author}: ${msg.content}`)
       .join('\n');
 
     // Determine if this was a workflow failure or direct site AI request
@@ -506,23 +541,41 @@ Please try again in a few minutes, or contact your system administrator if the i
     });
 
     // Emit message in the same format as regular messages to ensure compatibility
-    const messageToEmit = {
-      ...systemMessage,
-      // Include metadata for debugging but don't modify the core message structure
-      _systemMetadata: {
-        messageType: usedFallback ? "fallback_response" : "workflow_response",
-        workflowId: usedFallback ? "fallback-site-ai" : route.workflowId,
-        intent: intent,
-        metadata: systemMetadata,
-        usedFallback: usedFallback,
-      }
-    };
+    // Only emit if socket is available to prevent payload errors
+    if (socketIo && typeof socketIo.emit === 'function') {
+      try {
+        const messageToEmit = {
+          ...systemMessage,
+          // Include metadata for debugging but don't modify the core message structure
+          _systemMetadata: {
+            messageType: usedFallback ? "fallback_response" : "workflow_response",
+            workflowId: usedFallback ? "fallback-site-ai" : route.workflowId,
+            intent: intent,
+            metadata: systemMetadata,
+            usedFallback: usedFallback,
+          }
+        };
 
-    try {
-      socketIo?.emit(channelKey, messageToEmit);
-      console.log(`[SYSTEM_MESSAGE] ✅ Socket emission completed`);
-    } catch (emitError) {
-      console.error(`[SYSTEM_MESSAGE] ❌ Socket emission failed:`, emitError);
+        // Validate message structure before emission
+        if (messageToEmit && messageToEmit.id && messageToEmit.content) {
+          socketIo.emit(channelKey, messageToEmit);
+          console.log(`[SYSTEM_MESSAGE] ✅ Socket emission completed`);
+        } else {
+          console.error(`[SYSTEM_MESSAGE] ❌ Invalid message structure for emission:`, {
+            hasId: !!messageToEmit?.id,
+            hasContent: !!messageToEmit?.content,
+            hasChannelId: !!messageToEmit?.channelId
+          });
+        }
+      } catch (emitError) {
+        console.error(`[SYSTEM_MESSAGE] ❌ Socket emission failed:`, {
+          error: emitError instanceof Error ? emitError.message : 'Unknown error',
+          channelKey,
+          messageId: systemMessage?.id
+        });
+      }
+    } else {
+      console.log(`[SYSTEM_MESSAGE] ⚠️ Socket IO not available for emission`);
     }
 
     return systemMessage;
@@ -628,31 +681,76 @@ export async function createSystemMessage(
   socketIo?: any,
   req?: any
 ) {
-  const context = await getSystemContext(channelId);
-  
-  // Get serverId for workflow routing
-  const channel = await db.channel.findUnique({
-    where: { id: channelId },
-    select: { serverId: true },
-  });
-
-  const handlers = [
-    new OnboardingHandler(),
-    new WorkflowHandler(), // This now handles all non-onboarding messages including voice commands via n8n
-    new ImageAnalysisHandler(),
-  ];
-
-  for (const handler of handlers) {
-    if (handler.canHandle(message)) {
-      return await handler.handle(message, { 
-        channelId, 
-        serverId: channel?.serverId,
-        socketIo, 
-        context,
-        req 
-      });
+  try {
+    // Validate inputs to prevent errors
+    if (!channelId || !message) {
+      console.error("[CREATE_SYSTEM_MESSAGE] Invalid inputs:", { channelId: !!channelId, message: !!message });
+      return null;
     }
-  }
 
-  return null;
+    console.log(`[CREATE_SYSTEM_MESSAGE] Starting for channel: ${channelId}, message: ${message.id}`);
+    
+    const context = await getSystemContext(channelId);
+    
+    // Get serverId for workflow routing with error handling
+    const channel = await db.channel.findUnique({
+      where: { id: channelId },
+      select: { serverId: true },
+    });
+
+    if (!channel) {
+      console.error("[CREATE_SYSTEM_MESSAGE] Channel not found:", channelId);
+      return null;
+    }
+
+    const handlers = [
+      new OnboardingHandler(),
+      new WorkflowHandler(), // This now handles all non-onboarding messages including voice commands via n8n
+      new ImageAnalysisHandler(),
+    ];
+
+    for (const handler of handlers) {
+      try {
+        if (handler.canHandle(message)) {
+          console.log(`[CREATE_SYSTEM_MESSAGE] Using handler: ${handler.constructor.name}`);
+          
+          const result = await handler.handle(message, { 
+            channelId, 
+            serverId: channel.serverId,
+            socketIo, 
+            context,
+            req 
+          });
+          
+          console.log(`[CREATE_SYSTEM_MESSAGE] Handler completed successfully`);
+          return result;
+        }
+      } catch (handlerError) {
+        console.error(`[CREATE_SYSTEM_MESSAGE] Handler error (${handler.constructor.name}):`, {
+          error: handlerError instanceof Error ? handlerError.message : 'Unknown error',
+          stack: handlerError instanceof Error ? handlerError.stack : undefined,
+          channelId,
+          messageId: message.id
+        });
+        
+        // Continue to next handler instead of failing completely
+        continue;
+      }
+    }
+
+    console.log(`[CREATE_SYSTEM_MESSAGE] No suitable handler found for message`);
+    return null;
+    
+  } catch (error) {
+    console.error("[CREATE_SYSTEM_MESSAGE] Critical error:", {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      channelId,
+      messageId: message?.id,
+      timestamp: new Date().toISOString()
+    });
+    
+    // Return null instead of throwing to prevent unhandled promise rejections
+    return null;
+  }
 }

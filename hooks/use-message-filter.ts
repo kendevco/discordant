@@ -1,10 +1,9 @@
 import { useMemo } from "react";
 import { MessageWithMemberWithProfile } from "@/lib/system/types/message";
-import { FileType } from "@prisma/client";
 
 interface SearchFilters {
   query: string;
-  fileTypes: FileType[];
+  fileTypes: string[];
   dateRange: string;
   hasFiles: boolean;
   fromCurrentUser: boolean;
@@ -26,7 +25,7 @@ export function useMessageFilter(
         const query = filters.query.toLowerCase();
         const content = message.content?.toLowerCase() || "";
         const memberName = message.member.profile.name.toLowerCase();
-        const memberEmail = message.member.profile.email.toLowerCase();
+        const memberEmail = message.member.profile.email?.toLowerCase() || "";
         
         if (!content.includes(query) && 
             !memberName.includes(query) && 
@@ -58,9 +57,9 @@ export function useMessageFilter(
       // File type filter
       if (filters.fileTypes.length > 0) {
         if (!message.fileUrl) return false;
-        // Extract file type from URL if not directly available
-        const fileType = message.fileUrl.split('.').pop()?.toLowerCase();
-        if (!fileType || !filters.fileTypes.includes(fileType as FileType)) return false;
+        // Extract file extension from URL
+        const fileExtension = message.fileUrl.split('.').pop()?.toLowerCase();
+        if (!fileExtension || !filters.fileTypes.includes(fileExtension)) return false;
       }
 
       // Has files filter

@@ -7,6 +7,8 @@ Each client receives a **white-labeled portal** (like a private Discord server) 
 ## 🔑 Highlights
 
 ### 🔁 Conversational Automation (n8n)
+- **Async Workflow Processing** - Advanced asynchronous workflow execution with comprehensive debugging
+- **VAPI Voice Integration** - Voice-to-AI chat processing via n8n workflows 
 - Trigger and interact with **n8n workflows** directly from chat
 - Chat-first interface for backend automation
 - Fully self-hosted & isolated per client or tenant
@@ -29,7 +31,24 @@ Each client receives a **white-labeled portal** (like a private Discord server) 
 
 ---
 
-## ✨ New Features
+## ✨ Current Status & Recent Achievements
+
+### 🚀 **Async Workflow Foundation** ✅
+- **Production-Ready Async Processing** - Workflows now process asynchronously with proper webhook responses
+- **Enhanced Business Intelligence AI Agent v3.0** - Comprehensive AI agent with Calendar, Search, Research, Gmail, and YouTube tools
+- **Cold Start Resilience** - Robust error handling and fallback mechanisms for workflow initialization
+- **Comprehensive Debugging** - Full execution data tracking and performance monitoring
+
+### 🎙️ **VAPI Voice AI Integration** ✅  
+- **Voice-to-Chat Processing** - VAPI calls route through Discordant AI workflow for sophisticated voice interactions
+- **Tool Execution for Voice** - Voice callers get access to full AI tool suite (Calendar, Search, Research, etc.)
+- **Unified AI Configuration** - Single workflow serves both Discord and voice interactions
+
+### 🔧 **Developer Experience**
+- **One Week Setup Target** - Any sufficiently skilled developer should be productive within a week
+- **Memory-Optimized Development** - PowerShell script for handling large Next.js compilation with 8GB memory allocation
+- **Comprehensive Documentation** - Updated workflow files and integration guides in `/docs/workflows/`
+- **Production-Ready Deployment** - HTTPS development server with proper certificates
 
 ### 🤖 AI & Content Management
 - **Share AI Generated Content** - Share AI responses with public links and enhanced formatting
@@ -66,16 +85,25 @@ Discordant+ is built on a **simple, scalable stack**:
 - UploadThing for file handling
 - External integration with **n8n**, hosted privately or on-prem
 
-> 🔹 A Payload CMS version also exists at [spaces.kendev.co](https://spaces.kendev.co) if you’re exploring content-driven variations of this platform.
+> 🔹 A Payload CMS version also exists at [spaces.kendev.co](https://spaces.kendev.co) if you're exploring content-driven variations of this platform.
 
 ---
 
 ## 🚀 Getting Started
 
+### Prerequisites
+- Node.js 18+ with sufficient memory allocation (8GB recommended for development)
+- MySQL 8.0+
+- n8n instance (local or hosted)
+- Clerk account for authentication
+- UploadThing account for file handling
+- LiveKit account for video/audio
+
 ### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/your-org/discordant-plus.git
+cd discordant-plus
 ```
 
 ### 2. Install Dependencies
@@ -112,22 +140,42 @@ NEXT_PUBLIC_AI_SHARE_ENABLED=true
 npx prisma db push
 ```
 
-### 5. Run the Development Server
+### 5. Import n8n Workflows
 
+Import the provided workflows from `/docs/workflows/`:
+- `discordant-agent-0003.json` - Main AI agent with async processing
+- `vapi-discord-integration-workflow-v2.json` - VAPI voice integration
+
+### 6. Run the Development Server
+
+For optimal performance with large builds:
+
+**Windows (PowerShell):**
+```bash
+.\start-dev.ps1
+```
+
+**Standard:**
 ```bash
 npm run dev
 ```
 
-### 6. Launch the App
+### 7. Launch the App
 
 Visit [http://localhost:3000](http://localhost:3000)
 
-### 7. Key Commands & Shortcuts
+### 8. Key Commands & Shortcuts
 
 - **Ctrl+S** - Open advanced message search
 - **Enter** - Send message (in editor)
 - **Shift+Enter** - New line in message
 - **Escape** - Cancel editing/close modals
+
+### 📅 **Development Timeline**
+With proper setup and the provided documentation, any sufficiently skilled developer should be able to:
+- **Day 1-2**: Complete environment setup and basic deployment
+- **Day 3-4**: Configure n8n workflows and test basic automation
+- **Day 5-7**: Customize workflows, integrate additional tools, and achieve full productivity
 
 ---
 
@@ -143,12 +191,29 @@ Visit [http://localhost:3000](http://localhost:3000)
 
 Discordant+ integrates directly with your **n8n instance**, enabling:
 
+- **Asynchronous workflow execution** with comprehensive error handling
+- **Voice-driven automation** via VAPI integration
 - Conversational workflow launches
 - Slack/Discord-style automations via chat commands
 - Visual feedback from flows into chat or modal components
 - Works with any n8n trigger, including webhooks, schedulers, or external apps
 
 > 🔐 You retain full control over your infrastructure — host n8n, LiveKit, and the app privately.
+
+---
+
+## 📂 Project Structure
+
+```
+/docs/workflows/          # n8n workflow configurations
+  ├── discordant-agent-0003.json           # Main AI agent (async)
+  └── vapi-discord-integration-workflow-v2.json  # Voice integration
+/docs/misc/               # General documentation
+/components/              # React components
+/app/                     # Next.js 15 app router
+/lib/                     # Utilities and services
+start-dev.ps1            # Memory-optimized development script
+```
 
 ---
 
@@ -159,6 +224,8 @@ Discordant+ integrates directly with your **n8n instance**, enabling:
 - Internal Tools for Agencies  
 - Private Collaboration Environments  
 - White-Label Managed Service Platforms
+- **Voice-Enabled Business Intelligence**
+- **Async Workflow Processing Centers**
 
 ---
 
@@ -170,8 +237,10 @@ If you're looking to:
 - Integrate it with your self-hosted **n8n**
 - Customize portals, commands, or workflows
 - Expand to include billing, analytics, or enterprise SSO
+- **Implement voice AI integration with VAPI**
+- **Scale async workflow processing**
 
-🧑‍💻 **Connect with me on [LinkedIn](https://www.linkedin.com/in/kendevco/)** — I’m available for full-cycle consulting, white-label deployment, and integration work.
+🧑‍💻 **Connect with me on [LinkedIn](https://www.linkedin.com/in/kendevco/)** — I'm available for full-cycle consulting, white-label deployment, and integration work.
 
 ---
 
@@ -187,4 +256,4 @@ If you're looking to:
 
 ## 🙏 Acknowledgments
 
-This project was originally inspired by the excellent teaching content from [Code with Antonio](https://www.youtube.com/@codewithantonio), then reimagined for enterprise-grade conversational automation.
+This project was originally inspired by the excellent teaching content from [Code with Antonio](https://www.youtube.com/@codewithantonio), then reimagined for enterprise-grade conversational automation with async workflow processing and voice AI integration.

@@ -33,6 +33,9 @@ export const useChatQuery = ({
     );
 
     const res = await fetch(url);
+    if (!res.ok) {
+      throw new Error(`Failed to fetch messages: ${res.status}`);
+    }
     const data = await res.json();
     return data;
   };
@@ -43,9 +46,15 @@ export const useChatQuery = ({
       queryFn: fetchMessages,
       initialPageParam: undefined,
       getNextPageParam: (lastPage) => lastPage?.nextCursor,
-      refetchInterval: isConnected ? false : 1000,
+      refetchInterval: isConnected ? false : 10000,
       refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
+      refetchOnReconnect: true,
+      retry: (failureCount, error) => {
+        if (failureCount >= 3) return false;
+        if (error?.message?.includes('4')) return false;
+        return true;
+      },
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
     });
 
   return {

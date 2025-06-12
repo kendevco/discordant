@@ -29,21 +29,51 @@ export async function POST(req: NextRequest) {
       }, { status: 400 });
     }
     
-    // Store the AI response in the database
+    // Find the existing "AI Processing Started" message and update it instead of creating a new one
     try {
-      const message = await db.message.create({
-        data: {
-          id: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-          content,
+      // First, try to find the most recent system message in this channel that contains "AI Processing Started"
+      const existingMessage = await db.message.findFirst({
+        where: {
           channelId,
-          memberId: 'ai-assistant-bot',
           role: 'system',
-          fileUrl: null,
-          updatedAt: new Date(),
+          content: {
+            contains: 'AI Processing Started'
+          },
+          createdAt: {
+            gte: new Date(Date.now() - 5 * 60 * 1000) // Only look for messages in the last 5 minutes
+          }
+        },
+        orderBy: {
+          createdAt: 'desc'
         }
       });
-      
-      console.log('AI response saved to database:', message.id);
+
+      let message;
+      if (existingMessage) {
+        // Update the existing message with the final AI response
+        message = await db.message.update({
+          where: { id: existingMessage.id },
+          data: {
+            content,
+            updatedAt: new Date(),
+          }
+        });
+        console.log('Updated existing processing message:', message.id);
+      } else {
+        // Fallback: create new message if no processing message found
+        message = await db.message.create({
+          data: {
+            id: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            content,
+            channelId,
+            memberId: 'ai-assistant-bot',
+            role: 'system',
+            fileUrl: null,
+            updatedAt: new Date(),
+          }
+        });
+        console.log('Created new AI response message:', message.id);
+      }
       
       // Real-time update via Socket.IO
       const socketMessage: SocketMessage = {

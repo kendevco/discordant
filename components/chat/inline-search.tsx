@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Search, X, Filter, Calendar, File, Users } from "lucide-react";
+import { Search, X, Filter, Calendar, File, Users, ChevronDown, ChevronUp } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,18 +19,18 @@ interface InlineSearchProps {
 
 interface SearchFilters {
   query: string;
-  fileTypes: FileType[];
+  fileTypes: string[]; // Changed from FileType[] to string[] for file extensions
   dateRange: string; // 'today', 'week', 'month', 'all'
   hasFiles: boolean;
   fromCurrentUser: boolean;
 }
 
+// Map file extensions to user-friendly labels
 const FILE_TYPE_OPTIONS = [
-  { label: "Images", value: "IMAGE" as FileType },
-  { label: "Documents", value: "DOCUMENT" as FileType },
-  { label: "Videos", value: "VIDEO" as FileType },
-  { label: "Audio", value: "AUDIO" as FileType },
-  { label: "PDFs", value: "PDF" as FileType },
+  { label: "Images", extensions: ["jpg", "jpeg", "png", "gif", "webp", "svg", "bmp"] },
+  { label: "Documents", extensions: ["pdf", "doc", "docx", "txt", "rtf", "odt"] },
+  { label: "Videos", extensions: ["mp4", "avi", "mov", "wmv", "flv", "webm", "mkv"] },
+  { label: "Audio", extensions: ["mp3", "wav", "flac", "aac", "ogg", "wma"] },
 ];
 
 const DATE_RANGE_OPTIONS = [
@@ -118,10 +118,15 @@ export function InlineSearch({ onSearchChange, onClearSearch, messageCount, filt
     onSearchChange(searchQuery, newFilters);
   };
 
-  const handleFileTypeToggle = (fileType: FileType, checked: boolean) => {
-    const newFileTypes = checked 
-      ? [...filters.fileTypes, fileType]
-      : filters.fileTypes.filter(ft => ft !== fileType);
+  const handleFileTypeToggle = (fileTypeGroup: typeof FILE_TYPE_OPTIONS[0], checked: boolean) => {
+    let newFileTypes: string[];
+    if (checked) {
+      // Add all extensions from this group
+      newFileTypes = [...new Set([...filters.fileTypes, ...fileTypeGroup.extensions])];
+    } else {
+      // Remove all extensions from this group
+      newFileTypes = filters.fileTypes.filter(ext => !fileTypeGroup.extensions.includes(ext));
+    }
     updateFilters({ fileTypes: newFileTypes });
   };
 
@@ -144,21 +149,30 @@ export function InlineSearch({ onSearchChange, onClearSearch, messageCount, filt
 
   const isFiltering = searchQuery.trim() || hasActiveFilters;
 
+  // Collapsed state - just a search icon
   if (!isExpanded) {
     return (
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={handleOpen}
-        className="text-white hover:text-zinc-300 hover:bg-white/10"
-      >
-        <Search className="h-4 w-4" />
-      </Button>
+      <div className="flex items-center gap-2">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleOpen}
+          className="text-white hover:text-zinc-300 hover:bg-white/10 flex items-center gap-2"
+        >
+          <Search className="h-4 w-4" />
+          <span className="hidden sm:inline text-sm">Search</span>
+        </Button>
+        {isFiltering && (
+          <Badge variant="secondary" className="text-xs">
+            {filteredCount} of {messageCount}
+          </Badge>
+        )}
+      </div>
     );
   }
 
   return (
-    <div className="flex flex-col w-full min-w-80 max-w-full">
+    <div className="flex flex-col w-full max-w-full">
       {/* Search Input Row */}
       <div className="flex items-center gap-2 bg-white/10 rounded-md px-3 py-2 backdrop-blur-sm">
         <Search className="h-4 w-4 text-white/70 flex-shrink-0" />
@@ -187,9 +201,19 @@ export function InlineSearch({ onSearchChange, onClearSearch, messageCount, filt
           <Filter className="h-3 w-3" />
           {hasActiveFilters && (
             <Badge variant="destructive" className="ml-1 text-xs h-4 w-4 p-0 flex items-center justify-center">
-              {filters.fileTypes.length + (filters.dateRange !== "all" ? 1 : 0) + (filters.hasFiles ? 1 : 0) + (filters.fromCurrentUser ? 1 : 0)}
+              {(filters.fileTypes.length > 0 ? 1 : 0) + (filters.dateRange !== "all" ? 1 : 0) + (filters.hasFiles ? 1 : 0) + (filters.fromCurrentUser ? 1 : 0)}
             </Badge>
           )}
+        </Button>
+
+        {/* Minimize Search */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setIsExpanded(false)}
+          className="flex-shrink-0 text-white hover:text-zinc-300 hover:bg-white/10"
+        >
+          <ChevronUp className="h-3 w-3" />
         </Button>
 
         {/* Close Search */}
@@ -203,9 +227,9 @@ export function InlineSearch({ onSearchChange, onClearSearch, messageCount, filt
         </Button>
       </div>
 
-      {/* Filters Panel - Slides down on mobile, shows inline on desktop */}
+      {/* Filters Panel - Collapsible */}
       {showFilters && (
-        <div className="mt-2 p-4 bg-white/10 rounded-md backdrop-blur-sm space-y-4">
+        <div className="mt-2 p-4 bg-white/10 rounded-md backdrop-blur-sm space-y-4 animate-in slide-in-from-top-2 duration-200">
           <div className="flex items-center justify-between">
             <h4 className="text-sm font-medium text-white">Filters</h4>
             {hasActiveFilters && (
@@ -220,7 +244,7 @@ export function InlineSearch({ onSearchChange, onClearSearch, messageCount, filt
             )}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             {/* Date Range */}
             <div>
               <label className="text-xs text-white/70 block mb-2">
@@ -248,19 +272,22 @@ export function InlineSearch({ onSearchChange, onClearSearch, messageCount, filt
                 File Types
               </label>
               <div className="space-y-2">
-                {FILE_TYPE_OPTIONS.slice(0, 3).map((fileType) => (
-                  <div key={fileType.value} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={fileType.value}
-                      checked={filters.fileTypes.includes(fileType.value)}
-                      onCheckedChange={(checked) => handleFileTypeToggle(fileType.value, checked as boolean)}
-                      className="border-white/30 data-[state=checked]:bg-white data-[state=checked]:text-purple-600"
-                    />
-                    <label htmlFor={fileType.value} className="text-xs text-white/90">
-                      {fileType.label}
-                    </label>
-                  </div>
-                ))}
+                {FILE_TYPE_OPTIONS.map((fileTypeGroup) => {
+                  const isChecked = fileTypeGroup.extensions.some(ext => filters.fileTypes.includes(ext));
+                  return (
+                    <div key={fileTypeGroup.label} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={fileTypeGroup.label}
+                        checked={isChecked}
+                        onCheckedChange={(checked) => handleFileTypeToggle(fileTypeGroup, checked as boolean)}
+                        className="border-white/30 data-[state=checked]:bg-white data-[state=checked]:text-purple-600"
+                      />
+                      <label htmlFor={fileTypeGroup.label} className="text-xs text-white/90">
+                        {fileTypeGroup.label}
+                      </label>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -298,7 +325,7 @@ export function InlineSearch({ onSearchChange, onClearSearch, messageCount, filt
           </div>
 
           {/* Filter Tips */}
-          <div className="text-xs text-white/50 mt-2">
+          <div className="text-xs text-white/50 mt-2 hidden sm:block">
             <kbd className="px-1 py-0.5 bg-white/20 rounded text-xs">Ctrl+F</kbd> Search • 
             <kbd className="px-1 py-0.5 bg-white/20 rounded text-xs ml-1">Ctrl+Shift+F</kbd> Filters • 
             <kbd className="px-1 py-0.5 bg-white/20 rounded text-xs ml-1">Esc</kbd> Close
