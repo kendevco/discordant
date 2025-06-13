@@ -12,6 +12,7 @@ const isPublicRoute = createRouteMatcher([
   '/api/workflow(.*)',
   '/api/ai(.*)',
   '/api/uploadthing(.*)',
+  '/api/socket(.*)',
   '/embed(.*)',
   '/shared(.*)'
 ]);

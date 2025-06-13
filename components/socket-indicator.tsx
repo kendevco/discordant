@@ -1,76 +1,55 @@
 "use client";
 
-import { useSocket } from "@/components/providers/socket-provider";
 import { Badge } from "@/components/ui/badge";
-import { Wifi, WifiOff, Loader2 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useSocket } from "@/components/providers/socket-provider";
+import { Wifi, WifiOff, Loader2, AlertTriangle } from "lucide-react";
 
 export const SocketIndicator = () => {
-  const { isConnected } = useSocket();
-  const [isLargeScreen, setIsLargeScreen] = useState(false);
-  const [connectionState, setConnectionState] = useState<"connected" | "disconnected" | "connecting">("connecting");
+  const { isConnected, connectionStatus } = useSocket();
 
-  useEffect(() => {
-    const checkScreenWidth = () => {
-      setIsLargeScreen(window.innerWidth >= 768);
-    };
-
-    checkScreenWidth();
-    window.addEventListener("resize", checkScreenWidth);
-
-    return () => window.removeEventListener("resize", checkScreenWidth);
-  }, []);
-
-  useEffect(() => {
-    if (isConnected) {
-      setConnectionState("connected");
-    } else {
-      setConnectionState("disconnected");
+  const getStatusConfig = () => {
+    switch (connectionStatus) {
+      case 'connected':
+        return {
+          icon: <Wifi className="h-3 w-3" />,
+          label: "Live",
+          variant: "default" as const,
+          className: "bg-emerald-600 text-white border-emerald-600"
+        };
+      case 'connecting':
+        return {
+          icon: <Loader2 className="h-3 w-3 animate-spin" />,
+          label: "Connecting",
+          variant: "secondary" as const,
+          className: "bg-yellow-600 text-white border-yellow-600"
+        };
+      case 'error':
+        return {
+          icon: <AlertTriangle className="h-3 w-3" />,
+          label: "Error",
+          variant: "destructive" as const,
+          className: "bg-red-600 text-white border-red-600"
+        };
+      default:
+        return {
+          icon: <WifiOff className="h-3 w-3" />,
+          label: "Offline",
+          variant: "outline" as const,
+          className: "bg-zinc-600 text-white border-zinc-600"
+        };
     }
-  }, [isConnected]);
+  };
 
-  if (!isLargeScreen) {
-    return (
-      <div className="flex items-center justify-center h-6 w-6">
-        {connectionState === "connected" ? (
-          <Wifi className="h-4 w-4 text-emerald-500" />
-        ) : connectionState === "connecting" ? (
-          <Loader2 className="h-4 w-4 text-yellow-500 animate-spin" />
-        ) : (
-          <WifiOff className="h-4 w-4 text-yellow-500 animate-pulse" />
-        )}
-      </div>
-    );
-  }
-
-  if (connectionState === "disconnected") {
-    return (
-      <Badge
-        variant="outline"
-        className="bg-yellow-600 text-white border-none animate-pulse"
-      >
-        Fallback: Polling every 1s
-      </Badge>
-    );
-  }
-
-  if (connectionState === "connecting") {
-    return (
-      <Badge
-        variant="outline"
-        className="bg-yellow-600 text-white border-none"
-      >
-        Connecting...
-      </Badge>
-    );
-  }
+  const config = getStatusConfig();
 
   return (
-    <Badge
-      variant="outline"
-      className="bg-emerald-600 text-white border-none"
+    <Badge 
+      variant={config.variant} 
+      className={`${config.className} flex items-center gap-1.5 px-2 py-1 text-xs font-medium`}
+      title={`Socket.IO Status: ${connectionStatus} | Real-time messaging ${isConnected ? 'active' : 'inactive'}`}
     >
-      Live: Real-time updates
+      {config.icon}
+      {config.label}
     </Badge>
   );
 };

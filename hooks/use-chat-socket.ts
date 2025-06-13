@@ -1,6 +1,7 @@
 // /hooks/use-chat-socket.ts
 
 import { useSocket } from "@/components/providers/socket-provider";
+import { socketHelper } from "@/lib/system/socket";
 import { Member, Message, Profile } from "@prisma/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
@@ -9,7 +10,10 @@ type ChatSocketProps = {
   addKey: string;
   updateKey: string;
   queryKey: string;
+  channelId?: string;
+  conversationId?: string;
 };
+
 type MessageWithMemberWithProfile = Message & {
   member: Member & {
     profile: Profile;
@@ -22,12 +26,14 @@ export const useChatSocket = ({
   addKey,
   updateKey,
   queryKey,
+  channelId,
+  conversationId,
 }: ChatSocketProps) => {
-  const { socket } = useSocket();
+  const { socket, isConnected } = useSocket();
   const queryClient = useQueryClient();
   
   useEffect(() => {
-    if (!socket) {
+    if (!socket || !isConnected) {
       console.log(`[USE_CHAT_SOCKET] Socket not available for queryKey: ${queryKey}`);
       return;
     }
@@ -36,12 +42,23 @@ export const useChatSocket = ({
       queryKey,
       addKey,
       updateKey,
+      channelId,
+      conversationId,
       socketConnected: socket.connected,
       socketId: socket.id
     });
 
+    // Join appropriate room
+    if (channelId) {
+      socketHelper.joinChannel(channelId);
+      console.log(`[USE_CHAT_SOCKET] Joined channel: ${channelId}`);
+    } else if (conversationId) {
+      socketHelper.joinConversation(conversationId);
+      console.log(`[USE_CHAT_SOCKET] Joined conversation: ${conversationId}`);
+    }
+
     // Handle message updates
-    socket.on(updateKey, (message: MessageWithMemberWithProfile) => {
+    const handleUpdate = (message: MessageWithMemberWithProfile) => {
       console.log(`[USE_CHAT_SOCKET] Received UPDATE on key: ${updateKey}`);
       console.log(`[USE_CHAT_SOCKET] Update message ID: ${message.id}`);
       
@@ -69,10 +86,10 @@ export const useChatSocket = ({
           pages: newData,
         };
       });
-    });
+    };
 
     // Handle new message additions
-    socket.on(addKey, (message: MessageWithMemberWithProfile) => {
+    const handleAdd = (message: MessageWithMemberWithProfile) => {
       console.log(`[USE_CHAT_SOCKET] Received message on key: ${addKey}`);
       console.log(`[USE_CHAT_SOCKET] Message ID: ${message.id}`);
       console.log(`[USE_CHAT_SOCKET] Message role: ${message.role}`);
@@ -154,11 +171,28 @@ export const useChatSocket = ({
           });
         }, 100);
       }
-    });
-
-    return () => {
-      socket.off(addKey);
-      socket.off(updateKey);
     };
-  }, [queryClient, addKey, queryKey, socket, updateKey]);
+
+    // Attach event listeners
+    socket.on(updateKey, handleUpdate);
+    socket.on(addKey, handleAdd);
+
+    // Cleanup function
+    return () => {
+      console.log(`[USE_CHAT_SOCKET] Cleaning up listeners for: ${queryKey}`);
+      
+      // Remove event listeners
+      socket.off(updateKey, handleUpdate);
+      socket.off(addKey, handleAdd);
+      
+      // Leave rooms
+      if (channelId) {
+        socketHelper.leaveChannel(channelId);
+        console.log(`[USE_CHAT_SOCKET] Left channel: ${channelId}`);
+      } else if (conversationId) {
+        socketHelper.leaveConversation(conversationId);
+        console.log(`[USE_CHAT_SOCKET] Left conversation: ${conversationId}`);
+      }
+    };
+  }, [queryClient, addKey, queryKey, socket, updateKey, isConnected, channelId, conversationId]);
 };

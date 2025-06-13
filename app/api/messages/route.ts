@@ -8,22 +8,73 @@ const MESSAGES_BATCH = 50;
 
 export async function GET(req: Request) {
   try {
+    console.log('[MESSAGES_GET] Request started:', {
+      url: req.url,
+      timestamp: new Date().toISOString()
+    });
+
     const profile = await currentProfile();
     const { searchParams } = new URL(req.url);
     const cursor = searchParams.get("cursor");
     const channelId = searchParams.get("channelId");
     
+    console.log('[MESSAGES_GET] Request params:', {
+      profileId: profile?.id,
+      channelId,
+      cursor: cursor ? cursor.substring(0, 8) + '...' : null
+    });
+    
     if (!profile) {
+      console.error('[MESSAGES_GET] No profile found - user not authenticated');
       return new NextResponse("Unauthorized", { status: 401 });
     }
     if (!channelId) {
+      console.error('[MESSAGES_GET] No channelId provided in request');
       return new NextResponse("Channel ID missing", { status: 400 });
     }
     
     // Validate channelId format (UUID format)
     if (!/^[a-f0-9-]{36}$/.test(channelId)) {
+      console.error('[MESSAGES_GET] Invalid channelId format:', channelId);
       return new NextResponse("Invalid channel ID format", { status: 400 });
     }
+
+    // Check if user has access to this channel
+    console.log('[MESSAGES_GET] Checking channel access...');
+    const channel = await db.channel.findFirst({
+      where: {
+        id: channelId,
+        server: {
+          members: {
+            some: {
+              profileId: profile.id
+            }
+          }
+        }
+      },
+      include: {
+        server: {
+          select: {
+            id: true,
+            name: true
+          }
+        }
+      }
+    });
+
+    if (!channel) {
+      console.error('[MESSAGES_GET] Channel not found or user has no access:', {
+        channelId,
+        profileId: profile.id
+      });
+      return new NextResponse("Channel not found or access denied", { status: 404 });
+    }
+
+    console.log('[MESSAGES_GET] Channel access confirmed:', {
+      channelId: channel.id,
+      serverId: channel.server.id,
+      serverName: channel.server.name
+    });
 
     // Use raw query to avoid Prisma include issues with null relationships
     let messages;
@@ -32,9 +83,11 @@ export async function GET(req: Request) {
       if (cursor) {
         // Validate cursor format - should be a UUID (message ID)
         if (!/^[a-f0-9-]{36}$/.test(cursor)) {
+          console.error('[MESSAGES_GET] Invalid cursor format:', cursor);
           return new NextResponse("Invalid cursor format", { status: 400 });
         }
         
+        console.log('[MESSAGES_GET] Fetching messages with cursor...');
         messages = await db.$queryRaw`
           SELECT 
             m.id,
@@ -60,6 +113,7 @@ export async function GET(req: Request) {
           LIMIT ${MESSAGES_BATCH}
         `;
       } else {
+        console.log('[MESSAGES_GET] Fetching initial messages...');
         messages = await db.$queryRaw`
           SELECT 
             m.id,
@@ -82,6 +136,9 @@ export async function GET(req: Request) {
           LIMIT ${MESSAGES_BATCH}
         `;
       }
+      
+      console.log('[MESSAGES_GET] Database query completed, messages found:', Array.isArray(messages) ? messages.length : 0);
+      
     } catch (dbError) {
       console.error("[MESSAGES_GET] Database error:", dbError);
       return new NextResponse("Database error", { status: 500 });
@@ -129,6 +186,12 @@ export async function GET(req: Request) {
       items: processedMessages || [], 
       nextCursor: nextCursor
     };
+    
+    console.log('[MESSAGES_GET] Response prepared:', {
+      messageCount: processedMessages.length,
+      hasNextCursor: !!nextCursor,
+      processingTime: Date.now() - new Date().getTime()
+    });
     
     return NextResponse.json(response);
     

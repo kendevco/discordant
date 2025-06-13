@@ -3,6 +3,7 @@ import { MobileToggle } from "@/components/mobile-toggle";
 import { UserAvatar } from "@/components/user-avatar";
 import { SocketIndicator } from "@/components/socket-indicator";
 import { ChatVideoButton } from "@/components/chat-video-button";
+import { ChatHeaderClient } from "@/components/chat/chat-header-client";
 
 interface ChatHeaderProps {
   serverId: string;
@@ -46,6 +47,15 @@ export const ChatHeader = ({
       <p className="font-semibold text-md text-white">{name}</p>
       <div className="ml-auto flex items-center gap-x-2">
         {type === "conversation" && <ChatVideoButton />}
+        
+        {/* SSE Status - shows real-time connection status */}
+        <ChatHeaderClient 
+          type={type}
+          channelId={channelId}
+          conversationId={conversationId}
+        />
+        
+        {/* Keep the old socket indicator for fallback */}
         <SocketIndicator />
       </div>
     </div>

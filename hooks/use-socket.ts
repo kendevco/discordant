@@ -19,12 +19,17 @@ export const useSocket = () => {
   const params = useParams();
   const { user } = useUser();
 
-  useEffect(() => {
+    useEffect(() => {
     const socket = socketHelper.connect();
+
+    if (!socket) {
+      setStatus("disconnected");
+      return;
+    }
 
     socket.on("connect", () => {
       setStatus("connected");
-      
+
       // Create session when connected
       if (user && params?.serverId) {
         socketHelper.emit("user:session:create", {
