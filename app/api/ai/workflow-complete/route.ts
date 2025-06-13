@@ -33,23 +33,65 @@ export async function POST(req: NextRequest) {
       let messageToEmit = null;
       
       if (messageId && messageId !== 'skip-update') {
-        // Try to get updated message from database
-        messageToEmit = await db.message.findUnique({
-          where: { id: messageId },
-          include: {
-            member: {
-              include: {
-                profile: true
+        // UPDATE the existing processing message with the AI response
+        console.log('Updating existing processing message:', messageId);
+        
+        try {
+          messageToEmit = await db.message.update({
+            where: { id: messageId },
+            data: {
+              content,
+              updatedAt: new Date()
+            },
+            include: {
+              member: {
+                include: {
+                  profile: true
+                }
               }
             }
+          });
+          console.log('✅ Successfully updated processing message with AI response');
+        } catch (updateError) {
+          console.error('❌ Failed to update processing message:', updateError);
+          
+          // Fallback: try to find the message and update it
+          const existingMessage = await db.message.findUnique({
+            where: { id: messageId },
+            include: {
+              member: {
+                include: {
+                  profile: true
+                }
+              }
+            }
+          });
+          
+          if (existingMessage) {
+            messageToEmit = await db.message.update({
+              where: { id: messageId },
+              data: {
+                content,
+                updatedAt: new Date()
+              },
+              include: {
+                member: {
+                  include: {
+                    profile: true
+                  }
+                }
+              }
+            });
+            console.log('✅ Fallback update successful');
+          } else {
+            console.error('❌ Processing message not found:', messageId);
           }
-        });
-        console.log('Found existing message to update:', !!messageToEmit);
+        }
       }
       
       if (!messageToEmit) {
-        // Create new AI system message since no existing message to update
-        console.log('Creating new AI system message...');
+        // Only create new message if no processing message exists (shouldn't happen in normal flow)
+        console.log('⚠️ No processing message found, creating new AI message (unexpected scenario)');
         
         // Find any admin member for this channel to create the system message
         const adminMember = await db.member.findFirst({
