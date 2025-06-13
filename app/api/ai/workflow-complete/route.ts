@@ -28,34 +28,88 @@ export async function POST(req: NextRequest) {
       }, { status: 400 });
     }
     
-    // The n8n workflow handles database updates directly via MySQL UPDATE
-    // This endpoint ONLY handles real-time Socket.IO notifications
+    // Handle both message updates and new message creation
     try {
-      // Get the updated message from database to emit the complete object
-      const updatedMessage = await db.message.findUnique({
-        where: { id: messageId },
-        include: {
-          member: {
-            include: {
-              profile: true
+      let messageToEmit = null;
+      
+      if (messageId && messageId !== 'skip-update') {
+        // Try to get updated message from database
+        messageToEmit = await db.message.findUnique({
+          where: { id: messageId },
+          include: {
+            member: {
+              include: {
+                profile: true
+              }
             }
           }
+        });
+        console.log('Found existing message to update:', !!messageToEmit);
+      }
+      
+      if (!messageToEmit) {
+        // Create new AI system message since no existing message to update
+        console.log('Creating new AI system message...');
+        
+        // Find any admin member for this channel to create the system message
+        const adminMember = await db.member.findFirst({
+          where: {
+            role: 'ADMIN',
+            server: {
+              channels: {
+                some: {
+                  id: channelId
+                }
+              }
+            }
+          },
+          include: {
+            profile: true
+          }
+        });
+        
+        if (adminMember) {
+          messageToEmit = await db.message.create({
+            data: {
+              id: require('crypto').randomUUID(),
+              content,
+              role: 'system',
+              memberId: adminMember.id,
+              channelId: channelId,
+              updatedAt: new Date()
+            },
+            include: {
+              member: {
+                include: {
+                  profile: true
+                }
+              }
+            }
+          });
+          console.log('Created new AI system message:', messageToEmit.id);
+        } else {
+          console.error('No admin member found for channel:', channelId);
         }
-      });
+      }
 
-      if (updatedMessage) {
-        // Import socket service dynamically to avoid initialization issues
-        const { socketHelper } = await import('@/lib/system/socket');
+      if (messageToEmit) {
+        console.log(`✅ AI message created/updated successfully: ${messageToEmit.id}`);
+        console.log(`Channel: ${channelId}, Content length: ${content.length}`);
         
-        // Emit to the CORRECT channel key that useChatSocket is listening to
-        const channelKey = `chat:${channelId}:messages`;
+        // In serverless environments, Socket.IO emissions are unreliable
+        // The client will pick up the new message through normal polling/refresh
+        // or we can trigger a Server-Sent Events update
         
-        // Emit the complete updated message object (not a new message)
-        socketHelper.emit(channelKey, updatedMessage);
-        
-        console.log(`Real-time update notification sent to channel: ${channelKey}`);
+        try {
+          // Try to trigger a Server-Sent Events update if available
+          const { triggerChannelUpdate } = await import('@/lib/system/sse-updates');
+          await triggerChannelUpdate(channelId, messageToEmit);
+          console.log(`✅ SSE update triggered for channel: ${channelId}`);
+        } catch (sseError) {
+          console.log('SSE update not available, relying on client polling');
+        }
       } else {
-        console.warn('Updated message not found in database:', messageId);
+        console.warn('No message to emit for channel:', channelId);
       }
       
       const processingTime = Date.now() - startTime;

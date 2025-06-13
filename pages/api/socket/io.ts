@@ -25,6 +25,14 @@ const ioHandler = (req: NextApiRequest, res: NextApiResponseServerIo) => {
     });
 
     res.socket.server.io = io;
+    
+    // Register the Socket.IO instance globally for server-side emissions
+    import('@/lib/system/server-socket').then(({ setServerSocketIO }) => {
+      setServerSocketIO(io);
+      console.log('[SOCKET_IO] Server instance registered globally');
+    }).catch(error => {
+      console.error('[SOCKET_IO] Failed to register server instance:', error);
+    });
   }
 
   res.end();
