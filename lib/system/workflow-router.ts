@@ -15,6 +15,7 @@ export interface WorkflowPayload {
   userName: string;
   channelId: string;
   serverId?: string;
+  messageId?: string;
   timestamp: string;
   metadata: {
     platform: string;
@@ -107,7 +108,8 @@ export class WorkflowRouter {
     message: MessageWithMember,
     route: WorkflowRoute,
     channelId: string,
-    serverId?: string
+    serverId?: string,
+    messageId?: string
   ): WorkflowPayload {
     const intent = this.detectIntent(message.content);
     
@@ -117,6 +119,7 @@ export class WorkflowRouter {
       userName: message.member.profile.name,
       channelId,
       serverId,
+      messageId,
       timestamp: new Date().toISOString(),
       metadata: {
         platform: "discordant-chat",

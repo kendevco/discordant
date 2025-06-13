@@ -26,7 +26,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     const socketInstance = io(process.env.NEXT_PUBLIC_SITE_URL!, {
       path: "/api/socket/io",
       addTrailingSlash: false,
-      transports: ["polling", "websocket"],
+      transports: ["websocket", "polling"],
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 2000,
@@ -46,7 +46,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       console.log("[SOCKET] Disconnected:", reason);
       setIsConnected(false);
       
-      if (reason === "io server disconnect" || reason === "io client disconnect") {
+      if (reason === "io server disconnect") {
         socketInstance.disconnect();
       }
     });

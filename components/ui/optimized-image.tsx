@@ -22,37 +22,28 @@ export const OptimizedImage = ({
   height = 96,
   className,
   priority = false,
-  fallbackSrc = "/default-avatar.png"
+  fallbackSrc = "/default-avatar.png",
 }: OptimizedImageProps) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasError, setHasError] = useState(false);
+  const [imageState, setImageState] = useState<'loading' | 'loaded' | 'error'>('loading');
   const [currentSrc, setCurrentSrc] = useState(src);
 
   const handleLoad = () => {
-    setIsLoading(false);
-    setHasError(false);
+    setImageState('loaded');
   };
 
   const handleError = () => {
-    setIsLoading(false);
-    setHasError(true);
-    
-    // Try fallback if current src is not already the fallback
     if (currentSrc !== fallbackSrc) {
       setCurrentSrc(fallbackSrc);
-      setIsLoading(true);
-      setHasError(false);
+      setImageState('loading');
+    } else {
+      setImageState('error');
     }
   };
 
-  // Show loading state
-  if (isLoading) {
+  if (imageState === 'loading') {
     return (
-      <div 
-        className={cn(
-          "flex items-center justify-center bg-gray-200 dark:bg-gray-700 rounded-full",
-          className
-        )}
+      <div
+        className={cn("flex items-center justify-center bg-gray-200 dark:bg-gray-700", className)}
         style={{ width, height }}
       >
         <Loader2 className="w-4 h-4 animate-spin text-gray-400" />
@@ -60,14 +51,10 @@ export const OptimizedImage = ({
     );
   }
 
-  // Show error state with icon
-  if (hasError && currentSrc === fallbackSrc) {
+  if (imageState === 'error') {
     return (
-      <div 
-        className={cn(
-          "flex items-center justify-center bg-gray-200 dark:bg-gray-700 rounded-full",
-          className
-        )}
+      <div
+        className={cn("flex items-center justify-center bg-gray-200 dark:bg-gray-700", className)}
         style={{ width, height }}
       >
         <ImageIcon className="w-6 h-6 text-gray-400" />
@@ -81,16 +68,11 @@ export const OptimizedImage = ({
       alt={alt}
       width={width}
       height={height}
-      className={cn("rounded-full object-cover", className)}
+      className={cn("object-cover", className)}
       priority={priority}
       onLoad={handleLoad}
       onError={handleError}
-      // Add timeout handling via loading strategy
-      loading={priority ? "eager" : "lazy"}
-      // Optimize for UploadThing images
       quality={85}
-      placeholder="blur"
-      blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+Eve5P4HcLtH/Z"
     />
   );
 }; 

@@ -1,0 +1,126 @@
+{
+  "name": "Groq LLM Chain Example",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "groq-chat",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        200,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a helpful AI assistant for business automation and workflow optimization.\n\nUser Query: {{ $json.query || $json.message || 'Hello' }}\n\nContext: {{ $json.context || 'General assistance' }}\n\nPlease provide a helpful and detailed response.",
+        "options": {
+          "systemMessage": "You are an expert in business automation, n8n workflows, and AI integration. Provide practical, actionable advice."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        500,
+        160
+      ],
+      "id": "298f5337-ef44-4d68-b1d5-2f0970b80451",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "llama-3.1-70b-versatile",
+          "mode": "list",
+          "cachedResultName": "Llama 3.1 70B Versatile"
+        },
+        "options": {
+          "maxTokens": 4096,
+          "temperature": 0.7
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        920,
+        180
+      ],
+      "id": "95441c21-cb04-4665-8051-af7726d489f2",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "VT4QABs3We47cSWs",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"response\": \"{{ $json.output }}\",\n  \"model\": \"llama-3.1-70b-versatile\",\n  \"timestamp\": \"{{ new Date().toISOString() }}\",\n  \"status\": \"success\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.2,
+      "position": [
+        800,
+        160
+      ],
+      "id": "webhook-response",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "136461ac021bda65593ed5d2f70798d0433ed7859abfc9e2ca43aa4b9c0b779e"
+  },
+  "tags": ["groq", "llm", "ai", "chat"]
+} 

@@ -2,6 +2,7 @@
 
 import { Fragment } from "react";
 import { ExpandableMessage } from "./expandable-message";
+import { UI_CONFIG } from "@/lib/constants/ui-config";
 
 interface RichContentRendererProps {
   content: string;
@@ -14,7 +15,7 @@ export const RichContentRenderer = ({
 }: RichContentRendererProps) => {
   
   // If content is short enough, render normally with existing logic
-  if (content.length <= 650) {
+  if (content.length <= UI_CONFIG.MESSAGE_EXPANDABLE_LENGTH) {
     if (isSystemMessage) {
       return (
         <div className="system-message">
@@ -46,21 +47,21 @@ export const RichContentRenderer = ({
       .replace(/\*\*\[([^\]]+)\]\(([^)]+)\)\*\*/g, '<strong><a href="$2" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 underline">$1</a></strong>')
       .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 underline">$1</a>')
       // Handle section headers (### Header or ## Header) - BEFORE other formatting
-      .replace(/^###\s*(.+)$/gm, '<h3 class="text-lg font-bold text-blue-400 dark:text-blue-300 mt-3 mb-2">$1</h3>')
-      .replace(/^##\s*(.+)$/gm, '<h2 class="text-xl font-bold text-blue-400 dark:text-blue-300 mt-4 mb-2">$1</h2>')
-      .replace(/^#\s*(.+)$/gm, '<h1 class="text-2xl font-bold text-blue-400 dark:text-blue-300 mt-4 mb-3">$1</h1>')
+      .replace(/^###\s*(.+)$/gm, '<h3 class="text-lg font-bold text-blue-400 dark:text-blue-300 mt-1 mb-1">$1</h3>')
+      .replace(/^##\s*(.+)$/gm, '<h2 class="text-xl font-bold text-blue-400 dark:text-blue-300 mt-1 mb-1">$1</h2>')
+      .replace(/^#\s*(.+)$/gm, '<h1 class="text-2xl font-bold text-blue-400 dark:text-blue-300 mt-1 mb-1">$1</h1>')
       // Apply text formatting
       .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-white">$1</strong>')
       .replace(/\*(.*?)\*/g, '<em class="italic text-zinc-200">$1</em>')
       .replace(/`(.*?)`/g, '<code class="bg-zinc-800 dark:bg-zinc-700 px-1 py-0.5 rounded text-sm font-mono text-yellow-300">$1</code>')
       // Handle list items with bullet points
-      .replace(/^[\s]*[-•]\s*(.+)$/gm, '<div class="ml-4 mb-1 text-zinc-200 dark:text-zinc-300">• $1</div>')
+      .replace(/^[\s]*[-•]\s*(.+)$/gm, '<div class="ml-4 mb-0.5 text-zinc-200 dark:text-zinc-300">• $1</div>')
       // Handle numbered lists
-      .replace(/^[\s]*(\d+)\.\s*(.+)$/gm, '<div class="ml-4 mb-1 text-zinc-200 dark:text-zinc-300">$1. $2</div>')
+      .replace(/^[\s]*(\d+)\.\s*(.+)$/gm, '<div class="ml-4 mb-0.5 text-zinc-200 dark:text-zinc-300">$1. $2</div>')
       // Handle plain URLs that aren't already in markdown links
       .replace(/(^|[^"])https?:\/\/[^\s<)]+(?![^<]*<\/a>)/g, '$1<a href="$&" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 underline">$&</a>')
-      // Handle line breaks - tighter spacing
-      .replace(/\n\n+/g, '<br class="my-2">')
+      // Handle line breaks - much tighter spacing
+      .replace(/\n\n+/g, '<br class="my-0.5">')
       .replace(/\n/g, '<br>');
   };
 
@@ -68,7 +69,7 @@ export const RichContentRenderer = ({
     return (
       <ExpandableMessage 
         content={formatContentForHTML(content)}
-        maxLength={650}
+        maxLength={UI_CONFIG.MESSAGE_EXPANDABLE_LENGTH}
         className="system-message text-zinc-200 dark:text-zinc-300"
       />
     );
@@ -77,7 +78,7 @@ export const RichContentRenderer = ({
   return (
     <ExpandableMessage 
       content={formatContentForHTML(content)}
-      maxLength={650}
+      maxLength={UI_CONFIG.MESSAGE_EXPANDABLE_LENGTH}
       className="regular-message text-zinc-600 dark:text-zinc-300"
     />
   );
@@ -91,9 +92,9 @@ export const RichContentRenderer = ({
       if (line.match(/^#{1,3}\s+/)) {
         const level = line.match(/^(#{1,3})/)?.[1].length || 3;
         const headerText = line.replace(/^#{1,3}\s+/, '');
-        const headerClass = level === 1 ? "text-xl font-bold mt-4 mb-2" :
-                           level === 2 ? "text-lg font-bold mt-3 mb-2" :
-                           "text-base font-bold mt-2 mb-1";
+        const headerClass = level === 1 ? "text-xl font-bold mt-1 mb-1" :
+                           level === 2 ? "text-lg font-bold mt-1 mb-1" :
+                           "text-base font-bold mt-1 mb-0.5";
         return (
           <div key={index} className={`${headerClass} text-blue-400 dark:text-blue-300`}>
             {headerText}
@@ -104,7 +105,7 @@ export const RichContentRenderer = ({
       // Headers with emojis (🔍 **Research Results:**)
       if (line.match(/^[🔍📋✅🔄❌🕐📅📊📄📍🌐❓⚠️💰🚀]\s?\*\*.*\*\*:?\s*$/)) {
         return (
-          <div key={index} className="font-bold text-lg mb-2 mt-3 text-blue-400 dark:text-blue-300">
+          <div key={index} className="font-bold text-lg mb-1 mt-1 text-blue-400 dark:text-blue-300">
             {line.replace(/\*\*/g, '')}
           </div>
         );
@@ -113,7 +114,7 @@ export const RichContentRenderer = ({
       // Sub-headers or important lines
       if (line.startsWith('**') && line.endsWith('**')) {
         return (
-          <div key={index} className="font-semibold text-base mb-1 text-green-400 dark:text-green-300">
+          <div key={index} className="font-semibold text-base mb-0.5 text-green-400 dark:text-green-300">
             {line.replace(/\*\*/g, '')}
           </div>
         );
@@ -122,7 +123,7 @@ export const RichContentRenderer = ({
       // Numbered list items (1. Item)
       if (line.match(/^\d+\.\s+/)) {
         return (
-          <div key={index} className="ml-4 mb-1 text-zinc-200 dark:text-zinc-300">
+          <div key={index} className="ml-4 mb-0.5 text-zinc-200 dark:text-zinc-300">
             {renderFormattedLine(line)}
           </div>
         );
@@ -131,7 +132,7 @@ export const RichContentRenderer = ({
       // Bullet points or list items with dashes/bullets
       if (line.match(/^[\s]*[-•]\s+/) || line.match(/^[📊📄📍🌐❌✅]\s/)) {
         return (
-          <div key={index} className="ml-4 mb-1 text-zinc-300 dark:text-zinc-400">
+          <div key={index} className="ml-4 mb-0.5 text-zinc-300 dark:text-zinc-400">
             {renderFormattedLine(line)}
           </div>
         );
@@ -139,12 +140,12 @@ export const RichContentRenderer = ({
       
       // Empty lines for minimal spacing
       if (line.trim() === '') {
-        return <div key={index} className="h-1" />;
+        return <div key={index} className="h-0.5" />;
       }
       
-      // Regular lines with tighter spacing
+      // Regular lines with very tight spacing
       return (
-        <div key={index} className="mb-1 text-zinc-200 dark:text-zinc-300">
+        <div key={index} className="mb-0.5 text-zinc-200 dark:text-zinc-300">
           {renderFormattedLine(line)}
         </div>
       );

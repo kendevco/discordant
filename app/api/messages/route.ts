@@ -20,7 +20,7 @@ export async function GET(req: Request) {
       return new NextResponse("Channel ID missing", { status: 400 });
     }
     
-    // Validate channelId format to prevent SQL injection
+    // Validate channelId format (UUID format)
     if (!/^[a-f0-9-]{36}$/.test(channelId)) {
       return new NextResponse("Invalid channel ID format", { status: 400 });
     }
@@ -30,8 +30,8 @@ export async function GET(req: Request) {
     
     try {
       if (cursor) {
-        // Validate cursor format
-        if (!/^msg_[a-zA-Z0-9_]+$/.test(cursor)) {
+        // Validate cursor format - should be a UUID (message ID)
+        if (!/^[a-f0-9-]{36}$/.test(cursor)) {
           return new NextResponse("Invalid cursor format", { status: 400 });
         }
         
@@ -53,7 +53,9 @@ export async function GET(req: Request) {
           LEFT JOIN member mb ON m.memberId = mb.id
           LEFT JOIN profile p ON mb.profileId = p.id
           WHERE m.channelId = ${channelId}
-          AND m.id < ${cursor}
+          AND m.createdAt < (
+            SELECT createdAt FROM message WHERE id = ${cursor}
+          )
           ORDER BY m.createdAt DESC
           LIMIT ${MESSAGES_BATCH}
         `;
@@ -105,6 +107,7 @@ export async function GET(req: Request) {
         createdAt: msg.createdAt instanceof Date ? msg.createdAt : new Date(msg.createdAt),
         updatedAt: msg.updatedAt instanceof Date ? msg.updatedAt : new Date(msg.updatedAt),
         channelId: String(msg.channelId || channelId),
+        deleted: false, // Add missing deleted field
         member: {
           id: String(msg.memberIdResolved || 'ai-assistant-bot'),
           profile: {
@@ -134,6 +137,7 @@ export async function GET(req: Request) {
       error: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
       channelId: new URL(req.url).searchParams.get("channelId"),
+      cursor: new URL(req.url).searchParams.get("cursor"),
       timestamp: new Date().toISOString()
     });
     

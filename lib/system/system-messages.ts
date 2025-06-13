@@ -369,6 +369,33 @@ class WorkflowHandler implements SystemMessageHandler {
     console.log(`[WORKFLOW_HANDLER] Routing message to: ${route.workflowId}`);
     console.log(`[WORKFLOW_HANDLER] Webhook path: ${route.webhookPath}`);
 
+    // Create initial processing message FIRST
+    const systemMember = await fetchSystemMember(channelId);
+    const processingMessage = await db.message.create({
+      data: {
+        id: randomUUID(),
+        content: "🤖 **Processing your request...**\n\nYour message is being analyzed by our AI systems. Response incoming shortly...",
+        channelId,
+        memberId: systemMember.id,
+        role: "system",
+        updatedAt: new Date(),
+      },
+      include: { member: { include: { profile: true } } },
+    });
+
+    console.log(`[WORKFLOW_HANDLER] Created processing message: ${processingMessage.id}`);
+
+    // Emit the processing message immediately
+    const channelKey = `chat:${channelId}:messages`;
+    if (socketIo && typeof socketIo.emit === 'function') {
+      try {
+        socketIo.emit(channelKey, processingMessage);
+        console.log(`[WORKFLOW_HANDLER] ✅ Processing message emitted`);
+      } catch (emitError) {
+        console.error(`[WORKFLOW_HANDLER] ❌ Processing message emission failed:`, emitError);
+      }
+    }
+
     // Process message based on intent
     let processedMessage = message.content;
     const intent = WorkflowRouter.detectIntent(message.content);
@@ -380,19 +407,20 @@ class WorkflowHandler implements SystemMessageHandler {
       console.log(`[WORKFLOW_HANDLER] Calendar message enhanced with date/time context`);
     }
 
-    // Create the workflow payload
+    // Create the workflow payload WITH the processing messageId
     const payload = WorkflowRouter.createWorkflowPayload(
       { ...message, content: processedMessage },
       route,
       channelId,
-      serverId
+      serverId,
+      processingMessage.id // Pass the processing message ID for UPDATE
     );
 
     // Get the webhook URL using dynamic detection
     const proxyUrl = getWorkflowProxyUrl(req);
     
     console.log(`[WORKFLOW_HANDLER] Proxy URL: ${proxyUrl}`);
-    console.log(`[WORKFLOW_HANDLER] Payload:`, JSON.stringify(payload, null, 2));
+    console.log(`[WORKFLOW_HANDLER] Payload with messageId:`, JSON.stringify(payload, null, 2));
     
     let workflowResponse;
     let errorType = null;
@@ -427,6 +455,9 @@ class WorkflowHandler implements SystemMessageHandler {
       workflowResponse = await res.json();
       console.log(`[WORKFLOW_HANDLER] ✅ n8n workflow response received:`, JSON.stringify(workflowResponse, null, 2));
 
+      // If n8n workflow succeeds, return the processing message (it will be updated by n8n)
+      return processingMessage;
+
     } catch (err) {
       console.error(`[WORKFLOW_HANDLER] ❌ n8n workflow failed, attempting OpenAI fallback:`, err);
       console.error(`[WORKFLOW_HANDLER] Error details:`, {
@@ -435,33 +466,38 @@ class WorkflowHandler implements SystemMessageHandler {
         stack: err instanceof Error ? err.stack : 'No stack trace'
       });
       
-      // Fallback to OpenAI
+      // Fallback to OpenAI - UPDATE the processing message
       try {
         const fallbackResponse = await getSiteAIResponse(message, context, channelId, route, err instanceof Error ? err.message : undefined);
-        workflowResponse = {
-          content: fallbackResponse,
-          output: fallbackResponse,
-          message: fallbackResponse,
-          metadata: {
-            originalMessage: message.content,
-            processedMessage: processedMessage,
-            sessionId: payload.metadata.sessionId,
-            platform: "site-ai-fallback",
-            workflowId: "fallback-site-ai",
-            intent: intent,
-            responseTime: new Date().toISOString(),
-            fallbackReason: err instanceof Error ? err.message : "Unknown error",
+        
+        // Update the processing message with fallback response
+        const updatedMessage = await db.message.update({
+          where: { id: processingMessage.id },
+          data: {
+            content: fallbackResponse,
+            updatedAt: new Date(),
           },
-        };
-        usedFallback = true;
-        errorType = "fallback_used";
+          include: { member: { include: { profile: true } } },
+        });
+
+        // Emit the updated message
+        if (socketIo && typeof socketIo.emit === 'function') {
+          try {
+            socketIo.emit(channelKey, updatedMessage);
+            console.log(`[WORKFLOW_HANDLER] ✅ Fallback message updated and emitted`);
+          } catch (emitError) {
+            console.error(`[WORKFLOW_HANDLER] ❌ Fallback message emission failed:`, emitError);
+          }
+        }
+
         console.log(`[WORKFLOW_HANDLER] ✅ Site AI fallback successful`);
+        return updatedMessage;
         
       } catch (fallbackErr) {
         console.error(`[WORKFLOW_HANDLER] ❌ Site AI fallback also failed:`, fallbackErr);
-        errorType = "total_failure";
-        workflowResponse = {
-          message: `🚨 **System Status Alert**
+        
+        // Update processing message with error
+        const errorMessage = `🚨 **System Status Alert**
 
 Both the primary AI workflow system and the backup Site AI service are currently experiencing difficulties.
 
@@ -473,112 +509,30 @@ Both the primary AI workflow system and the backup Site AI service are currently
 Please try again in a few minutes, or contact your system administrator if the issue persists.
 
 **Environment:** ${process.env.NODE_ENV}
-**Timestamp:** ${new Date().toISOString()}`,
-          type: "system_error",
-          timestamp: new Date().toISOString(),
-          metadata: {
-            originalMessage: message.content,
-            processedMessage: processedMessage,
-            sessionId: payload.metadata.sessionId,
-            platform: "system-error",
-            error: "total_system_failure",
-            workflowId: route.workflowId,
-            primaryError: err instanceof Error ? err.message : 'Unknown',
-            fallbackError: fallbackErr instanceof Error ? fallbackErr.message : 'Unknown',
+**Timestamp:** ${new Date().toISOString()}`;
+
+        const errorUpdatedMessage = await db.message.update({
+          where: { id: processingMessage.id },
+          data: {
+            content: errorMessage,
+            updatedAt: new Date(),
           },
-        };
-      }
-    }
-
-    // Format the response
-    const systemContent = this.formatWorkflowResponse(workflowResponse, route, errorType, usedFallback);
-    
-    // Handle array response for metadata extraction
-    let responseData = workflowResponse;
-    if (Array.isArray(workflowResponse) && workflowResponse.length > 0) {
-      responseData = workflowResponse[0];
-    }
-    
-    const systemMetadata = responseData?.metadata || {
-      originalMessage: message.content,
-      processedMessage: processedMessage,
-      sessionId: payload.metadata.sessionId,
-      platform: usedFallback ? "site-ai-fallback" : "n8n-workflow",
-      workflowId: usedFallback ? "fallback-site-ai" : route.workflowId,
-      intent: intent,
-      responseTime: new Date().toISOString(),
-      usedFallback: usedFallback,
-    };
-
-    // Create system message
-    const systemMember = await fetchSystemMember(channelId);
-    const systemMessage = await db.message.create({
-      data: {
-        id: randomUUID(),
-        content: systemContent,
-        channelId,
-        memberId: systemMember.id,
-        role: "system",
-        updatedAt: new Date(),
-      },
-      include: { member: { include: { profile: true } } },
-    });
-
-    // Emit to socket with workflow metadata
-    const channelKey = `chat:${channelId}:messages`;
-    
-    // Debug logging for socket emission
-    console.log(`[SYSTEM_MESSAGE] Emitting to channel key: ${channelKey}`);
-    console.log(`[SYSTEM_MESSAGE] Socket IO available:`, !!socketIo);
-    console.log(`[SYSTEM_MESSAGE] Message content length:`, systemContent.length);
-    console.log(`[SYSTEM_MESSAGE] System message structure:`, {
-      id: systemMessage.id,
-      content: systemContent.substring(0, 100) + '...',
-      channelId: systemMessage.channelId,
-      memberId: systemMessage.memberId,
-      role: systemMessage.role,
-      member: !!systemMessage.member
-    });
-
-    // Emit message in the same format as regular messages to ensure compatibility
-    // Only emit if socket is available to prevent payload errors
-    if (socketIo && typeof socketIo.emit === 'function') {
-      try {
-        const messageToEmit = {
-          ...systemMessage,
-          // Include metadata for debugging but don't modify the core message structure
-          _systemMetadata: {
-            messageType: usedFallback ? "fallback_response" : "workflow_response",
-            workflowId: usedFallback ? "fallback-site-ai" : route.workflowId,
-            intent: intent,
-            metadata: systemMetadata,
-            usedFallback: usedFallback,
-          }
-        };
-
-        // Validate message structure before emission
-        if (messageToEmit && messageToEmit.id && messageToEmit.content) {
-          socketIo.emit(channelKey, messageToEmit);
-          console.log(`[SYSTEM_MESSAGE] ✅ Socket emission completed`);
-        } else {
-          console.error(`[SYSTEM_MESSAGE] ❌ Invalid message structure for emission:`, {
-            hasId: !!messageToEmit?.id,
-            hasContent: !!messageToEmit?.content,
-            hasChannelId: !!messageToEmit?.channelId
-          });
-        }
-      } catch (emitError) {
-        console.error(`[SYSTEM_MESSAGE] ❌ Socket emission failed:`, {
-          error: emitError instanceof Error ? emitError.message : 'Unknown error',
-          channelKey,
-          messageId: systemMessage?.id
+          include: { member: { include: { profile: true } } },
         });
-      }
-    } else {
-      console.log(`[SYSTEM_MESSAGE] ⚠️ Socket IO not available for emission`);
-    }
 
-    return systemMessage;
+        // Emit the error message
+        if (socketIo && typeof socketIo.emit === 'function') {
+          try {
+            socketIo.emit(channelKey, errorUpdatedMessage);
+            console.log(`[WORKFLOW_HANDLER] ✅ Error message updated and emitted`);
+          } catch (emitError) {
+            console.error(`[WORKFLOW_HANDLER] ❌ Error message emission failed:`, emitError);
+          }
+        }
+
+        return errorUpdatedMessage;
+      }
+    }
   }
 
   private formatWorkflowResponse(response: any, route: WorkflowRoute, errorType: string | null, usedFallback: boolean = false): string {

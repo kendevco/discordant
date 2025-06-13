@@ -4,7 +4,7 @@
 import { Member, MemberRole, Profile } from "@prisma/client";
 import { UserAvatar } from "@/components/user-avatar";
 import { ActionTooltip } from "@/components/action-tooltip";
-import { Edit, FileIcon, ShieldAlert, ShieldCheck, Trash, Check, CheckCheck, Clock, AlertCircle, Share2, Bot, Send } from "lucide-react";
+import { Edit, FileIcon, ShieldAlert, ShieldCheck, Trash, Check, CheckCheck, Clock, AlertCircle, Share2, Bot, Send, ImageIcon, FileText, Music, Video, Archive, Code, Database } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState, Fragment, memo } from "react";
 import { cn } from "@/lib/utils";
@@ -232,35 +232,77 @@ const ChatItemComponent = ({
           </div>
           {isImage && (
             <>
-              <div
-                onClick={() => setIsImageDialogOpen(true)}
-                className="relative aspect-square rounded-md mt-2 overflow-hidden border flex items-center bg-secondary h-48 w-48 cursor-pointer hover:opacity-90 transition"
-              >
-                <Image
-                  src={fileUrl}
-                  alt={content}
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className="object-cover"
-                />
+              <div className="flex flex-col items-center mt-2 space-y-2">
+                <div
+                  onClick={() => setIsImageDialogOpen(true)}
+                  className="relative rounded-md overflow-hidden border flex items-center justify-center bg-secondary h-48 w-48 cursor-pointer hover:opacity-90 transition"
+                >
+                  <Image
+                    src={fileUrl}
+                    alt={content || "Uploaded image"}
+                    width={192}
+                    height={192}
+                    className="object-cover w-full h-full"
+                    priority={isLast}
+                  />
+                </div>
+                {content && !deleted && (
+                  <div className="text-sm max-w-md text-center">
+                    <RichContentRenderer 
+                      content={content} 
+                      isSystemMessage={isSystemMessage}
+                    />
+                  </div>
+                )}
               </div>
               <ImageDialog
                 isOpen={isImageDialogOpen}
                 onClose={() => setIsImageDialogOpen(false)}
                 imageUrl={fileUrl}
+                fileType={fileType}
               />
             </>
           )}
           {isPDF && (
+            <>
+              <div 
+                onClick={() => setIsImageDialogOpen(true)}
+                className="relative flex items-center p-2 mt-2 rounded-md bg-background/10 cursor-pointer hover:opacity-90 transition"
+              >
+                <FileIcon className="h-10 w-10 fill-indigo-200 stroke-indigo-400" />
+                <span className="ml-2 text-sm text-indigo-500 dark:text-indigo-400">
+                  PDF File - Click to view
+                </span>
+              </div>
+              <ImageDialog
+                isOpen={isImageDialogOpen}
+                onClose={() => setIsImageDialogOpen(false)}
+                imageUrl={fileUrl}
+                fileType={fileType}
+              />
+            </>
+          )}
+          {/* Other file types */}
+          {!isImage && !isPDF && fileUrl && (
             <div className="relative flex items-center p-2 mt-2 rounded-md bg-background/10">
-              <FileIcon className="h-10 w-10 fill-indigo-200 stroke-indigo-400" />
+              {(() => {
+                const ext = fileType?.toLowerCase() || '';
+                if (["jpg", "jpeg", "png", "gif", "webp", "svg", "bmp"].includes(ext)) return <ImageIcon className="h-10 w-10 text-blue-400" />;
+                if (["mp3", "wav", "flac", "aac", "ogg", "wma"].includes(ext)) return <Music className="h-10 w-10 text-green-500" />;
+                if (["mp4", "avi", "mov", "wmv", "flv", "webm", "mkv"].includes(ext)) return <Video className="h-10 w-10 text-purple-500" />;
+                if (["zip", "rar", "7z", "tar", "gz"].includes(ext)) return <Archive className="h-10 w-10 text-yellow-500" />;
+                if (["doc", "docx", "txt", "rtf", "odt"].includes(ext)) return <FileText className="h-10 w-10 text-indigo-400" />;
+                if (["xls", "xlsx", "csv", "ods"].includes(ext)) return <Database className="h-10 w-10 text-emerald-500" />;
+                if (["js", "ts", "tsx", "py", "java", "c", "cpp", "cs", "rb", "go", "php", "html", "css", "json", "xml", "sh", "bat"].includes(ext)) return <Code className="h-10 w-10 text-pink-500" />;
+                return <FileIcon className="h-10 w-10 fill-indigo-200 stroke-indigo-400" />;
+              })()}
               <a
                 href={fileUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="ml-2 text-sm text-indigo-500 dark:text-indigo-400 hover:underline"
               >
-                PDF File
+                {fileUrl.split("/").pop() || "Download file"}
               </a>
             </div>
           )}

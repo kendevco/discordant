@@ -11,22 +11,27 @@ interface ImageDialogProps {
   isOpen: boolean;
   onClose: () => void;
   imageUrl: string;
+  fileType?: string;
 }
 
-export const ImageDialog = ({ isOpen, onClose, imageUrl }: ImageDialogProps) => {
+export const ImageDialog = ({ isOpen, onClose, imageUrl, fileType }: ImageDialogProps) => {
   const [scale, setScale] = useState(1);
   const [isDragging, setIsDragging] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
   const [dimensions, setDimensions] = useState({ width: 1200, height: 800 });
 
+  const isPDF = fileType === "pdf";
+
   const handleWheel = (e: React.WheelEvent) => {
+    if (isPDF) return; // Disable zoom for PDFs
     e.preventDefault();
     const newScale = scale + (e.deltaY > 0 ? -0.1 : 0.1);
     setScale(Math.max(0.5, Math.min(3, newScale)));
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
+    if (isPDF) return; // Disable drag for PDFs
     setIsDragging(true);
     setStartPos({
       x: e.clientX - position.x,
@@ -35,7 +40,7 @@ export const ImageDialog = ({ isOpen, onClose, imageUrl }: ImageDialogProps) => 
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (isDragging) {
+    if (isDragging && !isPDF) {
       setPosition({
         x: e.clientX - startPos.x,
         y: e.clientY - startPos.y,
@@ -48,6 +53,7 @@ export const ImageDialog = ({ isOpen, onClose, imageUrl }: ImageDialogProps) => 
   };
 
   const handleDoubleClick = () => {
+    if (isPDF) return; // Disable reset for PDFs
     setScale(1);
     setPosition({ x: 0, y: 0 });
   };
@@ -74,33 +80,45 @@ export const ImageDialog = ({ isOpen, onClose, imageUrl }: ImageDialogProps) => 
         onMouseLeave={handleMouseUp}
       >
         <DialogTitle className="sr-only">
-          Image Preview
+          {isPDF ? "PDF Preview" : "Image Preview"}
         </DialogTitle>
         <div className="relative w-full h-full overflow-hidden">
-          <div
-            className={cn(
-              "absolute left-1/2 top-1/2 cursor-move w-full h-full flex items-center justify-center",
-              isDragging && "transition-none"
-            )}
-            style={{
-              transform: `translate(-50%, -50%) translate(${position.x}px, ${position.y}px) scale(${scale})`
-            }}
-          >
-            <Image
+          {isPDF ? (
+            <iframe
               src={imageUrl}
-              alt="Enlarged view"
-              className="object-contain w-full h-full"
-              fill
-              sizes="95vw"
-              quality={100}
-              onLoad={handleImageLoad}
-              onDoubleClick={handleDoubleClick}
-              draggable={false}
-              priority
+              className="w-full h-full border-none"
+              title="PDF Preview"
             />
-          </div>
+          ) : (
+            <div
+              className={cn(
+                "absolute left-1/2 top-1/2 cursor-move w-full h-full flex items-center justify-center",
+                isDragging && "transition-none"
+              )}
+              style={{
+                transform: `translate(-50%, -50%) translate(${position.x}px, ${position.y}px) scale(${scale})`
+              }}
+            >
+              <Image
+                src={imageUrl}
+                alt="Enlarged view"
+                className="object-contain w-full h-full"
+                fill
+                sizes="95vw"
+                quality={100}
+                onLoad={handleImageLoad}
+                onDoubleClick={handleDoubleClick}
+                draggable={false}
+                priority
+              />
+            </div>
+          )}
           <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-md text-sm">
-            {Math.round(scale * 100)}% (Scroll to zoom, drag to pan, double-click to reset)
+            {isPDF ? (
+              "PDF Document"
+            ) : (
+              `${Math.round(scale * 100)}% (Scroll to zoom, drag to pan, double-click to reset)`
+            )}
           </div>
         </div>
       </DialogContent>
