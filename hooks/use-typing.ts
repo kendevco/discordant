@@ -16,40 +16,9 @@ export const useTyping = (channelId: string, currentUserId: string) => {
   );
 
   useEffect(() => {
-    const socketInstance = socket.socket;
-    if (!socketInstance) return;
-
-    const handleTyping = ({
-      userId,
-      name,
-    }: {
-      userId: string;
-      name: string;
-    }) => {
-      if (userId === currentUserId) return;
-
-      setTypingUsers((prev) => {
-        const next = new Map(prev);
-        next.set(userId, {
-          userId,
-          name,
-          timestamp: Date.now(),
-        });
-        return next;
-      });
-    };
-
-    const handleStopTyping = ({ userId }: { userId: string }) => {
-      setTypingUsers((prev) => {
-        const next = new Map(prev);
-        next.delete(userId);
-        return next;
-      });
-    };
-
-    socketInstance.on("chat:typing", handleTyping);
-    socketInstance.on("chat:stop_typing", handleStopTyping);
-
+    // Socket functionality temporarily disabled - using SSE for real-time updates
+    // TODO: Implement typing indicators via SSE or external socket service
+    
     // Cleanup old typing indicators
     const interval = setInterval(() => {
       setTypingUsers((prev) => {
@@ -65,23 +34,18 @@ export const useTyping = (channelId: string, currentUserId: string) => {
     }, 1000);
 
     return () => {
-      socketInstance.off("chat:typing", handleTyping);
-      socketInstance.off("chat:stop_typing", handleStopTyping);
       clearInterval(interval);
     };
-  }, [socket, channelId, currentUserId]);
+  }, [channelId, currentUserId]);
 
   const sendTyping = (name: string) => {
-    socket.socket?.emit(`chat:${channelId}:typing`, {
-      userId: currentUserId,
-      name,
-    });
+    // TODO: Implement typing via SSE or external socket service
+    console.log('Typing indicator disabled - using SSE for real-time updates');
   };
 
   const sendStopTyping = () => {
-    socket.socket?.emit(`chat:${channelId}:stop_typing`, {
-      userId: currentUserId,
-    });
+    // TODO: Implement stop typing via SSE or external socket service
+    console.log('Stop typing indicator disabled - using SSE for real-time updates');
   };
 
   const getTypingUsers = () => Array.from(typingUsers.values());

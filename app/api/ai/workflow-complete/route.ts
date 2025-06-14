@@ -162,10 +162,7 @@ export async function POST(req: NextRequest) {
             content: messageToEmit.content,
             role: messageToEmit.role || 'system',
             author: messageToEmit.member.profile.name,
-            authorId: messageToEmit.member.profile.id,
-            createdAt: messageToEmit.createdAt,
-            updatedAt: messageToEmit.updatedAt,
-            isSystemMessage: true
+            createdAt: messageToEmit.createdAt
           });
           console.log(`✅ SSE update triggered for channel: ${channelId}`);
         } catch (sseError) {

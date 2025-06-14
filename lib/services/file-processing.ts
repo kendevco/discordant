@@ -395,7 +395,8 @@ Respond in JSON format with: description, businessContext, summary, categories, 
           workflowId: 'file-processor',
           priority: 5,
           webhookPath: 'file-processor',
-          description: 'File analysis and processing workflow'
+          description: 'File analysis and processing workflow',
+          mode: 'async'
         }, channelId),
         fileMetadata: {
           metadataId,
