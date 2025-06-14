@@ -179,22 +179,29 @@ export const ChatMessages = ({
       autoRefresh: false, // NEVER auto-refresh, we handle updates manually
       refreshDelay: 2000, // If auto-refresh is enabled, wait 2 seconds
       onNewMessages: () => {
-        // Simple, reliable invalidation - just invalidate and let React Query handle the rest
-        console.log(`[CHAT_MESSAGES] SSE detected new messages, invalidating cache`);
-        queryClient.invalidateQueries({ queryKey: [queryKey] });
+        // Aggressive invalidation and immediate refetch for real-time updates
+        console.log(`[CHAT_MESSAGES] SSE detected new messages, forcing immediate refresh`);
+        
+        // Clear all related cache entries
+        queryClient.removeQueries({ queryKey: [queryKey] });
+        
+        // Force immediate refetch
+        queryClient.refetchQueries({ 
+          queryKey: [queryKey],
+          type: 'active' 
+        });
         
         // Show new message notification
         setHasNewMessages(true);
         
-        // Fallback: if invalidation doesn't work within 3 seconds, force refresh
+        // Fallback: if invalidation doesn't work within 2 seconds, force page refresh
         setTimeout(() => {
-          // Check if the message is visible by looking at the latest data
           const currentData = queryClient.getQueryData([queryKey]);
           if (!currentData) {
-            console.log(`[CHAT_MESSAGES] Cache invalidation may have failed, forcing page refresh`);
+            console.log(`[CHAT_MESSAGES] Cache refresh failed, forcing page reload`);
             window.location.reload();
           }
-        }, 3000);
+        }, 2000);
       }
     }
   );
@@ -205,22 +212,29 @@ export const ChatMessages = ({
       autoRefresh: false, // NEVER auto-refresh, we handle updates manually
       refreshDelay: 2000, // If auto-refresh is enabled, wait 2 seconds
       onNewMessages: () => {
-        // Simple, reliable invalidation - just invalidate and let React Query handle the rest
-        console.log(`[CHAT_MESSAGES] SSE detected new conversation messages, invalidating cache`);
-        queryClient.invalidateQueries({ queryKey: [queryKey] });
+        // Aggressive invalidation and immediate refetch for real-time updates
+        console.log(`[CHAT_MESSAGES] SSE detected new conversation messages, forcing immediate refresh`);
+        
+        // Clear all related cache entries
+        queryClient.removeQueries({ queryKey: [queryKey] });
+        
+        // Force immediate refetch
+        queryClient.refetchQueries({ 
+          queryKey: [queryKey],
+          type: 'active' 
+        });
         
         // Show new message notification
         setHasNewMessages(true);
         
-        // Fallback: if invalidation doesn't work within 3 seconds, force refresh
+        // Fallback: if invalidation doesn't work within 2 seconds, force page refresh
         setTimeout(() => {
-          // Check if the message is visible by looking at the latest data
           const currentData = queryClient.getQueryData([queryKey]);
           if (!currentData) {
-            console.log(`[CHAT_MESSAGES] Cache invalidation may have failed, forcing page refresh`);
+            console.log(`[CHAT_MESSAGES] Cache refresh failed, forcing page reload`);
             window.location.reload();
           }
-        }, 3000);
+        }, 2000);
       }
     }
   );
@@ -308,9 +322,13 @@ export const ChatMessages = ({
         {/* Manual Refresh Button */}
         <button
           onClick={() => {
-            console.log("[CHAT_MESSAGES] Manual refresh triggered");
-            queryClient.invalidateQueries({ queryKey: [queryKey] });
-            queryClient.refetchQueries({ queryKey: [queryKey] });
+            console.log("[CHAT_MESSAGES] Manual refresh triggered - clearing cache and refetching");
+            // Aggressive cache clearing and refetch
+            queryClient.removeQueries({ queryKey: [queryKey] });
+            queryClient.refetchQueries({ 
+              queryKey: [queryKey],
+              type: 'active' 
+            });
             setHasNewMessages(false); // Clear notification
           }}
           className={`p-1 transition-colors ${

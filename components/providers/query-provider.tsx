@@ -1,8 +1,10 @@
 "use client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useUser } from "@clerk/nextjs";
 
 export const QueryProvider = ({ children }: { children: React.ReactNode }) => {
+  const { user } = useUser();
   const [queryClient] = useState(() => new QueryClient({
     defaultOptions: {
       queries: {
@@ -35,6 +37,23 @@ export const QueryProvider = ({ children }: { children: React.ReactNode }) => {
       },
     },
   }));
+
+  // Clear cache when user authentication changes
+  useEffect(() => {
+    const userId = user?.id;
+    
+    // Store the previous user ID to detect changes
+    const previousUserId = queryClient.getQueryData(['current-user-id']);
+    
+    if (previousUserId && previousUserId !== userId) {
+      // User changed (logout/login) - clear all cache
+      console.log('[QUERY_PROVIDER] User authentication changed, clearing all cache');
+      queryClient.clear();
+    }
+    
+    // Update stored user ID
+    queryClient.setQueryData(['current-user-id'], userId);
+  }, [user?.id, queryClient]);
 
   return (
     <QueryClientProvider client={queryClient}>

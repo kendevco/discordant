@@ -89,14 +89,17 @@ export const useChatQuery = ({
       initialPageParam: undefined,
       getNextPageParam: (lastPage) => lastPage?.nextCursor,
       
-      // Enhanced error handling and network resilience
-      staleTime: 2 * 60 * 1000, // 2 minutes
-      gcTime: 5 * 60 * 1000, // 5 minutes
+      // Aggressive cache settings for real-time messaging
+      staleTime: 0, // Always consider data stale for real-time updates
+      gcTime: 30 * 1000, // Keep in cache for only 30 seconds
       
-      // Only refetch if socket is disconnected
-      refetchInterval: isConnected ? false : 30000, // 30 seconds when disconnected
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: isConnected,
+      // Enable fresh data fetching
+      refetchOnMount: true, // Always fetch fresh data when component mounts
+      refetchOnWindowFocus: true, // Refetch when user returns to tab
+      refetchOnReconnect: isConnected, // Refetch when socket reconnects
+      
+      // Disable polling since we have SSE
+      refetchInterval: false,
       
       // Improved retry strategy
       retry: (failureCount, error: any) => {
