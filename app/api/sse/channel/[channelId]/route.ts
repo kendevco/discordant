@@ -43,9 +43,9 @@ export async function GET(
     select: { createdAt: true }
   });
 
-  let lastCheckTime = latestMessage?.createdAt || new Date();
+  let lastCheckTime = latestMessage?.createdAt || new Date(Date.now() - 60000); // Check last minute initially
   let consecutiveEmptyChecks = 0;
-  let currentInterval = 5000; // Start with 5 seconds
+  let currentInterval = 2000; // Start with 2 seconds for more responsive updates
 
   const stream = new ReadableStream({
     start(controller) {
@@ -78,10 +78,10 @@ export async function GET(
           if (newMessages.length > 0) {
             // Reset empty check counter and interval when messages found
             consecutiveEmptyChecks = 0;
-            currentInterval = Math.max(5000, currentInterval * 0.8); // Speed up slightly
+            currentInterval = Math.max(2000, currentInterval * 0.8); // Speed up slightly, min 2 seconds
             
-            // Update last check time
-            lastCheckTime = new Date();
+            // Update last check time to the latest message time
+            lastCheckTime = newMessages[newMessages.length - 1].createdAt;
             
             // Send new message event
             const eventData = {

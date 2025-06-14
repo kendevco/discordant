@@ -178,9 +178,19 @@ export const ChatMessages = ({
         // Invalidate and refetch the query when new messages arrive
         try {
           console.log(`[CHAT_MESSAGES] SSE detected new messages, refreshing query`);
+          // More aggressive invalidation and refetch
           queryClient.invalidateQueries({ queryKey: [queryKey] });
+          queryClient.refetchQueries({ queryKey: [queryKey] });
+          
+          // Also try to reset the query to force a fresh fetch
+          setTimeout(() => {
+            queryClient.resetQueries({ queryKey: [queryKey] });
+          }, 100);
         } catch (error) {
           console.error("Error invalidating messages query:", error);
+          // Fallback: force page refresh if query invalidation fails
+          console.log("[CHAT_MESSAGES] Falling back to page refresh");
+          window.location.reload();
         }
       }
     }
@@ -194,9 +204,19 @@ export const ChatMessages = ({
         // Invalidate and refetch the query when new messages arrive
         try {
           console.log(`[CHAT_MESSAGES] SSE detected new conversation messages, refreshing query`);
+          // More aggressive invalidation and refetch
           queryClient.invalidateQueries({ queryKey: [queryKey] });
+          queryClient.refetchQueries({ queryKey: [queryKey] });
+          
+          // Also try to reset the query to force a fresh fetch
+          setTimeout(() => {
+            queryClient.resetQueries({ queryKey: [queryKey] });
+          }, 100);
         } catch (error) {
           console.error("Error invalidating messages query:", error);
+          // Fallback: force page refresh if query invalidation fails
+          console.log("[CHAT_MESSAGES] Falling back to page refresh");
+          window.location.reload();
         }
       }
     }
@@ -272,6 +292,29 @@ export const ChatMessages = ({
           />
         </div>
       )}
+      
+      {/* SSE Connection Status and Manual Refresh */}
+      <div className="absolute top-2 left-2 z-20 flex items-center gap-2">
+        {/* SSE Status Indicator */}
+        <div className={`w-2 h-2 rounded-full ${
+          (type === "channel" ? channelSSE.isConnected : conversationSSE.isConnected) 
+            ? 'bg-green-400' 
+            : 'bg-red-400'
+        }`} title={`SSE ${(type === "channel" ? channelSSE.isConnected : conversationSSE.isConnected) ? 'Connected' : 'Disconnected'}`} />
+        
+        {/* Manual Refresh Button */}
+        <button
+          onClick={() => {
+            console.log("[CHAT_MESSAGES] Manual refresh triggered");
+            queryClient.invalidateQueries({ queryKey: [queryKey] });
+            queryClient.refetchQueries({ queryKey: [queryKey] });
+          }}
+          className="p-1 text-white/60 hover:text-white/90 transition-colors"
+          title="Refresh messages"
+        >
+          <RefreshCw className="h-3 w-3" />
+        </button>
+      </div>
       <div ref={chatRef} className="flex-1 flex flex-col py-4 overflow-y-auto">
         {!hasNextPage && !isFiltering && <div className="flex-1" />}
         {!hasNextPage && !isFiltering && <ChatWelcome type={type} name={name} />}
