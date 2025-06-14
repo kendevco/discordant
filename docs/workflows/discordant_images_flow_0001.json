@@ -239,9 +239,9 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "UPDATE message SET content = $1, fileUrl = COALESCE($2, fileUrl), updatedAt = NOW() WHERE id = $3",
+        "query": "UPDATE message SET content = ?, fileUrl = COALESCE(?, fileUrl), updatedAt = NOW() WHERE id = ?",
         "options": {
-          "queryReplacement": "=[\n  {\n    \"name\": \"content\",\n    \"value\": \"={{ $json.newContent }}\"\n  },\n  {\n    \"name\": \"fileUrl\",\n    \"value\": \"={{ $json.fileUrl || null }}\"\n  },\n  {\n    \"name\": \"messageId\",\n    \"value\": \"={{ $json.messageId }}\"\n  }\n]"
+          "queryReplacement": "=[\n  \"{{ $json.newContent }}\",\n  \"{{ $json.fileUrl || null }}\",\n  \"{{ $json.messageId }}\"\n]"
         }
       },
       "id": "0f304638-481f-4b51-80b9-16411262ce82",

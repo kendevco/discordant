@@ -165,8 +165,39 @@ export async function POST(req: NextRequest) {
             createdAt: messageToEmit.createdAt
           });
           console.log(`✅ SSE update triggered for channel: ${channelId}`);
+          
+          // Additional verification: Log the message details for debugging
+          console.log(`📊 Message Details for SSE:`, {
+            messageId: messageToEmit.id,
+            channelId: channelId,
+            contentPreview: messageToEmit.content.substring(0, 100) + '...',
+            timestamp: messageToEmit.createdAt.toISOString(),
+            author: messageToEmit.member.profile.name,
+            role: messageToEmit.role
+          });
+          
+          // Force a small delay to ensure database consistency
+          await new Promise(resolve => setTimeout(resolve, 100));
+          
         } catch (sseError) {
-          console.log('SSE update not available, relying on client polling');
+          console.error('❌ SSE update failed:', sseError);
+          console.log('📡 Relying on client polling for message delivery');
+        }
+        
+        // Additional safety: Verify the message was actually saved
+        try {
+          const verifyMessage = await db.message.findUnique({
+            where: { id: messageToEmit.id },
+            select: { id: true, createdAt: true, content: true }
+          });
+          
+          if (verifyMessage) {
+            console.log(`✅ Message verification successful: ${verifyMessage.id}`);
+          } else {
+            console.error(`❌ Message verification failed: ${messageToEmit.id} not found in database`);
+          }
+        } catch (verifyError) {
+          console.error('❌ Message verification error:', verifyError);
         }
       } else {
         console.error('❌ Failed to process AI message for channel:', channelId);

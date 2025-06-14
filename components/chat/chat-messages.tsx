@@ -169,29 +169,32 @@ export const ChatMessages = ({
     }
   }, [isFiltering, totalCount, filteredCount, onSearchStateChange]);
 
+  // State for new message notification
+  const [hasNewMessages, setHasNewMessages] = useState(false);
+
   // Set up SSE for real-time updates based on type
   const channelSSE = useSSEChannel(
     type === "channel" ? paramValue : null,
     {
       autoRefresh: false, // NEVER auto-refresh, we handle updates manually
+      refreshDelay: 2000, // If auto-refresh is enabled, wait 2 seconds
       onNewMessages: () => {
-        // Invalidate and refetch the query when new messages arrive
-        try {
-          console.log(`[CHAT_MESSAGES] SSE detected new messages, refreshing query`);
-          // More aggressive invalidation and refetch
-          queryClient.invalidateQueries({ queryKey: [queryKey] });
-          queryClient.refetchQueries({ queryKey: [queryKey] });
-          
-          // Also try to reset the query to force a fresh fetch
-          setTimeout(() => {
-            queryClient.resetQueries({ queryKey: [queryKey] });
-          }, 100);
-        } catch (error) {
-          console.error("Error invalidating messages query:", error);
-          // Fallback: force page refresh if query invalidation fails
-          console.log("[CHAT_MESSAGES] Falling back to page refresh");
-          window.location.reload();
-        }
+        // Simple, reliable invalidation - just invalidate and let React Query handle the rest
+        console.log(`[CHAT_MESSAGES] SSE detected new messages, invalidating cache`);
+        queryClient.invalidateQueries({ queryKey: [queryKey] });
+        
+        // Show new message notification
+        setHasNewMessages(true);
+        
+        // Fallback: if invalidation doesn't work within 3 seconds, force refresh
+        setTimeout(() => {
+          // Check if the message is visible by looking at the latest data
+          const currentData = queryClient.getQueryData([queryKey]);
+          if (!currentData) {
+            console.log(`[CHAT_MESSAGES] Cache invalidation may have failed, forcing page refresh`);
+            window.location.reload();
+          }
+        }, 3000);
       }
     }
   );
@@ -200,24 +203,24 @@ export const ChatMessages = ({
     type === "conversation" ? paramValue : null,
     {
       autoRefresh: false, // NEVER auto-refresh, we handle updates manually
+      refreshDelay: 2000, // If auto-refresh is enabled, wait 2 seconds
       onNewMessages: () => {
-        // Invalidate and refetch the query when new messages arrive
-        try {
-          console.log(`[CHAT_MESSAGES] SSE detected new conversation messages, refreshing query`);
-          // More aggressive invalidation and refetch
-          queryClient.invalidateQueries({ queryKey: [queryKey] });
-          queryClient.refetchQueries({ queryKey: [queryKey] });
-          
-          // Also try to reset the query to force a fresh fetch
-          setTimeout(() => {
-            queryClient.resetQueries({ queryKey: [queryKey] });
-          }, 100);
-        } catch (error) {
-          console.error("Error invalidating messages query:", error);
-          // Fallback: force page refresh if query invalidation fails
-          console.log("[CHAT_MESSAGES] Falling back to page refresh");
-          window.location.reload();
-        }
+        // Simple, reliable invalidation - just invalidate and let React Query handle the rest
+        console.log(`[CHAT_MESSAGES] SSE detected new conversation messages, invalidating cache`);
+        queryClient.invalidateQueries({ queryKey: [queryKey] });
+        
+        // Show new message notification
+        setHasNewMessages(true);
+        
+        // Fallback: if invalidation doesn't work within 3 seconds, force refresh
+        setTimeout(() => {
+          // Check if the message is visible by looking at the latest data
+          const currentData = queryClient.getQueryData([queryKey]);
+          if (!currentData) {
+            console.log(`[CHAT_MESSAGES] Cache invalidation may have failed, forcing page refresh`);
+            window.location.reload();
+          }
+        }, 3000);
       }
     }
   );
@@ -308,11 +311,19 @@ export const ChatMessages = ({
             console.log("[CHAT_MESSAGES] Manual refresh triggered");
             queryClient.invalidateQueries({ queryKey: [queryKey] });
             queryClient.refetchQueries({ queryKey: [queryKey] });
+            setHasNewMessages(false); // Clear notification
           }}
-          className="p-1 text-white/60 hover:text-white/90 transition-colors"
-          title="Refresh messages"
+          className={`p-1 transition-colors ${
+            hasNewMessages 
+              ? 'text-yellow-400 hover:text-yellow-300 animate-pulse' 
+              : 'text-white/60 hover:text-white/90'
+          }`}
+          title={hasNewMessages ? "New messages available - Click to refresh" : "Refresh messages"}
         >
-          <RefreshCw className="h-3 w-3" />
+          <RefreshCw className={`h-3 w-3 ${hasNewMessages ? 'animate-spin' : ''}`} />
+          {hasNewMessages && (
+            <span className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full"></span>
+          )}
         </button>
       </div>
       <div ref={chatRef} className="flex-1 flex flex-col py-4 overflow-y-auto">

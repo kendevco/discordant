@@ -659,9 +659,9 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "UPDATE message SET content = $1, updatedAt = NOW() WHERE id = $2",
+        "query": "UPDATE message SET content = ?, updatedAt = NOW() WHERE id = ?",
         "options": {
-          "queryReplacement": "=[\n  {\n    \"name\": \"content\",\n    \"value\": \"={{ $('Format Response').first().json.content }}\"\n  },\n  {\n    \"name\": \"messageId\", \n    \"value\": \"={{ $('Input Processor').first().json.messageId || 'skip-update' }}\"\n  }\n]"
+          "queryReplacement": "=[\n  \"{{ $('Format Response').first().json.content }}\",\n  \"{{ $('Input Processor').first().json.messageId || 'skip-update' }}\"\n]"
         }
       },
       "executeOnce": false,
