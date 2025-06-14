@@ -67,7 +67,7 @@ export const ChannelChatWrapper = ({
           chatId={channel.id}
           type="channel"
           apiUrl="/api/messages"
-          socketUrl="/api/socket/messages"
+          socketUrl="/api/messages"
           socketQuery={{
             channelId: channel.id,
             serverId: channel.serverId,
@@ -84,7 +84,7 @@ export const ChannelChatWrapper = ({
       {/* Fixed Footer */}
       <div className="flex-shrink-0">
         <ChatInput
-          apiUrl="/api/socket/messages"
+          apiUrl="/api/messages"
           name={channel.name}
           type="channel"
           query={{ channelId: channel.id, serverId: channel.serverId }}

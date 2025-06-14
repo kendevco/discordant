@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 
+function getCallbackUrl(): string {
+  return process.env.NODE_ENV === 'production' 
+    ? 'https://discordant.kendev.co/api/ai/workflow-complete'
+    : 'https://localhost:3000/api/ai/workflow-complete';
+}
+
 export async function POST(request: NextRequest) {
   try {
     console.log('=== ASYNC WORKFLOW REQUEST ===');
@@ -47,13 +53,13 @@ export async function POST(request: NextRequest) {
         'Content-Type': 'application/json',
         'User-Agent': 'Discordant-Async/1.0',
         'X-Source': 'discordant-async-workflow',
-        'X-Callback-URL': 'https://discordant.kendev.co/api/ai/workflow-complete',
+        'X-Callback-URL': getCallbackUrl(),
         'X-Workflow-Id': workflowId || 'discordant-agent-0001'
       },
       body: JSON.stringify({
         ...body,
         asyncMode: true,
-        callbackUrl: 'https://discordant.kendev.co/api/ai/workflow-complete',
+        callbackUrl: getCallbackUrl(),
         requestId: immediateResponse.metadata.requestId,
         workflowId: workflowId || 'discordant-agent-0001'
       })
@@ -68,7 +74,7 @@ export async function POST(request: NextRequest) {
         console.error('n8n Status:', n8nResponse.status);
         
         // Send error callback
-        const errorCallbackUrl = 'https://discordant.kendev.co/api/ai/workflow-complete';
+        const errorCallbackUrl = getCallbackUrl();
         console.log('Sending error callback to:', errorCallbackUrl);
         
         await fetch(errorCallbackUrl, {
@@ -102,7 +108,7 @@ export async function POST(request: NextRequest) {
       console.error('Webhook URL:', webhookUrl);
       
       // Send error callback for network issues
-      const errorCallbackUrl = 'https://discordant.kendev.co/api/ai/workflow-complete';
+      const errorCallbackUrl = getCallbackUrl();
       console.log('Sending network error callback to:', errorCallbackUrl);
       
       fetch(errorCallbackUrl, {

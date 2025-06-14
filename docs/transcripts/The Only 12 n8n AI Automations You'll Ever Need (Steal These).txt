@@ -1,0 +1,1292 @@
+https://www.youtube.com/watch?v=uQGT2K26W84&t=88s
+
+The Only 12 n8n AI Automations You'll Ever Need (Steal These)
+
+Jono Catliff
+68.8K subscribers
+
+Subscribed
+
+911
+
+
+Share
+
+31,191 views  Apr 26, 2025
+🌍 COMMUNITY 
+https://www.skool.com/automatable/about
+
+📝 BLUEPRINTS
+• Gmail Automation →    • This n8n AI Agent Will Manage Your Email I...  
+• New Lead →    • How I Increased Sales By 391% With One Cha...  
+• Recruitment →    • How I Automated the Entire Hiring Process ...  
+• Google Sheets →    • How I Create Custom n8n Dashboards To Auto...  
+• Lead scraping →    • This AI Agent Can Scrape ANYTHING (100% Au...  
+• Personal assistant →    • This n8n AI Assistant Will Manage Your Lif...  
+• Voice calling →    • This n8n AI Voice Agent Will Call Anyone F...  
+• ChatGPT Automation →    • This ChatGPT SECRET Automates Nearly Every...  
+• Job Seeking →    • Automate Your Job Search With LinkedIn & n8n  
+• RAG System →    • Create This RAG n8n AI Agent in 30 Minutes...  
+• Chatbot →    • Add ChatGPT To Your Website In Minutes (n8...  
+• Document Extraction →    • Extract Text From Images & PDFs Using AI (...  
+
+📚 SUMMARY
+In this video, you'll discover 12 powerful n8n automations that can save you hours every week. From inbox cleanup to AI-powered workflows, these automations will boost your productivity fast.
+
+📣 SOCIAL MEDIA
+• Instagram →   / jono_catliff  
+• TikTok →   / jonocatliff  
+• LinkedIn →   / jonocatliff  
+• X →   / @jonocatliff  
+
+📺 RELATED VIDEOS
+• Full crash course on Make.com →    • Make.com Basics: How To Automate Anything ...  
+• Full crash course on n8n →   • Master n8n in 2 Hours: Complete Beginner’s...  
+• 11 Favourite Make.com automations →    • 11 Make.com Automations You NEED To Start ...  
+• 12 Favourite n8n automations →    • The Only 12 n8n AI Automations You'll Ever...  
+
+🎯 1:1 CONSULTING
+Book a time → https://jonocatliff.com/consultation
+
+🚀 AUTOMATION AGENCY
+Get help with your business → https://www.automatable.co
+
+💼 CAREERS
+Work with me → https://jonocatliff.com/careers
+
+🔗 LINKS (some of these make me money - thanks in advance!)
+• n8n → https://jonocatliff.com/n8n
+• Make.com → https://jonocatliff.com/make
+• Go High Level → https://jonocatliff.com/gohighlevel
+• Apify → https://jonocatliff.com/apify
+• Skool → https://jonocatliff.com/skool
+• Zapier → https://jonocatliff.com/zapier
+• PandaDoc → https://jonocatliff.com/pandadoc
+• Apollo → https://jonocatliff.com/apollo
+• ManyChat → https://jonocatliff.com/manychat
+• Vapi → https://jonocatliff.com/vapi
+• PhantomBuster → https://jonocatliff.com/phantombuster
+• ClickUp → https://jonocatliff.com/clickup
+• ElevenLabs → https://jonocatliff.com/elevenlabs
+• Upwork → https://jonocatliff.com/upwork
+• Instantly.ai → https://jonocatliff.com/instantly
+• Airtable → https://jonocatliff.com/airtable
+
+👋  ABOUT ME
+Hey everyone, my name is Jono. I run a 7-figure service business that offers DJ, photo, video services (#1 largest in Canada), and spent years figuring out how to automate every part of it (and hired the roles that I couldn't). Conservatively, I used to work 80+ hours per week, before sunrise till long after sunset; missing gatherings, family events and everything in between. Through automation though, I was able to replace my job. My goal is to help share what worked for me, in a dream of helping others find true success with their passion.
+
+Please subscribe, like and comment below if you have any questions! Thank you 😊
+
+⌛ TIMESTAMPS
+0:00 – Intro
+0:35 – Clean your inbox automatically
+2:00 – Speed-to-lead workflow
+4:35 – Scrape Google Maps data
+6:31 – Job seeker automation
+8:06 – Connect ChatGPT with n8n
+9:07 – AI agent to manage your life
+11:00 – Voice AI for calls
+12:31 – Add a custom chatbot to your site
+13:54 – Extract data from photo invoices → Google Sheets
+14:52 – AI-powered chatbot
+16:31 – Automate recruitment
+18:30 – Custom dashboard in Google Sheets
+
+Transcript
+
+
+Intro
+0:00
+what's going on guys today we're talking
+0:01
+about 12 gamechanging NAND automations
+0:04
+that I think you're absolutely going to
+0:05
+love Most of these I use every single
+0:07
+day With that being said just before we
+0:09
+dive into showcasing all of these I just
+0:11
+want to let you know every single one of
+0:13
+the blueprints are going to be down
+0:14
+below in the description for free You're
+0:16
+going to see links to other videos In
+0:17
+those videos you'll see the step-by-step
+0:19
+tutorial as well as the blueprints to
+0:22
+those systems Now all of these combined
+0:25
+save me hours and hours and hours every
+0:28
+single week I'm sure they can have the
+0:30
+same effect on you as well And I'm
+0:31
+really excited to share this content
+0:33
+with you Let's dive into it right now
+Clean your inbox automatically
+0:36
+First one is simple It's actually
+0:39
+automating the process of cleaning up
+0:41
+your Gmail inbox So if you're like me
+0:44
+you're probably like drowning inside
+0:47
+Gmails every single day And one of the
+0:50
+things is is like I just love the idea
+0:52
+of organizing my inbox by essentially
+0:55
+labeling them And so that's exactly what
+0:57
+this automation does when you receive an
+0:59
+email through Gmail it's going to
+1:01
+automatically classify that email of one
+1:04
+of many categories And the categories
+1:06
+are the labels over here So like I have
+1:07
+like calendar and recruitment and school
+1:10
+and um all these other kind of labels
+1:12
+And so what happens is when emails come
+1:15
+in they're automatically labeled
+1:16
+Sometimes I create draft responses to
+1:19
+them So if we kind of come back into
+1:21
+this inbox here you can see down here
+1:23
+there's a draft email Sometimes I
+1:25
+automatically send emails back Sometimes
+1:27
+I forward off emails to my accountant so
+1:30
+on and so forth And sometimes when you
+1:32
+get those like annoying uh e-commerce
+1:34
+emails on your birthday being like
+1:36
+"Happy birthday Would you like to spend
+1:37
+an extra $20 on stuff you don't need?"
+1:39
+You can also either delete those or you
+1:42
+can just mark them as red which is
+1:44
+really cool So saves a ton of time Now
+1:47
+you'll notice too that it also doesn't
+1:48
+like kind of remove everything from the
+1:50
+common inbox You can do that you could
+1:52
+put them into the the the given labels
+1:55
+but I actually like having like a
+1:56
+primary inbox um where everything comes
+1:58
+in so I can see it in one feed The next
+Speed-to-lead workflow
+2:00
+automation that I want to talk about is
+2:02
+something that um is probably one of the
+2:05
+highest impact automations that you
+2:07
+could possibly build which is also
+2:08
+consequently like one of the easiest
+2:10
+freaking things you could possibly build
+2:11
+on N So this is a speedtole workflow If
+2:14
+you run a service-based business so take
+2:16
+for example my business here If you run
+2:18
+a service-based business like this
+2:20
+people are going to inquire about your
+2:22
+products or services They're going to
+2:23
+fill out their first name and their last
+2:25
+name and all these other details and
+2:26
+then they're going to click a button
+2:28
+saying you know let's talk and you've
+2:30
+got a lead Right now the thing is is
+2:32
+that if you call that person within 60
+2:34
+seconds you increase your conversion
+2:36
+rate by up to
+2:38
+391% If you wait 24 hours you pretty
+2:41
+much lose all of that advantage You
+2:43
+could make four times as much money just
+2:45
+by calling faster by doing no extra work
+2:48
+Let me show you how this works I have
+2:50
+this particular form in front of me I'm
+2:52
+going to first of all start this
+2:54
+workflow and wait for a response and
+2:55
+then submit a quote form And in a matter
+2:57
+of a couple seconds this workflow is
+2:59
+going to start It's going to activate
+3:01
+the trigger add that client into our CRM
+3:03
+start a call and I'm also going to get a
+3:06
+message notifying me Here's the call
+3:08
+coming in Here's
+3:11
+Gandalf
+3:14
+Here's the message from the call Just
+3:16
+inquired about your services Please
+3:19
+press any key on the keypad to connect
+3:21
+into a and I could connect into the call
+3:24
+with the client Right now I'm the sales
+3:25
+rep by clicking any key on the keypad
+3:28
+And now I'd call the client which you
+3:30
+can see on my phone here I'm also call
+3:32
+calling myself This is just an example
+3:33
+where I'm the client and I'm also the
+3:35
+sales rep But yeah that's how fast it
+3:38
+can be like literally 15 seconds you can
+3:40
+like be the first person to call that
+3:43
+person and more than 50% of sales goes
+3:45
+to the first uh company that actually
+3:47
+calls the client The reason why you
+3:48
+heard Gandalf there was just because I
+3:50
+got this notification right here where
+3:52
+um essentially I was notifying myself of
+3:55
+a lead coming through I don't know if
+3:57
+you can see my phone there but I have a
+3:58
+lead just with all the information of
+4:00
+this particular client This is another
+4:02
+way around it where if you don't want to
+4:04
+call yourself immediately you could just
+4:05
+send yourself a text message and then
+4:07
+you call that lead literally in the span
+4:08
+of like 15 seconds on the back end This
+4:11
+is what it looks like to call them We're
+4:13
+sending data to um GoHighle and then
+4:16
+we're automatically calling people in a
+4:18
+matter of 10 seconds Go High Level cost
+4:20
+$97 a month It's quite expensive but in
+4:22
+my community I offer this on $1 plans I
+4:25
+wish I could actually give it away for
+4:26
+free but the minimum to um automatically
+4:29
+set it up and install uh install this
+4:31
+for people was $1 So that's kind of what
+4:33
+it is If you guys want that you can join
+4:34
+my community The next thing here is this
+Scrape Google Maps data
+4:37
+Google Maps scraper So if you guys are
+4:40
+in the business of having to generate
+4:41
+leads sell those leads or if you're just
+4:44
+you know that's the lifeblood of your
+4:45
+business which is most service- based
+4:47
+businesses I'm sure you'll love this one
+4:48
+as well So this one scrapes Google Maps
+4:50
+listings So for example take this Maybe
+4:54
+you need to reach out to Toronto
+4:56
+landscapers And in the good old days
+4:58
+you'd have to go through all of these
+4:59
+listings one by one by one And I don't
+5:02
+think there's a single like human soul
+5:04
+on this planet that would enjoy the
+5:06
+process of going through this one by one
+5:08
+by one It would be slightly soul
+5:10
+crushing I think to say the least But
+5:12
+with an automation like this we can
+5:14
+schedule it So every single day it goes
+5:16
+through scrapes those um those those
+5:18
+leads off of Google Maps It even grabs
+5:21
+things like their email address by
+5:23
+actually going a step further not just
+5:25
+the listing here but also to the website
+5:28
+page because they have the website here
+5:30
+They don't have emails listed And then
+5:32
+it adds these leads over to this Google
+5:35
+uh sheet right here You could take it a
+5:36
+step further connect it into Instantly
+5:38
+which is a cold email outreach platform
+5:40
+which means that you could scrape
+5:42
+hundreds or even thousands of leads
+5:44
+instantly without doing any work pretty
+5:46
+much once it's set up And then you could
+5:48
+email these people as well You could
+5:50
+even throw in AI and customize and
+5:52
+personalize the emails that you're
+5:54
+sending out Um if you guys want access
+5:56
+to that go highlevel um account you can
+5:58
+join my school community It's going to
+6:00
+be in the description down below here
+6:01
+Funny thing is is it's actually cheaper
+6:03
+than signing up for a go highle account
+6:05
+in general All of these blueprints plus
+6:07
+so many more um are going to be in this
+6:09
+community as well as weekly calls If you
+6:11
+guys are ever looking for like tech
+6:13
+support you can jump on our calls or
+6:14
+live workshops We build things out
+6:16
+together as well as business calls as
+6:19
+well The primary objective of this is
+6:21
+two paths People that want to earn money
+6:23
+using AI and automation so selling it
+6:25
+And the second one is for operators of
+6:27
+businesses who want to automate all of
+6:29
+the work they're currently doing
+6:30
+manually right now Moving on the next
+Job seeker automation
+6:32
+workflow is for job seekers So if you're
+6:35
+out there you're looking for new jobs
+6:37
+you know how big of a pain in the ass it
+6:39
+is There's nothing that sucks more than
+6:41
+having to go through hundreds or even
+6:43
+thousands of job listings just to find
+6:45
+the right ones And then once you find
+6:47
+the right one then you have to apply to
+6:48
+them create cover letters It's a
+6:50
+nightmare I don't think anyone likes
+6:51
+doing that With this automation
+6:54
+essentially how this works is we
+6:55
+schedule it so that every single day you
+6:57
+can search through job boards like
+7:00
+LinkedIn And you can find the right
+7:02
+positions you're looking for In this
+7:04
+example we're using SEO and we're using
+7:06
+the location Canada And so it's going to
+7:08
+pull in all of these job listings here
+7:10
+via an RSS feed that we created This is
+7:13
+a custom RSS feed via RSS.app app and
+7:16
+then we're essentially feeding it into
+7:18
+this workflow Now how this works is we
+7:20
+generate tons of information about the
+7:22
+job We actually rate the job on a 1 to5
+7:25
+scale um so that you can prioritize the
+7:27
+ones that you actually like and then we
+7:30
+create cover letters that are customized
+7:32
+to that job and then post it into a
+7:34
+Google sheet here so that you can focus
+7:36
+on applying to the highest rated jobs
+7:38
+with a custom cover letter How this
+7:41
+practically works is we mirror well we
+7:44
+we take a snapshot of your uh your
+7:46
+resume and then compare it to the job
+7:48
+and then we just see hey on a on certain
+7:50
+categories like is this you know a good
+7:53
+fit for you and if so then here's a
+7:56
+cover letter all that kind of stuff So
+7:57
+obviously saves a ton of time not only
+7:59
+in searching for these jobs but then
+8:01
+also in the application process of
+8:02
+generating the cover letters which is
+8:04
+super nice The next one is this chatgbt
+Connect ChatGPT with n8n
+8:07
+n connection I think this is so freaking
+8:09
+cool Essentially you can connect chat
+8:11
+GBT into NADN And so instead of actually
+8:15
+interacting with chat GBT you can do
+8:18
+this straight or instead of going into
+8:20
+NAD you can literally just do this all
+8:23
+from within CHAGBT You could also do
+8:25
+this in claude as well in case you guys
+8:27
+want to use that So both options are
+8:29
+available And I have blueprints on both
+8:31
+of these but essentially in Chad GBT you
+8:34
+need you do need to be on a plus plan So
+8:36
+take this example Let's say I uploaded a
+8:39
+receipt and then I said "Can you please
+8:40
+process this receipt?" And I say "Please
+8:42
+here to chat GBT just because I'm
+8:44
+Canadian and there's no other reason to
+8:45
+that for that." And then it essentially
+8:48
+asks for my permission It will take out
+8:50
+all of the line items here from that
+8:52
+receipt And then it'll process that and
+8:54
+add it into this Google sheet right here
+8:56
+So take the total the tax the quantity
+8:58
+the description title everything And
+9:01
+it's really nice cuz it's going line
+9:02
+item by line item through that receipt
+9:05
+as well And so obviously super cool
+AI agent to manage your life
+9:07
+stuff Next one is this AI agent that
+9:10
+could literally manage your entire life
+9:13
+This is just like a couple examples of
+9:15
+things that it could do So for example
+9:17
+it could make calls on your behalf It
+9:19
+could manage your calendar It could
+9:22
+manage your Gmail It could manage your
+9:24
+social media posting It could manage
+9:25
+your to-do list on Air Table It could
+9:27
+also manage document parsing like
+9:30
+receipts your invoices all that kind of
+9:32
+stuff So super cool Here's just one
+9:34
+example with the document parsing here
+9:36
+We could or in this document we could
+9:38
+actually it's not parsing as much as is
+9:40
+sending off receipt or invoices to
+9:42
+people So say you have a meeting with a
+9:44
+client goes well you want to send off a
+9:46
+receipt or sorry an invoice to them All
+9:49
+you have to do is you just have to
+9:51
+message your assistant inside something
+9:53
+like telegram which is going to fire off
+9:55
+this bot to go down the document sub
+9:57
+agent Essentially from there you can
+9:59
+send off this contract straight to their
+10:01
+email instantaneously which contains a
+10:04
+contract in an invoice Now this is just
+10:06
+like a sample contract as you can see by
+10:09
+saying logo here Probably wouldn't want
+10:11
+to send that off to a client but uh yeah
+10:13
+it's super cool to set up super easy as
+10:15
+well and super powerful The this is an
+10:18
+example of like one of the sub agents So
+10:20
+this main AI agent has multiple sub AI
+10:24
+agents connected into it This is an
+10:27
+example of that And so you could ask it
+10:29
+hey can you create a calendar event for
+10:31
+me at 11:00 a.m tomorrow for coffee and
+10:33
+it'll go ahead and just do that So you
+10:35
+can have like sub agent or AI agent
+10:39
+inception where there's like stacks of
+10:40
+AI agents managing each other which is
+10:42
+really really cool And that's going to
+10:43
+be in the description down below for
+10:44
+free as well You could also have another
+10:47
+sub agent uh managing your air table So
+10:50
+for example you could be like "Hey
+10:51
+remind me tomorrow or tonight to cook
+10:53
+dinner at 5:00 p.m." And it'll add that
+10:55
+to your to-do list Assign yourself and
+10:57
+assign a priority to that as well The
+Voice AI for calls
+11:00
+next thing that I want to talk about
+11:01
+here is you can actually do voice AI
+11:04
+calling This could be outbound calling
+11:06
+This could be inbound calling Um there's
+11:08
+so many options in this particular
+11:10
+workflow What you can do is you could be
+11:11
+like "Hey find me like five hairdressers
+11:14
+in Toronto." So it'll go scrape those
+11:17
+hairdressers from Google Maps and then
+11:19
+you can call your favorite one to book
+11:20
+an appointment This is kind of like just
+11:22
+a demo of how the software works AI
+11:25
+calling just as a disclaimer isn't
+11:26
+perfect uh at the time of this recording
+11:29
+Could very well be is obviously going to
+11:31
+get way better in the future but just
+11:33
+kind of take it with a grain of salt but
+11:34
+essentially this is a demo of how this
+11:36
+works So this is going to be an example
+11:38
+of what that voice AI agent sounds like
+11:41
+I'm just going to go ahead and pick this
+11:42
+up
+11:45
+Hello
+11:47
+Hello I'd like to book a dinner
+11:48
+reservation tonight Okay perfect At what
+11:51
+time great Anytime between 5:00 p.m and
+11:55
+8:00 p.m would be great Do you have a
+11:57
+table by the window available if not any
+11:59
+spot within Yep we have a window table
+12:02
+available at 6:30 Does that work for you
+12:06
+that works perfectly Thank you so much
+12:09
+Awesome Can I get a name
+12:12
+yes The reservation is for Jono Thank
+12:14
+you Okay I'll see you then Thanks very
+12:16
+much Bye-bye And so obviously you know
+12:20
+not out of this world perfect yet but
+12:22
+for the year 2025 I think that's really
+12:24
+freaking cool Obviously it's only going
+12:27
+to get better as time goes on And so
+12:29
+that's just an example of how you can
+Add a custom chatbot to your site
+12:31
+use an AI agent The next thing that I
+12:33
+want to talk about here and by the way
+12:34
+this is powered by Vappy up here The
+12:37
+next thing we're going to talk about is
+12:38
+adding a custom chatbot onto your
+12:40
+website Like you can see here I actually
+12:42
+had just just moved my face over because
+12:45
+my face was definitely in the way of
+12:47
+this And so essentially we have this
+12:49
+chatbot Okay this is like adding chatbt
+12:52
+to your website So you can have an LLM
+12:53
+on your website interacting with your
+12:56
+particular clients Now it doesn't just
+12:58
+have to be something where they chat
+12:59
+back and forth You can add so many
+13:01
+different tools to this So for example
+13:03
+you could send your clients an invoice
+13:04
+So I could say um please as the client I
+13:07
+could say please send me over an invoice
+13:10
+And just like how this would work is
+13:12
+maybe like you'd have like your
+13:13
+packaging on the website here The client
+13:16
+sees something they like and they're
+13:17
+like "Hey okay this is good I want to
+13:18
+move forward." They ask the chatbot to
+13:20
+send it over And so I'm going to provide
+13:22
+my name and then I'm going to provide my
+13:26
+email address here And then it's going
+13:27
+to go ahead work its magic send that uh
+13:30
+over to me And then I can take a look at
+13:32
+my email see an invoice coming through
+13:34
+this and then I could go ahead and pay
+13:36
+and sign all within a matter of a couple
+13:39
+seconds Now it doesn't just have to send
+13:41
+over contracts or invoices It could also
+13:43
+go ahead and schedule calendar uh
+13:46
+invites between that person and your
+13:49
+sales rep on your team which is also
+13:52
+really cool And this is just a couple
+13:53
+things that it could do The next thing
+Extract data from photo invoices → Google Sheets
+13:54
+that I want to talk about here is a
+13:57
+invoice generator So actually that's
+14:00
+probably the worst name that I could
+14:01
+have come up with because that's not
+14:02
+what it does at all This parses receipts
+14:06
+and and specifically those receipts
+14:08
+could be images or they could be PDF
+14:11
+files And so the trick here is is that
+14:14
+we need to take PDFs we need to take
+14:16
+images and we need to convert those file
+14:19
+types into text and then we need to
+14:21
+essentially extract all the line items
+14:23
+and place it into a Google sheet like
+14:26
+this This is great if you deal with a
+14:28
+lot of receipts or invoices A lot of
+14:30
+tech companies um will just essentially
+14:33
+send you invoices monthly for your
+14:35
+subscription right and if you're like me
+14:37
+and you have that like software creep
+14:38
+where you just have like a million one
+14:40
+softwares every single month this is
+14:42
+great because all of a sudden you can
+14:43
+just get those emails coming through You
+14:44
+could attach to something like this and
+14:46
+then automatically extract it and put it
+14:48
+into line items here So really really
+14:50
+freaking cool stuff The next one here is
+AI-powered chatbot
+14:53
+a rag system So this is like um an AI
+14:56
+chatbot that you train on the history of
+14:59
+your company This is like the most
+15:01
+intelligent employee you've ever hired
+15:03
+Essentially how this works is think
+15:04
+about like the process of actually
+15:06
+hiring an employee Firstly you're going
+15:09
+to onboard them You're going to train
+15:11
+them on the pricing and the contracts
+15:13
+the invoices the how you message people
+15:15
+You're going to train them on the
+15:16
+standard operating procedures Every
+15:18
+single thing about your company you're
+15:19
+going to train that person on And
+15:21
+similarly you train a rag system on
+15:24
+essentially the same things So you train
+15:26
+the the rag system It has information
+15:28
+about every single possible interaction
+15:31
+uh that your company's ever had And then
+15:33
+what happens now is you can set up a
+15:35
+chatbot where people can message the
+15:37
+system and it will give that user back
+15:40
+the most appropriate message the
+15:41
+question So for example I have this
+15:44
+contract here This is a contract for DJ
+15:47
+photo and video services And so I could
+15:50
+ask it specific questions about this
+15:52
+chat So I could be like I'm just going
+15:53
+to refresh this chat What services are
+15:57
+offered it's going to go ahead and look
+16:00
+at the memory storage find the
+16:02
+information about that contract and then
+16:04
+spit it back out We offer DJ services
+16:06
+photo services video services You can
+16:08
+take a look at the contract here and it
+16:10
+says DJ services oops right here And
+16:13
+then it says uh photo services as well
+16:16
+as video services down here So it will
+16:18
+literally give you custom tailored
+16:20
+responses back based on the information
+16:23
+you provide it with So you could train
+16:25
+this on your entire company and then
+16:26
+have like a really intelligent bot that
+16:28
+knows everything about your company
+16:30
+Really really cool stuff The next thing
+Automate recruitment
+16:32
+here is recruitment And so what I've
+16:34
+done is I've set up a custom Google
+16:36
+Sheets dashboard Now this automates the
+16:39
+entire process of recruitment for me
+16:42
+Because what ended up happening was like
+16:44
+I was hiring thousands of people As you
+16:46
+can see here it's like actually tens of
+16:48
+thousands of people And um it was
+16:50
+obviously overwhelming It felt like a
+16:52
+full-time job doing this So I was like
+16:54
+hm how can I automate this whole process
+16:56
+um and here's how it works Essentially
+16:59
+people come in from Indeed This is one
+17:00
+of my favorite places to hire from
+17:02
+People apply to jobs and as soon as they
+17:05
+apply to jobs I'll automatically um get
+17:07
+their information and put them onto this
+17:10
+particular spreadsheet here From there
+17:12
+we have the entire life cycle stage of
+17:16
+their um of their recruitment process So
+17:18
+the first thing is is they actually come
+17:20
+onto the sheet and then we have to ask
+17:21
+them onboarding questions Onboarding
+17:23
+questions are like this We send them off
+17:25
+a form and we're like "Hey can you tell
+17:26
+us more about yourself can you provide
+17:28
+us with a resume can you provide us with
+17:30
+maybe a portfolio link can you tell us
+17:31
+how many years you've been doing what
+17:32
+you've been doing for what's your
+17:34
+expected salary?" All of that kind of
+17:35
+stuff And then from there uh once they
+17:38
+actually submit those questions this
+17:40
+will be marked as complete And then the
+17:43
+next thing is is that we actually have
+17:44
+to screen those people And so that's the
+17:46
+next step This can be automated too Like
+17:48
+you could automatically screen their
+17:50
+resume But for me I just like to quickly
+17:52
+do a once over just to make sure that
+17:53
+they're the right fit for the next stage
+17:55
+which is a test This is where we test
+17:58
+their skills in whatever uh position
+18:00
+they're hiring for So for example if
+18:03
+you're a blog writer write me a couple
+18:05
+blogs if you're a photo editor edit some
+18:07
+photos for me That kind of stuff As long
+18:08
+as they pass the test and it's good to
+18:10
+go it looks good then we can schedule an
+18:12
+interview This is all automated Then we
+18:13
+can have a second interview and so on
+18:15
+and so forth And so that's a really easy
+18:17
+way how you can automate a task that or
+18:21
+a process that takes hours every single
+18:22
+day You can also automate the
+18:24
+appointments and all that kind of stuff
+18:25
+too uh when it comes to hiring people
+18:27
+because obviously you're going to have
+18:28
+to do interviews and this is a great way
+Custom dashboard in Google Sheets
+18:30
+to automate that as well Lastly I want
+18:32
+to talk about just the same thing again
+18:35
+kind of just in a different um aspect
+18:38
+It's custom dashboards in Google Sheets
+18:40
+And so you can supercharge Google Sheets
+18:42
+here and essentially turn them into
+18:45
+custom dashboards where you can automate
+18:48
+any process that you want So in this
+18:50
+instance this is for like photo video
+18:53
+editing So um we have a lot of projects
+18:56
+coming onto the sheet and we have a
+18:58
+custom dashboard that we've created and
+19:00
+we can supercharge sheets like this by
+19:02
+clicking like adding these buttons on
+19:04
+here And again like the last example
+19:07
+anytime we click these buttons we can
+19:09
+actually cause actions So if I was to
+19:11
+click this for example I could then all
+19:13
+of a sudden send off the clients an
+19:15
+email being like "Hey we've here's your
+19:17
+editing project We've completed your
+19:18
+photos We've completed your videos or
+19:20
+whatever." And then send that off
+19:21
+immediately to them So you can
+19:23
+supercharge Google Sheets and um get so
+19:25
+much additional functionality out of it
+19:27
+that you didn't know And the cool thing
+19:28
+about this is there's two parts to this
+19:30
+Part number one is that you can add
+19:32
+information onto the Google sheet So you
+19:34
+can automatically update this Google
+19:35
+sheet in real time right you can add
+19:37
+stuff to it You can update those rows
+19:39
+over time So like for example this
+19:41
+person could be added and then we could
+19:43
+actually automatically update them over
+19:44
+time if we wanted to And then lastly we
+19:47
+could check a box to start a second
+19:48
+workflow here where as soon as that box
+19:50
+is checked we could send emails we could
+19:52
+send invoices we could do whatever it is
+19:55
+that we want And so we can really just
+19:57
+make our own pretty much custom software
+19:58
+through Google Sheets So anyways I just
+20:00
+think that's really cool That is it for
+20:02
+this video Thank you guys so much for
+20:04
+watching If you want more videos more
+20:07
+blueprints and more value I'd highly
+20:08
+recommend taking a look at the school
+20:10
+community over here Again it's just a
+20:11
+great place to uh take your automation
+20:14
+game to the next level learn how to sell
+20:15
+this kind of stuff or automate your
+20:17
+entire business Um cool thing is again
+20:19
+is that not only do you get access to
+20:21
+all that information but you also have a
+20:23
+thriving community of like-minded
+20:25
+individuals where you can learn and grow
+20:27
+uh with And also you can get access to
+20:30
+our weekly calls So if you ever uh hit a
+20:34
+roadblock which sometimes takes like 10
+20:36
+hours to get over you can just jump on a
+20:38
+call with me and I'll help you solve the
+20:39
+problem ASAP So thanks guys so much for
+20:41
+watching Make sure to subscribe to the
+20:43
+channel if you want more videos uh like
+20:46
+this appearing in your feed And I I look
+20:48
+forward to seeing you guys in the next
+20:49
+one Thanks very much and bye-bye

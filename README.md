@@ -1,121 +1,108 @@
-**Discordant+n8n** is a production-ready, full-featured communication and automation platform. Built with **Next.js**, **Prisma ORM**, **MySQL**, and **LiveKit**, it combines a real-time Discord-style UX with low-code automation powered by **n8n**.
+# Discordant
 
-Each client receives a **white-labeled portal** (like a private Discord server) with secure channels, video/audio conferencing, file sharing, and chat-driven workflows. This platform is ideal for consulting firms, agencies, and automation-led service providers looking to deliver AI-powered solutions in private environments.
+**Discordant** is a production-ready Discord-style communication platform with extensible n8n workflow automation. Built with **Next.js 15**, **Prisma**, **MySQL**, and **LiveKit**, it provides real-time chat, video/audio conferencing, and chat-driven AI workflows.
+
+Each deployment creates a **private communication hub** with secure channels, file sharing, and intelligent automation. Perfect for consulting firms, agencies, and service providers who need AI-powered workflows in controlled environments.
 
 ---
 
-## 🔑 Highlights
+## 🔑 Key Features
 
-### 🔁 Conversational Automation (n8n)
-- **Async Workflow Processing** - Advanced asynchronous workflow execution with comprehensive debugging
-- **VAPI Voice Integration** - Voice-to-AI chat processing via n8n workflows 
-- Trigger and interact with **n8n workflows** directly from chat
-- Chat-first interface for backend automation
-- Fully self-hosted & isolated per client or tenant
-- Token-based secure communication with n8n
-- Configure workflows per server or channel with intelligent routing
+### 🤖 Extensible AI Workflows
+- **Main AI Agent** (`discordant_agent_0011.json`) - Comprehensive business intelligence with Calendar, Search, Research, Gmail, YouTube, and Database tools
+- **Image Processing** (`discordant_images_flow_0001.json`) - Advanced image analysis and generation with GPT-4o Vision and DALL-E
+- **Async Processing** - All workflows run asynchronously with proper error handling and fallback mechanisms
+- **Extensible Architecture** - Easy to add new specialized workflows for specific use cases
 
 ### 💬 Real-Time Communication
-- Multi-channel server layout (like Discord)
+- Discord-style server and channel layout
 - Live **video, audio, and screen sharing** via LiveKit
-- Secure **file uploads** using UploadThing
-- Auth with **Clerk** (scalable, production-grade)
-- Advanced message search with filters and member activity tracking
+- Secure **file uploads** with UploadThing
+- Advanced message search with member activity tracking
+- **Clerk** authentication (production-grade)
 
-### 🛠️ Infrastructure & Stack
-- Backend: **Prisma + MySQL**
-- Frontend: **Next.js + Tailwind + shadcn/ui + Framer Motion**
-- Real-time: **LiveKit WebRTC**
-- Auth: **Clerk.dev**
-- DevOps-ready and deployable in **private environments**
+### 🛠️ Modern Stack
+- **Frontend**: Next.js 15 + Tailwind + shadcn/ui + Framer Motion
+- **Backend**: Prisma ORM + MySQL
+- **Real-time**: LiveKit WebRTC + Socket.IO
+- **Automation**: n8n workflows with comprehensive tool integration
+- **Auth**: Clerk.dev with role-based access
 
 ---
 
-## ✨ Current Status & Recent Achievements
+## ✨ Current Capabilities
 
-### 🚀 **Async Workflow Foundation** ✅
-- **Production-Ready Async Processing** - Workflows now process asynchronously with proper webhook responses
-- **Enhanced Business Intelligence AI Agent v3.0** - Comprehensive AI agent with Calendar, Search, Research, Gmail, and YouTube tools
-- **Cold Start Resilience** - Robust error handling and fallback mechanisms for workflow initialization
-- **Comprehensive Debugging** - Full execution data tracking and performance monitoring
+### 🚀 **Production-Ready Workflows** ✅
+- **Main AI Agent** - Business intelligence with 15+ integrated tools
+- **Image Processing** - Analysis, generation, and OCR capabilities
+- **Voice Integration** - VAPI voice-to-chat processing
+- **Database Intelligence** - Direct SQL execution with schema awareness
+- **Cold Start Resilience** - Robust error handling and recovery
 
-### 🎙️ **VAPI Voice AI Integration** ✅  
-- **Voice-to-Chat Processing** - VAPI calls route through Discordant AI workflow for sophisticated voice interactions
-- **Tool Execution for Voice** - Voice callers get access to full AI tool suite (Calendar, Search, Research, etc.)
-- **Unified AI Configuration** - Single workflow serves both Discord and voice interactions
+### 🎯 **Extensible Use Cases**
+The workflow architecture supports advanced scenarios like:
+- **PDF Processing Pipelines** - Extract images from tax documents, process individually, create research manuals
+- **Video Content Analysis** - Extract keyframes, analyze in context, generate companion textbooks
+- **Document Intelligence** - OCR with context awareness for comprehensive analysis
+- **Business Intelligence** - Real-time data analysis with multiple data sources
 
 ### 🔧 **Developer Experience**
-- **One Week Setup Target** - Any sufficiently skilled developer should be productive within a week
-- **Memory-Optimized Development** - PowerShell script for handling large Next.js compilation with 8GB memory allocation
-- **Comprehensive Documentation** - Updated workflow files and integration guides in `/docs/workflows/`
-- **Production-Ready Deployment** - HTTPS development server with proper certificates
+- **KISS Principle** - Simple, descriptive naming without unnecessary complexity
+- **One Week Productivity** - Comprehensive setup documentation for quick onboarding
+- **Memory-Optimized Development** - PowerShell script for 8GB memory allocation
+- **HTTPS Development** - Proper certificates for WebRTC and real-time features
 
-### 🤖 AI & Content Management
-- **Share AI Generated Content** - Share AI responses with public links and enhanced formatting
-- **Extensible Message Format** - Messages support both string and JSON formats for rich metadata
-- **Perfect Markdown Rendering** - Flawless code blocks, tables, and formatting with proper syntax highlighting
+### 🤖 **AI & Automation**
+- **Share AI Responses** - Public links for AI-generated content
+- **Rich Message Format** - Support for both text and structured JSON metadata
+- **Perfect Markdown** - Code blocks, tables, and syntax highlighting
+- **Workflow Inheritance** - Server and channel-level automation configuration
 
-### 🔍 Enhanced Search & Navigation
-- **Advanced Message Search** (Ctrl+S) - Search by content, type, member, date range, and activity
-- **Member Activity Tracking** - Real-time presence, online status, and activity history
-- **Smart Content Collapse** - Long messages (40+ lines) auto-collapse with "Show More" button
-
-### ⚙️ Workflow Integration
-- **Server-Level Workflows** - Configure n8n workflows for entire servers
-- **Channel-Specific Automation** - Override server settings with channel-specific workflows
-- **Workflow Inheritance** - Channels can inherit server workflows or define their own
-- **Message Pattern Detection** - Workflows automatically filter by message pattern support
-
-### 💬 Communication Enhancements
-- **Enhanced Message Editor** - Rich text editing with emoji picker and keyboard shortcuts
-- **Improved File Display** - Better handling of images, PDFs, and document previews
-- **Seamless Scrolling** - Optimized message list with proper scroll position management
-- **Presence Indicators** - See who's online, typing, or active in real-time
+### 🔍 **Enhanced UX**
+- **Advanced Search** (Ctrl+S) - Content, member, date, and activity filters
+- **Member Presence** - Real-time online status and activity tracking
+- **Smart Content** - Auto-collapse long messages with "Show More"
+- **Enhanced Editor** - Rich text with emoji picker and keyboard shortcuts
 
 ---
 
 ## 🧱 Architecture
 
-Discordant+ is built on a **simple, scalable stack**:
+**Simple, scalable foundation:**
 
-- Next.js frontend
-- Prisma ORM connected to a **MySQL** database
-- WebRTC with LiveKit
-- Clerk for auth and session control
-- UploadThing for file handling
-- External integration with **n8n**, hosted privately or on-prem
+- **Next.js 15** frontend with app router
+- **Prisma ORM** + **MySQL** database
+- **LiveKit** for WebRTC video/audio
+- **Clerk** for authentication and sessions
+- **UploadThing** for secure file handling
+- **n8n** for workflow automation (self-hosted or cloud)
 
-> 🔹 A Payload CMS version also exists at [spaces.kendev.co](https://spaces.kendev.co) if you're exploring content-driven variations of this platform.
+> 🔹 Alternative Payload CMS version available at [spaces.kendev.co](https://spaces.kendev.co)
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+ with sufficient memory allocation (8GB recommended for development)
+- Node.js 18+ (8GB memory recommended for development)
 - MySQL 8.0+
 - n8n instance (local or hosted)
-- Clerk account for authentication
-- UploadThing account for file handling
-- LiveKit account for video/audio
+- Clerk account
+- UploadThing account
+- LiveKit account
 
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/your-org/discordant-plus.git
-cd discordant-plus
-```
-
-### 2. Install Dependencies
+### 1. Setup
 
 ```bash
+git clone https://github.com/your-org/discordant.git
+cd discordant
 npm install
 ```
 
-### 3. Configure Environment Variables
+### 2. Environment Configuration
 
 ```bash
-# .env
+# .env.local
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_key
 CLERK_SECRET_KEY=your_clerk_secret
 UPLOADTHING_SECRET=your_uploadthing_secret
@@ -123,82 +110,73 @@ UPLOADTHING_APP_ID=your_uploadthing_app_id
 LIVEKIT_API_KEY=your_livekit_key
 LIVEKIT_API_SECRET=your_livekit_secret
 NEXT_PUBLIC_LIVEKIT_URL=your_livekit_url
-NEXT_PUBLIC_SITE_URL=http://localhost:3000
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-N8N_API_URL=http://localhost:5678
-N8N_API_TOKEN=your_n8n_api_token
+NEXT_PUBLIC_SITE_URL=https://localhost:3000
 DATABASE_URL=mysql://user:password@localhost:3306/discordant
-
-# Optional: For enhanced features
-NEXT_PUBLIC_SOCKET_URL=http://localhost:3000
-NEXT_PUBLIC_AI_SHARE_ENABLED=true
+N8N_API_URL=http://localhost:5678
+N8N_API_TOKEN=your_n8n_token
 ```
 
-### 4. Setup the Database
+### 3. Database Setup
 
 ```bash
 npx prisma db push
 ```
 
-### 5. Import n8n Workflows
+### 4. Import n8n Workflows
 
-Import the provided workflows from `/docs/workflows/`:
-- `discordant-agent-0003.json` - Main AI agent with async processing
-- `vapi-discord-integration-workflow-v2.json` - VAPI voice integration
+Import these workflows from `/docs/workflows/`:
+- **`discordant_agent_0011.json`** - Main AI agent with comprehensive tools
+- **`discordant_images_flow_0001.json`** - Image analysis and generation
 
-### 6. Run the Development Server
+### 5. Development Server
 
-For optimal performance with large builds:
-
-**Windows (PowerShell):**
+**Windows (Recommended):**
 ```bash
 .\start-dev.ps1
 ```
 
 **Standard:**
 ```bash
-npm run dev
+npm run dev:https-auto
 ```
 
-### 7. Launch the App
+### 6. Access
 
-Visit [http://localhost:3000](http://localhost:3000)
+Visit [https://localhost:3000](https://localhost:3000)
 
-### 8. Key Commands & Shortcuts
-
-- **Ctrl+S** - Open advanced message search
-- **Enter** - Send message (in editor)
-- **Shift+Enter** - New line in message
-- **Escape** - Cancel editing/close modals
-
-### 📅 **Development Timeline**
-With proper setup and the provided documentation, any sufficiently skilled developer should be able to:
-- **Day 1-2**: Complete environment setup and basic deployment
-- **Day 3-4**: Configure n8n workflows and test basic automation
-- **Day 5-7**: Customize workflows, integrate additional tools, and achieve full productivity
+### Key Shortcuts
+- **Ctrl+S** - Advanced message search
+- **Enter** - Send message
+- **Shift+Enter** - New line
+- **Escape** - Cancel/close
 
 ---
 
-## 🎥 Demo Video
+## 🎯 Workflow Architecture
 
-[![Watch Demo](https://img.shields.io/badge/🎬%20Watch%20Video-blue?style=for-the-badge)](https://github.com/kendevco/discordant/raw/main/public/demo/Discordant_Chat_Overview_480p.mp4)
+### Main AI Agent (`discordant_agent_0011.json`)
+**Comprehensive business intelligence with:**
+- 📅 **Calendar Management** - View, create, update, delete events
+- 🔍 **Database Intelligence** - Direct SQL execution with schema awareness
+- 🌐 **Web Research** - Tavily AI for real-time market intelligence
+- 📧 **Email Integration** - Gmail and SMTP for communications
+- 🎬 **YouTube Processing** - Video transcript analysis and insights
+- 🏢 **Client Research** - GSA qualification and business analysis
+- 📊 **Server Analytics** - Member management and activity tracking
 
-📅 Or [download the video directly](https://github.com/kendevco/discordant/raw/main/public/demo/Discordant_Chat_Overview_480p.mp4)
+### Image Processing (`discordant_images_flow_0001.json`)
+**Advanced visual intelligence with:**
+- 🔍 **Image Analysis** - GPT-4o Vision for detailed analysis
+- 🎨 **Image Generation** - DALL-E for custom image creation
+- 📄 **OCR Processing** - Text extraction from documents
+- 📊 **Chart Analysis** - Business intelligence from visual data
+- 🔄 **Auto-Detection** - Smart routing between analysis and generation
 
----
-
-## 🌐 LiveKit + n8n Integration
-
-Discordant+ integrates directly with your **n8n instance**, enabling:
-
-- **Asynchronous workflow execution** with comprehensive error handling
-- **Voice-driven automation** via VAPI integration
-- Conversational workflow launches
-- Slack/Discord-style automations via chat commands
-- Visual feedback from flows into chat or modal components
-- Works with any n8n trigger, including webhooks, schedulers, or external apps
-
-> 🔐 You retain full control over your infrastructure — host n8n, LiveKit, and the app privately.
+### Extensible Framework
+The architecture supports advanced use cases:
+- **Document Processing** - PDF → Image extraction → Individual analysis → Research manual
+- **Video Intelligence** - Keyframe extraction → Context analysis → Companion textbook
+- **Business Intelligence** - Multi-source data → Analysis → Actionable insights
 
 ---
 
@@ -206,54 +184,58 @@ Discordant+ integrates directly with your **n8n instance**, enabling:
 
 ```
 /docs/workflows/          # n8n workflow configurations
-  ├── discordant-agent-0003.json           # Main AI agent (async)
-  └── vapi-discord-integration-workflow-v2.json  # Voice integration
-/docs/misc/               # General documentation
+  ├── discordant_agent_0011.json      # Main AI agent
+  └── discordant_images_flow_0001.json # Image processing
 /components/              # React components
 /app/                     # Next.js 15 app router
 /lib/                     # Utilities and services
-start-dev.ps1            # Memory-optimized development script
+/prisma/                  # Database schema
+start-dev.ps1            # Memory-optimized dev script
 ```
 
 ---
 
-## 📆 Use Cases
+## 🎯 Use Cases
 
-- Client Automation Portals  
-- AI-Led Operational Interfaces  
-- Internal Tools for Agencies  
-- Private Collaboration Environments  
-- White-Label Managed Service Platforms
-- **Voice-Enabled Business Intelligence**
-- **Async Workflow Processing Centers**
+### Current Production Ready
+- **Client Communication Portals** - Private Discord-style environments
+- **AI-Powered Business Intelligence** - Automated research and analysis
+- **Voice-Enabled Workflows** - VAPI integration for voice commands
+- **Document Processing** - Image analysis and OCR capabilities
+- **Team Collaboration** - Real-time chat with workflow automation
 
----
-
-## 💼 Consulting & Private Integration
-
-If you're looking to:
-
-- Deploy Discordant+ in your own private environment
-- Integrate it with your self-hosted **n8n**
-- Customize portals, commands, or workflows
-- Expand to include billing, analytics, or enterprise SSO
-- **Implement voice AI integration with VAPI**
-- **Scale async workflow processing**
-
-🧑‍💻 **Connect with me on [LinkedIn](https://www.linkedin.com/in/kendevco/)** — I'm available for full-cycle consulting, white-label deployment, and integration work.
+### Extensible Future Applications
+- **Tax Document Processing** - PDF → Image extraction → Analysis → Research manual
+- **Video Content Analysis** - Keyframe extraction → Context analysis → Textbook generation
+- **Advanced OCR Workflows** - Context-aware document processing
+- **Multi-Modal Intelligence** - Combined text, image, and voice processing
 
 ---
 
-## 📚 Related Projects
+## 🎥 Demo
 
-- [spaces.kendev.co](https://spaces.kendev.co) — Payload CMS-powered version of Discordant+
-- [Next LMS Clone](https://github.com/...)
-- [Trello Clone (Taskify)](https://github.com/...)
-- [Notion Clone](https://github.com/...)
-- [n8n.io](https://n8n.io)
+[![Watch Demo](https://img.shields.io/badge/🎬%20Watch%20Demo-blue?style=for-the-badge)](https://github.com/kendevco/discordant/raw/main/public/demo/Discordant_Chat_Overview_480p.mp4)
+
+---
+
+## 💼 Implementation Services
+
+**Ready to deploy Discordant in your environment?**
+
+I can help with:
+- **Private deployment** and infrastructure setup
+- **Custom workflow development** for your specific use cases
+- **n8n integration** and automation design
+- **Voice AI implementation** with VAPI
+- **Advanced document processing** pipelines
+- **White-label customization** and branding
+
+🧑‍💻 **Connect on [LinkedIn](https://www.linkedin.com/in/kendevco/)** for consulting and implementation services.
 
 ---
 
 ## 🙏 Acknowledgments
 
-This project was originally inspired by the excellent teaching content from [Code with Antonio](https://www.youtube.com/@codewithantonio), then reimagined for enterprise-grade conversational automation with async workflow processing and voice AI integration.
+Originally inspired by [Code with Antonio](https://www.youtube.com/@codewithantonio), evolved into an enterprise-grade platform for conversational automation and intelligent workflow processing.
+
+Built with the **KISS principle** - keeping it simple, scalable, and extensible.

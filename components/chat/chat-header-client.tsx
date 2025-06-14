@@ -19,7 +19,7 @@ export function ChatHeaderClient({
   const channelSSE = useSSEChannel(
     type === "channel" ? channelId || null : null,
     {
-      autoRefresh: true,
+      autoRefresh: false, // NEVER auto-refresh from header
       refreshDelay: 1000
     }
   );
@@ -27,7 +27,7 @@ export function ChatHeaderClient({
   const conversationSSE = useSSEConversation(
     type === "conversation" ? conversationId || null : null,
     {
-      autoRefresh: true,
+      autoRefresh: false, // NEVER auto-refresh from header
       refreshDelay: 1000
     }
   );
@@ -41,6 +41,7 @@ export function ChatHeaderClient({
         messageCount={channelSSE.messageCount}
         lastMessageTime={channelSSE.lastMessageTime}
         onReconnect={channelSSE.forceReconnect}
+        compact={true}
       />
     );
   }
@@ -54,6 +55,7 @@ export function ChatHeaderClient({
         messageCount={conversationSSE.messageCount}
         lastMessageTime={conversationSSE.lastMessageTime}
         onReconnect={conversationSSE.forceReconnect}
+        compact={true}
       />
     );
   }

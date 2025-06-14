@@ -1,0 +1,844 @@
+https://www.youtube.com/watch?v=nGNm4IBZpGg&t=15s
+
+Connect ChatGPTs New Image Model to n8n (Step-By-Step)
+
+Jono Catliff
+68.8K subscribers
+
+Subscribed
+
+98
+
+
+Share
+
+3,693 views  Jun 7, 2025
+🌍 COMMUNITY 
+https://www.skool.com/automatable/about
+
+📝 BLUEPRINTS
+https://jonocatliff.gumroad.com/l/ifpbc
+
+📚 SUMMARY
+In this video, you'll learn how to use OpenAI’s newest image generation model, explore its key features, and see how to create stunning visuals step-by-step.
+
+📣 SOCIAL MEDIA
+• Instagram →   / jono_catliff  
+• TikTok →   / jonocatliff  
+• LinkedIn →   / jonocatliff  
+• X →   / @jonocatliff  
+
+📺 RELATED VIDEOS
+• Full crash course on Make.com →    • Make.com Basics: How To Automate Anything ...  
+• Full crash course on n8n →   • Master n8n in 2 Hours: Complete Beginner’s...  
+• 11 Favourite Make.com automations →    • 11 Make.com Automations You NEED To Start ...  
+• 12 Favourite n8n automations →    • The Only 12 n8n AI Automations You'll Ever...  
+
+🎯 1:1 CONSULTING
+Book a time → https://jonocatliff.com/consultation
+
+🚀 AUTOMATION AGENCY
+Get help with your business → https://www.automatable.co
+
+💼 CAREERS
+Work with me → https://jonocatliff.com/careers
+
+🔗 LINKS (some of these make me money - thanks in advance!)
+• n8n → https://jonocatliff.com/n8n
+• Make.com → https://jonocatliff.com/make
+• Go High Level → https://jonocatliff.com/gohighlevel
+• Apify → https://jonocatliff.com/apify
+• Skool → https://jonocatliff.com/skool
+• Zapier → https://jonocatliff.com/zapier
+• PandaDoc → https://jonocatliff.com/pandadoc
+• Apollo → https://jonocatliff.com/apollo
+• ManyChat → https://jonocatliff.com/manychat
+• Vapi → https://jonocatliff.com/vapi
+• PhantomBuster → https://jonocatliff.com/phantombuster
+• ClickUp → https://jonocatliff.com/clickup
+• ElevenLabs → https://jonocatliff.com/elevenlabs
+• Upwork → https://jonocatliff.com/upwork
+• Instantly.ai → https://jonocatliff.com/instantly
+• Airtable → https://jonocatliff.com/airtable
+
+👋  ABOUT ME
+Hey everyone, my name is Jono. I run a 7-figure service business that offers DJ, photo, video services (#1 largest in Canada), and spent years figuring out how to automate every part of it (and hired the roles that I couldn't). Conservatively, I used to work 80+ hours per week, before sunrise till long after sunset; missing gatherings, family events and everything in between. Through automation though, I was able to replace my job. My goal is to help share what worked for me, in a dream of helping others find true success with their passion.
+
+Please subscribe, like and comment below if you have any questions! Thank you 😊
+
+⌛ TIMESTAMPS
+0:00 Intro
+0:16 Overview
+1:27 Build: Generate Image
+7:10 Build: Combine Two Images
+
+Intro
+0:00
+openai just released their newest image
+0:02
+generation model and take a look for
+0:04
+yourself at how beautiful these images
+0:07
+are today we're going to be talking
+0:09
+about how you can use this image
+0:11
+generation model straight from within
+0:13
+NADN to programmatically generate images
+Overview
+0:16
+now there's going to be two particular
+0:18
+use cases here use case number one is
+0:21
+how we can generate any of these images
+0:23
+here and and keep in mind take a look at
+0:25
+the text as well this is one thing that
+0:27
+it's really improved on from previous
+0:29
+models it's the ability they can
+0:30
+actually write text and it's coherent
+0:32
+it's not just jumbling random words
+0:34
+together that make absolutely no sense
+0:36
+at all and so first of all the text has
+0:38
+become has gone such a long way and the
+0:41
+images itself look absolutely stunning
+0:43
+in my opinion as well and so today we're
+0:45
+going to be focusing on building out
+0:46
+these images and then the second use
+0:48
+case scenario is actually down here
+0:50
+where we can merge multiple images
+0:53
+together to generate a final output such
+0:56
+as like adding in multiple products into
+0:58
+a gift basket so forget having to go
+1:01
+into Photoshop or in design or whatever
+1:03
+and divi design something like this
+1:05
+quickly you can mock this up in a matter
+1:07
+of a couple seconds automatically using
+1:10
+the newest image generation model from
+1:12
+ChachiBT obviously it's probably not
+1:14
+going to be as perfect as somebody
+1:16
+sitting in in design or Photoshop doing
+1:18
+this but it's going to be a whole lot
+1:19
+faster so with that being said we're
+1:21
+going to be talking about how to build
+1:22
+these out in the next 10 or so minutes
+1:25
+let's dive into this right now the first
+1:26
+thing we're going to do is we're going
+Build: Generate Image
+1:27
+to go into OpenAI image generation API
+1:31
+on Google and we're going to click the
+1:32
+first link here which is going to take
+1:34
+me back to the exact page that I was
+1:37
+just on and so with this page we're
+1:40
+going to start with the first of three
+1:44
+different image generation models which
+1:46
+is just generating an image now just
+1:48
+before we talk about building this out
+1:49
+let's go over the next two which was the
+1:52
+second one was merging images together
+1:54
+and then the third one was being able to
+1:57
+essentially add in an image using a mask
+2:00
+so you can generate if I zoom in here
+2:02
+you can put in like a mask and be like
+2:03
+hey do you want to just add in a
+2:05
+flamingo to this pool because why not
+2:07
+and then you can go ahead and add in
+2:09
+that flamingo now we're not going to be
+2:11
+talking about this third example today
+2:12
+we're going to be talking about just the
+2:14
+first two because I didn't feel like it
+2:15
+was as applicable the third one so let's
+2:17
+get into this first uh image generation
+2:20
+prompt first now right away inside this
+2:23
+we need to hit image API over here and
+2:27
+then we have this code which is the
+2:29
+entire code to generate these images
+2:32
+programmatically using NAD so if you
+2:35
+come in here it's probably going to
+2:37
+start with Python code and we need to
+2:40
+change Python to curl and this contains
+2:43
+all the information we need to generate
+2:45
+these images inside NAD we just need to
+2:47
+hit this copy button here and go into
+2:50
+NAD now within NAD we can hit the plus
+2:53
+button here and we're going to type in
+2:55
+HTTP request now just before we build
+2:58
+this out I want to explain the
+3:00
+difference between an HTTP request and
+3:02
+all of the other modules here which is
+3:04
+essentially that the NAN team has gone
+3:06
+in and they've developed all of these
+3:08
+they've done the integrations for us
+3:10
+whereas with an HTTP request well you
+3:12
+have to kind of be the programmer it's
+3:13
+developed the whole thing yourself and
+3:15
+so we'll go into this HTTP request and
+3:18
+there's a lot of technical jargon here
+3:20
+but the cool thing about it is you have
+3:22
+this import curl function and you can
+3:24
+literally just copy exactly what we
+3:27
+pasted or copied from here into naden
+3:30
+and it's going to work outside the box
+3:32
+with the exception of this last line
+3:33
+here which we need to actually remove
+3:36
+and so inside naden if we kind of import
+3:39
+it it's going to draw an error here like
+3:41
+you can see on the side and so we'll
+3:43
+just go ahead and delete that last line
+3:45
+and then it should work out of the box
+3:47
+so we'll import this in and this will
+3:49
+generate the image pretty much
+3:51
+immediately for us couple things are
+3:54
+it's going to put in a prompt
+3:56
+automatically for us which says a
+3:59
+children's book drawing of a
+4:01
+veterinarian i don't know why I always
+4:03
+think that this is vegetarian every
+4:05
+single time I see veterinarian using a
+4:07
+stethoscope to listen to the heartbeat
+4:09
+of a baby otter that just like if I had
+4:11
+to say this like 10 times really really
+4:13
+fast I would struggle so much with that
+4:15
+i don't know why that seems so difficult
+4:16
+to me but anyways we're going to delete
+4:18
+this and I have this other prompt over
+4:19
+here and this prompt is creating a
+4:21
+stunning cinematic wide-angle shot of a
+4:24
+f futuristic workspace glowing with a
+4:26
+soft neon light um you can tell I wrote
+4:29
+this out just kidding i got chatb to
+4:31
+write that out for me and so that's more
+4:34
+or less it we could go ahead and test
+4:36
+this out but be actually before we do we
+4:39
+need to get this API key we need to do
+4:41
+two things so first is we need to get an
+4:43
+API key inside the platform.ai.com
+4:46
+com website we need to hit a setting the
+4:49
+settings up top here if you guys haven't
+4:51
+created an account this would be the
+4:52
+time where you have to create a free
+4:54
+account and inside API keys over on the
+4:58
+sidebar here we can go ahead and create
+5:01
+a unique key i'm going to call this
+5:03
+something original like test and I don't
+5:06
+know why I just I'm I always laugh at my
+5:09
+own jokes i feel like
+5:11
+probably less than 2% of people watching
+5:13
+this laughed at that but um yeah at
+5:15
+least at least I got a shock out of
+5:17
+myself okay sweet so we have the API key
+5:19
+we're going to paste it in here and
+5:20
+lastly we could execute the step but the
+5:23
+thing is is that before we actually take
+5:24
+that step and execute it for whatever
+5:27
+reason OpenAI has decided that you have
+5:30
+to verify your identity with them and
+5:32
+that means you have to upload a driver's
+5:33
+license because they need to make sure
+5:35
+that people are not using it for
+5:37
+malicious intent or in other words
+5:39
+they're probably actually just trying to
+5:41
+data farm you and get as much
+5:42
+information as possible and I tend to
+5:45
+think it's the latter so just make sure
+5:47
+to verify or else this will not work
+5:48
+this is the only downside of working
+5:50
+with this but once you've gone ahead and
+5:51
+verified sold off your firstborn child
+5:54
+and signed away all your rights you can
+5:55
+go ahead and execute this step here and
+5:57
+it should work outside of the box and
+6:00
+this will just take probably like 30
+6:02
+seconds to go ahead and generate and
+6:05
+then once it's generated we're pretty
+6:07
+much good to go for the first use case
+6:09
+here which is generating images okay and
+6:12
+we're good to go we can take a look at
+6:14
+the results here which gave us this base
+6:16
+uh
+6:18
+B64_JSON text this is the image we just
+6:21
+need to convert this into an actual
+6:23
+image and so how we do that is we're
+6:25
+going to pin the data up top here
+6:26
+otherwise it's going to ask us to keep
+6:28
+running this again to test it and we
+6:30
+will type in convert over here to a file
+6:33
+and move base 64 string to a file we can
+6:36
+drag this in and convert this string
+6:38
+over here into our image and let's take
+6:42
+a look at the results cool okay so
+6:45
+that's pretty interesting and so this is
+6:48
+just like one example of an image that
+6:50
+it could generate we can take a look at
+6:51
+a couple more images that it could
+6:53
+generate i got this earlier where I
+6:55
+typed in you know a hyperrealistic otter
+6:58
+with a orange scarf hug being hugged by
+7:00
+a cat which I think is really cool and
+7:02
+if we take a look at some of the past
+7:04
+images generated in their examples up
+7:06
+top here these are the other images that
+7:08
+you can generate as well now moving on
+Build: Combine Two Images
+7:10
+to the second example essentially what
+7:12
+we want to do is we want to combine two
+7:14
+images one being this product here and
+7:17
+another being this product here into a
+7:21
+gift basket containing the two of them
+7:23
+and so in other words it may it would
+7:26
+crop this turn it into a PNG and if
+7:28
+there was a background other than being
+7:30
+a white background it would remove you
+7:32
+know whatever background it is and then
+7:34
+be able to enter that into a gift basket
+7:36
+here and so I'm going to go back to the
+7:38
+original uh the original workflow that I
+7:41
+created here and this will be down below
+7:43
+in the description absolutely for free
+7:44
+if you guys choose to download this but
+7:47
+in a nutshell how this works is we have
+7:50
+two Google Drive folders here and this
+7:52
+was a bit complicated to set up uh it
+7:55
+seemed a lot more complicated than it
+7:57
+actually had to be but essentially we
+7:58
+had two images uh and we needed to
+8:01
+download them separately inside inside
+8:04
+uh NAN and then we are merging them
+8:07
+together so we have two two images
+8:09
+download both and only once they've both
+8:12
+been downloaded we merge them together
+8:14
+and we continue on you'll notice that
+8:16
+there's two items here which means that
+8:18
+we have one for the pictures one for
+8:20
+each picture but we don't want to
+8:22
+generate two images is we want to
+8:24
+generate one image with both pictures in
+8:26
+it and so first of all we need to merge
+8:29
+both of these together and how we do
+8:31
+that is through this aggregator and what
+8:33
+an aggregator does is it will it'll
+8:36
+essentially take two items or two
+8:38
+pictures and put it into a list so you
+8:40
+can think about a list of two images so
+8:43
+in other words we have one item and this
+8:45
+should really be called like list or
+8:47
+whatever but it's one list or one item
+8:50
+of two images here and one is called
+8:53
+data and the other is called
+8:55
+data_1 and then once we were able to
+8:58
+actually get a list of two images which
+9:00
+was actually unreasonably hard inside
+9:03
+NAD um and I had to format it this way
+9:06
+just to be able to get this to work
+9:08
+properly then we could use we could we
+9:11
+could have this HTTP request over here
+9:14
+to be able to generate these images now
+9:18
+I'm just going to go back into the
+9:19
+original setup here and use the the uh
+9:23
+code that it provided us with for this
+9:25
+example of editing an image and so we
+9:28
+just type we just select the image API
+9:31
+again and make sure that we set this to
+9:33
+curl and this particular curl request
+9:36
+here did not import well into NADN so if
+9:40
+we were to for instance add in another
+9:43
+HTTP request here and import that curl
+9:46
+paste it in it's going to give us a
+9:48
+whole boatload of errors just so so many
+9:51
+errors and so how I got over this
+9:55
+problem here was I just copied this into
+9:57
+chat GPT so I opened it up and I said
+10:00
+this um curl request is from the uh open
+10:06
+AI image
+10:09
+generator can I'm Oops and I don't want
+10:13
+to actually send that off right now i'm
+10:16
+trying to import this into NAN but it's
+10:21
+not working properly can you please
+10:24
+reformat this curl uh request and make
+10:31
+it usable in naden and we'll just pass
+10:35
+that in essentially you just want to
+10:37
+write out some particular prompt like
+10:39
+that and it will go ahead and generate
+10:41
+it or not um and we just have to we just
+10:46
+have to um essentially follow up with
+10:49
+this and just say please write me the
+10:53
+curl
+10:55
+um so that I can import it into an ADN
+10:59
+it must be in the format of a curl
+11:03
+request okay let's see if it gets it
+11:05
+this
+11:08
+time sweet so this looks good to me i
+11:11
+can go ahead and copy that and then
+11:13
+paste that in here and then it's just
+11:15
+going to give us all of the code to use
+11:17
+immediately and again the only thing
+11:19
+that we need to do is we just need to
+11:21
+import in the API over here which I've
+11:24
+gone ahead and done and then the second
+11:26
+thing is is that we just need to enter
+11:28
+in our two images now this is kind of
+11:30
+the body content that it gave us this is
+11:33
+form data and this is all boiler plate
+11:35
+but essentially we're defining the image
+11:37
+model here gpt- image one which is you
+11:40
+know what we're actually using over here
+11:42
+this is the image model and then we have
+11:44
+our particular prompt over here which is
+11:47
+to generate a photorealistic image of a
+11:49
+gift basket um and so on and so forth
+11:52
+even with text and all that kind of
+11:54
+stuff and then we're passing in the two
+11:56
+images both of these images are binary
+11:59
+files and they have the same name which
+12:02
+is image image with the curly or the
+12:04
+square braces on top of them and then we
+12:06
+just have to pass in the orange text on
+12:07
+both sides and what this is going to do
+12:10
+is be able to generate this image that
+12:13
+combines the two into one and I'm just
+12:16
+going to go ahead and generate this
+12:17
+image and sweet so as this is just
+12:19
+wrapping up I'm going to show you the
+12:20
+first image over here this kind of you
+12:23
+know is grainy pixelated you almost
+12:26
+can't even like re you can't really read
+12:27
+anything that's going on the second one
+12:30
+is pretty good it's still a bit
+12:32
+pixelated down here but overall it's
+12:34
+like somewhat legible and let's take a
+12:36
+look at the image that it generated over
+12:39
+here so we'll view this and zoom in so
+12:42
+first of all I think this is like
+12:44
+incredible that it seemed to upscale
+12:46
+this image here like I I mean like let's
+12:48
+just first of all compare these two
+12:50
+images side by side this is what it
+12:53
+started with and then it upscaled it
+12:55
+into something that absolutely looked
+12:56
+beautiful and it actually got the text
+12:59
+mostly right i guess is like maybe your
+13:02
+brand or something like that shower um
+13:06
+gel okay yeah it it looks like it
+13:08
+screwed up that text here but still I
+13:11
+think the text is better than you know
+13:13
+this I guess wicked and lush it's pretty
+13:15
+hard to read but it did a really good
+13:17
+job and then we have this over here
+13:20
+dream cream body lotion and then it
+13:23
+looks like the the uh Yeah that looks
+13:26
+like another language or just AI
+13:28
+generated but um yeah so obviously it's
+13:31
+not perfect with the text yet that is a
+13:34
+downfall of this but you can see that it
+13:36
+does say relax and unwind down here and
+13:38
+it's very good at generating that in my
+13:40
+opinion and overall super super long way
+13:44
+that this super far away that this
+13:46
+technology has come to think that we've
+13:48
+created a um image generation software
+13:51
+that's able to merge multiple images
+13:53
+into a completely uniquely generated
+13:56
+image in itself i think is super
+13:58
+freaking cool and so that is it for this
+14:01
+video guys i think that this technology
+14:03
+has come a long way if you guys liked
+14:05
+this video today please do me a favor
+14:06
+and hit that subscribe button really
+14:08
+helps me out and if you like content
+14:10
+like this I'm sure you're going to like
+14:12
+all the other videos that I publish on a
+14:13
+weekly basis as well and if you guys
+14:15
+want to take AI automations to the next
+14:17
+level highly recommend taking a look at
+14:19
+my school community over here this is
+14:21
+mainly to help people accomplish one of
+14:23
+two goals or two goals firstly it's to
+14:26
+help people automate their entire
+14:27
+business and I just give you the exact
+14:29
+blueprints and and templates and
+14:32
+everything that I use to scale my
+14:33
+business and ultimately replace myself
+14:35
+from it then it's also for people that
+14:37
+are looking to create an AI automation
+14:39
+agency give you the exact road map that
+14:41
+worked for me so that you can just
+14:42
+bypass all the time and find clients
+14:44
+close them all of that kind of stuff
+14:46
+thank you guys so much for watching this
+14:48
+video hope you have a lovely day and
+14:49
+I'll see you in the next one bye-bye

@@ -1,0 +1,1708 @@
+
+https://www.youtube.com/watch?v=k3mcttDLJB4
+
+This n8n AI Voice Agent Will Call Anyone For You (100% automatic)
+
+Jono Catliff
+68.8K subscribers
+
+Subscribed
+
+777
+
+
+Share
+
+31,371 views  Feb 19, 2025
+🌍 COMMUNITY 
+https://www.skool.com/automatable/about
+
+📝 BLUEPRINTS
+https://jonocatliff.gumroad.com/l/uddifh
+
+📚 SUMMARY
+In this video we go over how to create a voice AI call using n8n and Vapi
+
+📣 SOCIAL MEDIA
+• Instagram →   / jono_catliff  
+• TikTok →   / jonocatliff  
+• LinkedIn →   / jonocatliff  
+• X →   / @jonocatliff  
+
+📺 RELATED VIDEOS
+• Full crash course on Make.com →    • Make.com Basics: How To Automate Anything ...  
+• Full crash course on n8n →   • Master n8n in 2 Hours: Complete Beginner’s...  
+• 11 Favourite Make.com automations →    • 11 Make.com Automations You NEED To Start ...  
+• 12 Favourite n8n automations →    • The Only 12 n8n AI Automations You'll Ever...  
+
+🎯 1:1 CONSULTING
+Book a time → https://jonocatliff.com/consultation
+
+🚀 AUTOMATION AGENCY
+Get help with your business → https://www.automatable.co
+
+💼 CAREERS
+Work with me → https://jonocatliff.com/careers
+
+🔗 LINKS (some of these make me money - thanks in advance!)
+• n8n → https://jonocatliff.com/n8n
+• Make.com → https://jonocatliff.com/make
+• Go High Level → https://jonocatliff.com/gohighlevel
+• Apify → https://jonocatliff.com/apify
+• Skool → https://jonocatliff.com/skool
+• Zapier → https://jonocatliff.com/zapier
+• PandaDoc → https://jonocatliff.com/pandadoc
+• Apollo → https://jonocatliff.com/apollo
+• ManyChat → https://jonocatliff.com/manychat
+• Vapi → https://jonocatliff.com/vapi
+• PhantomBuster → https://jonocatliff.com/phantombuster
+• ClickUp → https://jonocatliff.com/clickup
+• ElevenLabs → https://jonocatliff.com/elevenlabs
+• Upwork → https://jonocatliff.com/upwork
+• Instantly.ai → https://jonocatliff.com/instantly
+• Airtable → https://jonocatliff.com/airtable
+
+👋  ABOUT ME
+Hey everyone, my name is Jono. I run a 7-figure service business that offers DJ, photo, video services (#1 largest in Canada), and spent years figuring out how to automate every part of it (and hired the roles that I couldn't). Conservatively, I used to work 80+ hours per week, before sunrise till long after sunset; missing gatherings, family events and everything in between. Through automation though, I was able to replace my job. My goal is to help share what worked for me, in a dream of helping others find true success with their passion.
+
+Please subscribe, like and comment below if you have any questions! Thank you 😊
+
+⌛ TIMESTAMPS
+0:00 Intro
+0:47 Demo
+8:27 Main AI agent
+13:23 Find your google contacts
+14:04 Finding businesses on Google Maps
+20:35 Voice AI agent
+27:42 Conclusion
+
+
+Intro
+0:00
+what is going on guys in this video we
+0:02
+are building out a voice AI agent that
+0:04
+is capable of literally calling any
+0:06
+single person you want it to whether
+0:08
+it's a friend or whether it's a business
+0:10
+that you're finding online automatically
+0:12
+we're going to be doing that and this
+0:13
+video is for you just before we get into
+0:16
+it guys because we will be reviewing
+0:17
+this software we're going to be building
+0:19
+it out together I just want to stress
+0:21
+the limitations it's nowhere near
+0:23
+perfect and if you do decide to use
+0:24
+technology like this just make sure to
+0:26
+test out make sure you're super happy
+0:27
+with it but with that being said let's
+0:29
+dive into how this works we are using
+0:31
+nadn if you guys haven't done so already
+0:32
+you can go ahead and get a free trial
+0:34
+right now and as always all of the
+0:37
+blueprints in these videos are
+0:38
+absolutely for free you can download
+0:40
+them in the description down below come
+0:42
+into your nadn account hit the three
+0:44
+dots and import them from the file that
+0:46
+you receive let's get into how this
+Demo
+0:48
+actually works so that you can see for
+0:49
+yourself whether this is something that
+0:51
+is interesting to you or not so the
+0:53
+first thing I'm going to do is I'm
+0:54
+actually going to send a message to this
+0:57
+hey can you please find me five rest
+0:59
+resturants for Indian food tonight in
+1:02
+Montreal that I can go to with my
+1:05
+friends and so it's going to essentially
+1:07
+send that off and we can see that it's
+1:09
+firing off it's taking that audio
+1:10
+message transcribed that message first
+1:12
+thing that's happening is we push that
+1:14
+over to the agent it has used chat gbt
+1:18
+here as like a reasoning model to
+1:19
+understand what it is I'm looking to do
+1:21
+and the first thing it's going to do is
+1:22
+just web scrape a bunch of results off
+1:24
+of Google Maps for me and then it's
+1:26
+going to spit that back out to the AI
+1:28
+agents to understand okay send this back
+1:30
+to jonal because he wants to take a look
+1:31
+at the results from what we've gathered
+1:34
+so far and so essentially it's going to
+1:36
+take all five of those results and then
+1:38
+it's going to send it back to us via
+1:40
+Telegram and here we go here are five
+1:42
+Indian restaurants in Montreal that you
+1:43
+can consider for tonight and it just
+1:45
+goes through all of them right and so
+1:47
+essentially I can just say hey you know
+1:49
+what I'm going to pick number
+1:50
+two and we can go ahead and get the
+1:53
+voice AI agent to give it a call hey
+1:56
+number two Plateau cine Indian sounds
+1:59
+good to me I'd like to book a table for
+2:00
+2 tonight between 5:00 to 9:00 p.m.
+2:03
+ideally it' be beside a window and if
+2:07
+they don't have any availability for
+2:09
+tonight I'm just going to cancel and
+2:11
+look somewhere else thanks and so we're
+2:13
+going to send off this message the first
+2:14
+thing it should do is it should just
+2:16
+double check the details with us and if
+2:18
+everything looks good then we can
+2:20
+confirm it and send it off if we already
+2:23
+provide all the details like a fall back
+2:25
+plan and all that kind of stuff it's
+2:26
+going to automatically schedule that
+2:28
+call which you can see on my phone here
+2:30
+so I'm going to go ahead and pick up
+2:32
+hello hello I would like to make a
+2:35
+reservation okay perfect for how many
+2:38
+people I'd like to reserve a table for
+2:41
+two people okay awesome and what time
+2:43
+would you like to come in
+2:44
+at anytime between 5: to 900 p.m. works
+2:48
+for me okay we have availability at 7:00
+2:51
+p.m.
+2:53
+tonight that's great I'll take the 7 P.M
+2:55
+slot and I also request a table by the
+2:58
+window if possible uh we don't have a
+3:00
+table by the window is that a deal
+3:02
+breaker for
+3:04
+you no that's not a deal breaker I'll
+3:07
+take the reservation at 700 p.m. without
+3:09
+the window table okay and can I get can
+3:11
+I get a name
+3:13
+please my name is jonno okay and can I
+3:16
+get a number to call you back
+3:18
+at you can reach me at 60412
+3:23
+34567 okay awesome we'll see you
+3:26
+tonight thank you so much bye looking
+3:29
+forward to it sounds good me too bye-bye
+3:32
+and so there we go it's just gone ahead
+3:34
+and it's given that restaurant to call
+3:37
+and then it's going to essentially grab
+3:39
+all the data from that call and then if
+3:41
+everything looks good to go it's going
+3:42
+to spit it back out to chat GPT which is
+3:44
+going to reason and understand what it
+3:45
+is we have to do next send us a message
+3:47
+with the confirmed booking and it's also
+3:50
+going to add that to my calendar as well
+3:52
+so that I can have that to view so let's
+3:54
+go back and see that our reservation at
+3:57
+this restaurant has been successfully
+3:58
+made here are the details everything
+4:00
+looks good to go and we can also take a
+4:02
+look at the calendar as well so I'm
+4:04
+going to go ahead and open up my
+4:05
+calendar
+4:09
+here and we can see a dinner reservation
+4:12
+for tonight at 7:00 p.m. so that's
+4:14
+pretty cool right and the thing is is
+4:16
+that this also has a fallback value just
+4:18
+in case like for example you know
+4:20
+they're they're like hey we're not
+4:21
+actually available it's like no problem
+4:23
+we're just going to look somewhere else
+4:24
+and and that's good to go another thing
+4:26
+it can do is book other things other
+4:28
+than just restaurants for example
+4:29
+example right so we'll go ahead and
+4:31
+we'll try this out with a hair
+4:32
+appointment this time hey I'd like to
+4:35
+book a hair appointment and so let's
+4:37
+just give it like a really basic prompt
+4:39
+here where it's like not really going to
+4:43
+give it enough information it's going to
+4:45
+send a message back could you please
+4:46
+provide more details to the about the
+4:48
+hair appointment specifically the Daye
+4:49
+and time the service fallback plan all
+4:52
+that kind of
+4:53
+stuff I'd like to book a hair
+4:55
+appointment in Montreal can you give me
+4:57
+a couple options to choose from and so
+5:00
+first thing is is I don't even know what
+5:02
+the hair appointments or hair hair shop
+5:05
+it's going to recommend so let's go
+5:07
+ahead and let's scrape Google and let's
+5:09
+bring back some results right because I
+5:10
+want to just make sure that I get to
+5:12
+choose something that seems you know
+5:14
+somewhat good to me and so we're going
+5:15
+to go ahead we're going to scrape Google
+5:17
+and we're going to do the same process
+5:18
+again find some barber shops and just
+5:20
+keep in mind like we're doing this for
+5:22
+restaurants we're doing this for hair
+5:23
+salons we can do this for pretty much
+5:24
+any other service out there the only
+5:26
+thing is is that obviously you're going
+5:27
+to have to spend some time perfecting
+5:29
+this because every single service might
+5:31
+be slightly different and it's just
+5:32
+important to run some tests to make sure
+5:34
+that you you know get it up and running
+5:35
+and you're happy with the results before
+5:37
+you actually push something like this
+5:39
+live and so we're just waiting for it to
+5:41
+synthesize all those results here which
+5:43
+it should bring us back five and let's
+5:45
+take a look so we have five different
+5:47
+places and I'm just going to say like
+5:49
+for example number four um is uh closest
+5:52
+to my house and we can go ahead and book
+5:55
+that can you please book number four
+5:57
+studio Fior and I'm available anytime
+6:01
+after 5:00 p.m. this week and that's
+6:05
+pretty much it it's a hair appointment
+6:07
+for uh a man's haircut and so we can go
+6:11
+ahead send that off and now we're just
+6:13
+going to receive that response and then
+6:15
+start this workflow and let's see okay
+6:17
+it just go it goes ahead and and
+6:19
+schedules the call
+6:21
+immediately
+6:24
+hello hello I would like to book a hair
+6:26
+appointment okay for what time
+6:31
+jono is available anytime after 5:00
+6:33
+p.m. this week starting from February
+6:35
+17th do you have any availability during
+6:38
+those times um we don't have
+6:40
+availability this week unfortunately but
+6:42
+maybe next
+6:45
+week that's okay thank you we will
+6:48
+follow up next week for an appointment
+6:51
+okay sounds good well then just give us
+6:52
+a call back
+6:53
+then we'll do we'll do thank you okay
+6:57
+thanks very much have a nice day bye-bye
+7:00
+you're welome and so that's kind of like
+7:02
+the fallback right where it's like hey I
+7:05
+said anytime this week and it recognizes
+7:08
+that they don't have availability uh
+7:10
+this week they only have availability
+7:12
+next week so the fall back value is you
+7:14
+know don't move forward with it just
+7:15
+schedule another call or hey we'll reach
+7:17
+back out again and so that's kind of how
+7:19
+these systems work so while this
+7:21
+technology is super super freaking cool
+7:24
+it definitely comes with a whole host of
+7:26
+limitations the thing is is it's not
+7:28
+perfect out of the box espe especially
+7:29
+for an implementation like this just
+7:31
+because if you're trying to call all
+7:33
+these different service providers it
+7:35
+might not have all the information it
+7:36
+needs unless you test it out super
+7:38
+rigorously what I mean by that is take
+7:40
+calling a restaurant for example if you
+7:42
+don't tell it how many people you want
+7:43
+sitting at the table it's not going to
+7:45
+know if you want two or four or eight or
+7:47
+whatever right so those are kind of the
+7:49
+limitations that come along with this
+7:51
+technology we're obviously going to be
+7:52
+building in some fallbacks and making
+7:54
+sure that we can accommodate for as many
+7:56
+different circumstances as possible but
+7:58
+just know that is not probably going to
+8:00
+work 100% of the time all right guys so
+8:02
+before we get into building this I just
+8:04
+want to point out I did release my
+8:05
+community a few days ago so if you guys
+8:07
+are interested in learning things like
+8:09
+AI agents automation or AI this is
+8:11
+probably the place for you there's over
+8:12
+a 100 unreleased videos on this platform
+8:16
+tons of blueprints that I haven't
+8:17
+released either as well as a community
+8:19
+of like-minded individuals and access to
+8:21
+me on group calls 5 days a week pretty
+8:23
+much so let's get into building this out
+8:25
+so the first thing is is this is going
+Main AI agent
+8:27
+to be a highle overview I'm not going to
+8:29
+be getting into the nitty-gritty of how
+8:30
+to build this out I just want to kind of
+8:32
+showcase what I built so that you guys
+8:33
+can understand more or less how to work
+8:36
+through this yourself so the first thing
+8:37
+is is we're using telegram okay and
+8:39
+telegram is just the trigger it's
+8:41
+essentially receiving messages right so
+8:43
+anytime we receive a message from
+8:45
+telegram this is going to start right
+8:47
+and so essentially you don't have to use
+8:49
+telegram you can use tons of other
+8:51
+things as well you can use twio it's
+8:53
+like a SMS platform you can also use
+8:55
+WhatsApp as well and obviously that's
+8:58
+super popular the only reason why I did
+9:00
+end up choosing telegram was just
+9:02
+because it's just so freaking simple to
+9:04
+set up and get going and it's great to
+9:06
+to test these things out and so the next
+9:08
+thing is is that we have a switch
+9:09
+statement here and a switch statement is
+9:11
+just checking hey is this an audio
+9:13
+message or is this a text message and if
+9:15
+it's an audio message we just
+9:16
+essentially have to download that file
+9:18
+and then we have to transcribe it and
+9:20
+once we transcribe that um then we turn
+9:22
+that into text right so there's this is
+9:24
+kind of boilerplate like there's really
+9:26
+nothing to do here other than just add
+9:28
+in uh open app module and put in
+9:31
+transcribe and then it's just going to
+9:32
+take the file and then it's going to
+9:34
+turn that into text right and the cool
+9:36
+thing is is no matter what it is whether
+9:39
+it's an audio file or a text we're just
+9:40
+kind of merging it together so it's like
+9:41
+hey these paths both converge here so
+9:44
+we're just taking the text out of the
+9:45
+audio file or the text of the message
+9:47
+and we're just merging that into one
+9:49
+field that we use for the actual message
+9:52
+and this field is just json. text so
+9:55
+whether it's an audio message or text
+9:57
+we're merging it together to use here
+9:58
+and essentially have an have our AI
+10:00
+agent here with a nice little prompt
+10:03
+this prompt is just essentially saying
+10:05
+hey you are very helpful voice AI agent
+10:07
+that excels at calling people on the
+10:09
+behalf of your user they'll either have
+10:10
+to find people with their personal
+10:12
+contact tools or find their phone number
+10:14
+on Google Maps and then essentially just
+10:16
+lists out the tools that we're using
+10:17
+here and the rules that needs to follow
+10:20
+in order to do things right so there's
+10:21
+an order of operations so for example
+10:23
+it's like hey if we want to find
+10:25
+businesses online to call because I want
+10:27
+to book a dinner tonight well we
+10:29
+actually got to search up a couple
+10:30
+businesses so that we actually have the
+10:32
+contact information that people to call
+10:33
+and then once we've successfully had a
+10:36
+call then let's go ahead and book an
+10:37
+appointment on our calendar right and so
+10:40
+this is just kind of like a you know I'm
+10:41
+just playing around with this and I just
+10:43
+wanted to to to throw something together
+10:45
+that's you know not 100% bulletproof but
+10:47
+like a good starting point for you guys
+10:49
+to take away from I think another
+10:51
+recommendation that I have is at this
+10:53
+point in time just taking a look at your
+10:54
+availability right the assumption that I
+10:55
+built this with is that you probably are
+10:58
+booking something at a time that you are
+10:59
+free but you can also take a look at
+11:01
+your availability and just make sure
+11:03
+that hey you know before before we book
+11:05
+this um you know we're not going to call
+11:08
+and so you can add in another module
+11:09
+here being like check my calendar see if
+11:11
+I'm available during that time so if
+11:13
+you're like hey booked dinner tonight at
+11:15
+5 to 7 but you actually have calls
+11:17
+tonight at 5: to 7 you probably don't
+11:18
+want to book it right and that's
+11:19
+something that this a agent can easily
+11:21
+handle and so um essentially you just
+11:24
+added another tool and let's kind of
+11:26
+break this AI agent down so there's
+11:28
+three parts to it this AI agent has a
+11:31
+chat Model A Memory and Tool so chat
+11:33
+model you can think about it like a
+11:35
+miniature chat gbt inside this AI agent
+11:38
+it's the brains the logic the reasoning
+11:41
+behind this AI agent so essentially when
+11:43
+you send a message the first thing it
+11:45
+has to do is actually understand what it
+11:47
+is you're saying and that's what chat
+11:48
+gbt does and then chat gbt will give
+11:50
+instructions over to the tools to be
+11:52
+like hey update the calendar or check
+11:54
+the calendar or find uh a business
+11:57
+online to to to web scra or call or
+12:00
+whatever right so it's going to give
+12:01
+commands to the tools to use and the you
+12:05
+you have a lot of options here I just
+12:06
+use like um Chad gbt but you can have
+12:10
+access to whatever um AI model that you
+12:12
+want to have access to the next thing
+12:13
+here is window buffer memory what window
+12:16
+buffer memory does is essentially just
+12:18
+you know you can think of it like chat
+12:20
+gbt it like just remembers past
+12:22
+conversations or past um messages in the
+12:25
+chat right so you can ask follow-up
+12:26
+questions and it'll actually remember
+12:28
+hey this is a follow-up question that
+12:29
+depends on the question that came before
+12:31
+this right so for example if I say hey
+12:33
+can you please
+12:35
+um schedule a or call this hair
+12:38
+appointments and it says sure no problem
+12:40
+can you give me a time window you're
+12:42
+available at and you say 5 to 7 it's
+12:44
+going to remember not only 5 to S but
+12:46
+that you actually wanted to call that
+12:47
+hairdresser and then it'll go ahead and
+12:49
+complete that task for you so right now
+12:51
+the default is just like five messages
+12:53
+that is remembering but you can add as
+12:55
+many in here as you want um apart from
+12:57
+that we have the output here which is
+12:59
+actually sending messages back so you
+13:00
+can kind of think about this as a
+13:02
+three-part process where we're first of
+13:04
+all getting the input which is the
+13:05
+message we're sending it back as an
+13:07
+output and then we actually have the
+13:09
+system that's handling the requests here
+13:11
+and so we have we've gone over the chat
+13:13
+model which is the brains we've gone
+13:14
+over the memory which remembers the
+13:16
+context of the conversation and then we
+13:17
+have these cool Nifty little tools um
+13:20
+the first one I want to kind of go over
+13:21
+is just the personal contact finder so
+Find your google contacts
+13:23
+you can essentially find contacts within
+13:26
+your Google calendar or sorry your your
+13:28
+Google contacts and so you can pull out
+13:30
+things like phone numbers and emails and
+13:32
+all that kind of stuff so in this case
+13:33
+we could pull out a phone number give
+13:35
+our friend a call if you want to do that
+13:36
+the second thing is is that we're using
+13:38
+Google uh maps and just sorry before I
+13:41
+move on here with Google contacts we're
+13:43
+just essentially um asking it to return
+13:46
+back phone numbers names email addresses
+13:49
+and what we're doing is we're passing in
+13:50
+a name and then as long as that name is
+13:52
+actually in your Google contacts then it
+13:54
+will go ahead find that person pull them
+13:56
+back and then deliver that phone number
+13:58
+that name that email address and that
+14:00
+phone number we would use to go ahead
+14:02
+and call them now the next thing here is
+Finding businesses on Google Maps
+14:05
+um web scraping Google Maps right which
+14:08
+is the main Crux of this video and so
+14:10
+what is going on in this simple workflow
+14:13
+is we have the first trigger here which
+14:15
+is saying hey this is executed from
+14:17
+another workflow what that practically
+14:19
+means and what all of these mean because
+14:21
+they're all executed by the separate
+14:23
+workflow it's just saying hey the
+14:25
+starting point of this workflow is when
+14:28
+this AI agent the main AI agent calls it
+14:31
+so if it's like hey let's go find Google
+14:33
+Maps it's going to reference this tool
+14:35
+and that's going to start this
+14:36
+particular workflow and so there's
+14:38
+really three things in here there is a
+14:41
+HT there's two HTTP requests and there's
+14:44
+an aggregator at the end here so let's
+14:46
+kind of go over this an HTTP request is
+14:50
+just essentially the same thing as
+14:52
+Google contacts here or Google Calendar
+14:56
+all of these are HTTP requests if I had
+14:58
+a tool here here um Google Drive in an
+15:00
+HTTP request Google Calendar Google Docs
+15:03
+all of these are the only difference
+15:05
+between an HTTP requests and these is
+15:07
+that these have a native integration
+15:09
+into nadn they they already built in the
+15:11
+nadn team came in here and they they
+15:13
+they integrated their software into
+15:15
+these tools but there's a lot of tools
+15:17
+that they haven't covered right now they
+15:18
+have about 400 Integrations and there's
+15:22
+thousands of applications that you can
+15:23
+connect into and how you do that is
+15:26
+through something called an HTP request
+15:28
+and so essentially more or less in a
+15:30
+nutshell what we are doing in this um
+15:33
+HTTP request is we're just web scraping
+15:36
+using appify now appify is like a web
+15:40
+scraping platform for people that don't
+15:42
+need to learn how to program and the
+15:45
+cool thing is is you don't have to
+15:46
+reinvent the wheel here there's tons of
+15:48
+um programmers that have built out
+15:50
+working solutions that just work and so
+15:52
+we're using something like a Google Maps
+15:53
+extractor which just essentially takes
+15:56
+um listings off of Google Maps so if I
+15:58
+do like hairdresser in
+16:02
+Toronto it's going to give me back this
+16:04
+list of hairdressers and essentially
+16:06
+what this is doing is it's going and
+16:08
+it's pulling off five hairdressers for
+16:11
+you and then it's grabbing things like
+16:13
+their contact information their phone
+16:15
+number their address all that kind of
+16:17
+stuff so that you can go ahead and give
+16:19
+those people a call right and so that's
+16:23
+in a nutshell what we're trying to do
+16:24
+there's a couple um parameters that we
+16:27
+just have to play around with in here um
+16:29
+let's go through this one by one we're
+16:31
+sending off a post request which is just
+16:34
+a method it's just jargon for saying hey
+16:36
+we're sending data from naden to appify
+16:40
+and appify is going to take that data
+16:42
+and it's going to webs scrape Google
+16:44
+Maps using this particular or another
+16:47
+actor right so all this is doing is it's
+16:49
+calling apify to then go ahead and web
+16:53
+scrape hairdressers or restaurants off
+16:56
+of Google Maps here right so that you
+16:58
+don't have to reinv the wheel and do it
+16:59
+yourself and so we have a URL here this
+17:01
+is just from their API documentation um
+17:04
+pretty much this is plug andplay you
+17:06
+don't even have to change anything other
+17:08
+than this ID here which is just the
+17:09
+actor so if you come into appify and you
+17:13
+go into any of these actors they have a
+17:15
+store here there's tons and tons and
+17:17
+tons if we just go into Google Maps here
+17:19
+I think I'm using specifically this one
+17:22
+um and yeah you can just grab the ID
+17:24
+from the URL up top here and they all
+17:26
+have different URLs you can just plug it
+17:28
+in here and you're good to go and you
+17:29
+can web scrape whatever actor it is that
+17:31
+you want and then more or less you just
+17:33
+have to include these headers here this
+17:35
+is nothing revolutionary this is just
+17:37
+documentation from their site saying hey
+17:39
+in order to have an HTTP request in
+17:42
+order to actually send data to scrape
+17:44
+you need to include this so this is
+17:45
+boilerplate I've just added in here the
+17:47
+only other thing you need to do is
+17:49
+include an API and you can just find
+17:51
+that by going to settings and going to
+17:53
+apis here and then you can just grab
+17:55
+your API connected in and you're good to
+17:57
+go and then more or less other than that
+17:59
+you just have this body here and really
+18:02
+there's there's nothing else that you
+18:03
+have to change I mean this just works
+18:05
+out of the box essentially we're just
+18:06
+putting in a city country code language
+18:09
+location um how many locations do we
+18:12
+want to crawl I just put a maximum of
+18:14
+five here or so I'm just saying even if
+18:16
+you said like a 100 it's just going to
+18:18
+cap you at five regardless and so that
+18:21
+way you're not like using a ton of data
+18:23
+or or whatnot you can't get started with
+18:25
+appify for free and you have $5 to uh
+18:28
+use you can see $5 here but you know
+18:31
+obviously with this kind of
+18:33
+stuff um you you still get a lot of um
+18:36
+credits here because you could
+18:37
+essentially do this 800 times without
+18:39
+paying a dime and this resets every
+18:41
+month but you don't want to web scrape
+18:43
+over that and then not be able to use
+18:44
+this in a month so um yeah I'm just
+18:46
+limiting this to five and then we're
+18:48
+just putting in a search string here
+18:49
+which is like Indian restaurants in
+18:52
+whatever City and so that's more or less
+18:55
+it for this particular Json file and
+18:57
+then it's just going off scraping now
+19:00
+while this is scraping this can take a
+19:01
+bit of time we do have this um we do
+19:04
+have this Nifty little line here which
+19:07
+is wait for finish this is going to wait
+19:09
+300 seconds for it to finish before it
+19:11
+continues on to the next module here
+19:14
+that's really important because web
+19:15
+scraping does take time and if you
+19:17
+didn't put that it would just instantly
+19:19
+go over to the next module without
+19:20
+receiving the results back and then this
+19:23
+second HTTP request essentially just
+19:25
+grabs the results from the web scrape
+19:28
+and we we just do that through this
+19:30
+default data set item which we receive
+19:32
+from the previous module that first HTTP
+19:35
+request and then pretty much that's
+19:38
+that's really it um oops I think I just
+19:41
+clicked something there and uh totally
+19:43
+changed this so I'm just going to I'm
+19:45
+just going to refresh the page here and
+19:47
+then pull it back up and so everything
+19:49
+else is pretty much the same we're just
+19:50
+adding the API key and this is good to
+19:52
+go and this is a get request which just
+19:54
+means we're receiving data back we're
+19:56
+pulling data from appify we're pulling
+19:57
+the results in and then we're just
+19:59
+listing these all in through an
+20:01
+aggregator so if it gives us a list of
+20:03
+10 we're just saying hey we're merging
+20:05
+all these 10 into a list so that we can
+20:07
+send back that list so if we look back
+20:09
+we're just sending this list right so
+20:11
+instead of sending the messages one at a
+20:13
+time because if you didn't do the
+20:15
+aggregator you get message for deno's
+20:17
+hair stylist and then Beauty glow and
+20:20
+then sellon trust me and so on and so
+20:22
+forth agor merges them into one message
+20:24
+and so that's essentially it and the
+20:26
+last thing that I want to go over in
+20:28
+this is more or less just this voice AI
+20:30
+agent which is the main part of this
+20:32
+video and so let's kind of break down
+20:34
+how this works and so again it's being
+Voice AI agent
+20:37
+called by the main AI agent here and
+20:41
+what we're doing is we're going to
+20:43
+create a prompt using open aai and so
+20:47
+there's a lot of different things going
+20:48
+on here I have a system user and
+20:50
+assistant message in here you can think
+20:53
+about the system message as just context
+20:55
+you can think about the user message as
+20:56
+your input and you can think up the
+20:58
+assistant message as the output so you
+21:01
+have input coming in output going out
+21:03
+and then context for it to understand
+21:05
+what's going on and so with the context
+21:06
+we just saying you're an intelligent bot
+21:08
+that's going to create a voice AI um
+21:10
+agent and here's some rules to to follow
+21:13
+right you're supposed to sound happy and
+21:15
+nice not beat and try and be as detailed
+21:17
+as Pro possible and create a backup plan
+21:20
+and all that kind of stuff and then with
+21:23
+the actual system user message or sorry
+21:27
+the user message which is the input
+21:29
+we're providing all the details and so
+21:31
+this is really where the prompting comes
+21:33
+into play because we're essentially
+21:35
+saying creative appy opening line and
+21:37
+call Prompt for this type of call and we
+21:39
+give all the details we give the date
+21:40
+the start time we give uh we mentioned
+21:43
+that these are just ranges to play
+21:44
+around with but they're not absolutes um
+21:47
+or sorry it's not like you have to book
+21:49
+from the start to the end time but
+21:50
+anytime within that time range and then
+21:53
+we mentioned the first message any
+21:55
+special requests what the goal of the
+21:57
+call is the name of the place you're
+22:00
+calling whether it's a friend or a
+22:02
+business the fallback plan context all
+22:05
+of that kind of stuff and then we give
+22:06
+additional rules right so um yeah that's
+22:10
+just essentially more or less it this is
+22:12
+something that you definitely have to
+22:14
+work on you definitely definitely have
+22:16
+to spend the majority of your time just
+22:18
+here going back and forth making sure
+22:20
+that this prompt is as good as possible
+22:23
+so that you can structure your calls in
+22:25
+the best way again like if you're adding
+22:27
+on an addition service I would
+22:29
+definitely test this out multiple times
+22:31
+until you're incredibly happy with it
+22:33
+before pushing it live this is just like
+22:35
+a really good starting point for you
+22:38
+guys to take and go on and do whatever
+22:40
+it is that you wish to do with it but
+22:42
+yeah essentially this is more or less
+22:44
+the um the prompt that I had and then
+22:47
+all we're doing here is we're just
+22:49
+pushing that into another HTTP request
+22:51
+which connects in vapi now vapi is just
+22:55
+essentially an AI platform for calling
+22:58
+right so you can think about it for as
+23:00
+voice AI for developers there's really
+23:02
+not that much developing that you're
+23:03
+going to have to do in here because I've
+23:04
+pretty much done most of it but of
+23:06
+course you can add on as much as you'd
+23:09
+like here so the first thing is is again
+23:11
+it's a post request for sending data to
+23:13
+vapi and we're calling it based on this
+23:15
+URL this is essentially a URL saying hey
+23:17
+we're going to initiate a call and we
+23:21
+have some boilerplate headers here we're
+23:23
+just authenticating our account via our
+23:25
+API and then we have the content type
+23:27
+application Json nothing you have to
+23:30
+change here other than this API key here
+23:32
+and then you're good to go and then we
+23:34
+just have the Json body right which is
+23:37
+more or less essentially just saying hey
+23:40
+this is the information we're going to
+23:41
+send a vapy so that we can structure
+23:42
+this call properly and so we have a
+23:44
+couple things here first thing is is
+23:46
+that we have the phone number ID and so
+23:50
+with this phone number ID all we're
+23:51
+doing is we're coming into phone numbers
+23:53
+you should be able to create a phone
+23:54
+number for free in vapy and then it just
+23:56
+has this ID here that you uh that you
+23:59
+that you get now if you're unable to get
+24:03
+a phone number in vapy for whatever
+24:05
+reason you can also use twilio and too
+24:07
+has a free trial where you can just get
+24:09
+a number and then automatically import
+24:11
+that into vapi as well so this is what
+24:14
+I'm doing as well and so that's a great
+24:17
+option too so once you go ahead you get
+24:20
+your phone number you can just put in
+24:21
+your ID here the next thing is is that
+24:23
+you're going to need an assistant ID and
+24:25
+so you can just go ahead and simply
+24:26
+create an assistant by going into build
+24:28
+assistants and create an assistant and
+24:30
+then you're going to get that assistant
+24:31
+ID here too and you can paste that
+24:34
+assistant in this is going to be the
+24:35
+phone number that you are actually going
+24:37
+to want to call and then we have some
+24:40
+additional information here it's an
+24:42
+outbound call we're just specifying that
+24:43
+nothing has to change here and then we
+24:45
+have information about this AI assistant
+24:47
+so um you can change the voice right and
+24:50
+they have an entire library on different
+24:53
+voices that you can use down in the
+24:55
+voice Library here not all of these
+24:57
+you're going to be able to access on a
+24:58
+free plan but the one that I liked that
+25:01
+worked well was play HT and then you can
+25:04
+just take any of these names and just
+25:05
+make sure to uh to put it in lowercase
+25:08
+down here and the voice ID is
+25:11
+essentially just the person's name right
+25:13
+so Samuel or lowercase I'm using will
+25:15
+here lowercase and the pro provider is
+25:19
+essentially this play HT I hope I'm
+25:21
+saying that right I I doubt I am but uh
+25:23
+anyways yeah so that's the voice and
+25:26
+then first message mode is just just
+25:28
+essentially saying it's going to wait
+25:29
+until the person picks up and says
+25:31
+something and then there's no background
+25:33
+noise we're passing in the first message
+25:35
+we're passing this in from chat gpt's
+25:38
+prompt so it's going to say hey I'm
+25:40
+calling tandori chicken because I'm
+25:41
+looking to make a dinner reservation for
+25:44
+example and then um we're using open AI
+25:47
+Chad or gbt 3.0 turbo and then we just
+25:50
+have the context which is the main
+25:51
+prompt in here and this it contains
+25:53
+everything from the start time to the
+25:55
+end time the date the fallback value any
+25:57
+special requests and all that kind of
+25:58
+good stuff is going to be located in the
+26:00
+content here and then I just put in hey
+26:02
+if you're looking to give us a call back
+26:04
+or an email back or whatever you can go
+26:06
+ahead and you can add this in here and
+26:09
+so that's that's more or less it um and
+26:12
+essentially in this prompt I'm saying
+26:14
+hey there has to be a fallback value in
+26:16
+case this doesn't go according to plan
+26:17
+because a lot of times it will not go
+26:19
+according to plan and you have to
+26:20
+account for that as well and so moving
+26:22
+on we just essentially have this last
+26:24
+section here there's lots of different
+26:26
+ways to do this but we essentially are
+26:27
+just waiting for that call to be
+26:29
+finished and we want to grab the
+26:31
+transcript and send that back and the
+26:33
+book a calendar event if it's successful
+26:35
+and so what we're doing here is we're
+26:36
+saying hey um because this call could
+26:38
+take 10 minutes or sorry 10 seconds a
+26:41
+minute two minutes five minutes whatever
+26:42
+we don't know we're just essentially
+26:44
+going to send a request to fappy to see
+26:47
+hey has this call been
+26:49
+completed and so we're going to see hey
+26:51
+is this call been completed and it's
+26:53
+going to give us an answer either yes or
+26:56
+no and most of the time it's going to be
+26:57
+no because because we might in this case
+26:59
+have to run it 17 times for it to be
+27:01
+completed so we're going to wait 5
+27:03
+Seconds right and so we'll wait 5
+27:06
+seconds and then after 5 Seconds we'll
+27:07
+check has the call successfully been
+27:09
+completed or not and if it's not then
+27:11
+we're going to go back and check again
+27:12
+then wait 5 Seconds go back and check
+27:14
+again wait 5 Seconds go back and check
+27:16
+again and then maybe on the 10th or 11th
+27:18
+time it'll be completed which point at
+27:20
+which point in time it will pass through
+27:22
+and we'll just send over the transcript
+27:25
+um of the call so that we can use that
+27:27
+to then go head and go back to our main
+27:29
+voice agent to book a um appointment in
+27:33
+our calendar which we can see right here
+27:35
+and we can also just send ourselves back
+27:38
+a message saying hey everything has been
+27:40
+confirmed and so essentially in a
+27:41
+nutshell that is how this voice AI agent
+Conclusion
+27:44
+Works using nadn and vapy I think that
+27:48
+it has a long way to come it is very
+27:51
+promising but yeah if you guys are going
+27:52
+to use something like this just make
+27:53
+sure to um really test it out make sure
+27:56
+to have a fallback line make sure to
+27:57
+have every everything in place um and
+27:59
+add anything in there that you need so
+28:01
+that you're comfortable before using it
+28:03
+thank you guys so much for watching this
+28:04
+if you guys found value in this video
+28:06
+please make sure to subscribe down below
+28:09
+if you guys are interested in joining my
+28:11
+community you can head over to
+28:12
+school.com and join this community if
+28:15
+you guys are wanting to learn more about
+28:16
+Ai and Automation and AI agents then
+28:18
+this is hopefully the place for you so
+28:20
+thanks guys for watching and I'll see
+28:21
+you in the next one bye-bye

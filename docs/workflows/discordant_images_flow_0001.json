@@ -1,0 +1,461 @@
+{
+  "name": "discordant_images_flow_0001",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "process-image-message",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "a64ede10-a383-4a77-861a-5facf4dc955d",
+      "name": "Image Message Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1260,
+        -180
+      ],
+      "webhookId": "process-image-message"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract messageId and operation from input\nconst input = $input.first().json;\nconst messageId = input.messageId || input.message_id || '';\nconst operation = input.operation || 'auto'; // 'auto', 'analyze', 'generate'\n\nif (!messageId) {\n  throw new Error('messageId is required');\n}\n\nconsole.log(`[IMAGE_PROCESSOR] Processing messageId: ${messageId}`);\n\nreturn {\n  messageId: messageId,\n  operation: operation,\n  timestamp: new Date().toISOString()\n};"
+      },
+      "id": "73ed085b-32e7-42c5-bae6-afa2a1846a77",
+      "name": "Extract Message ID",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1060,
+        -180
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT m.id, m.content, m.fileUrl, m.channelId, m.memberId, m.createdAt, p.name as userName FROM message m JOIN member mem ON m.memberId = mem.id JOIN profile p ON mem.profileId = p.id WHERE m.id = '{{ $json.messageId }}'"
+      },
+      "id": "0ad755e4-9314-4c9b-bf28-4a5b35781fa0",
+      "name": "Get Message Details",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 1,
+      "position": [
+        -860,
+        -180
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "TvnUCP0CFWmGulQM",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Analyze message and determine processing type\nconst messageData = $input.first().json;\nconst extractedData = $('Extract Message ID').first().json;\n\nif (!messageData || !messageData.content) {\n  throw new Error('Message not found or has no content');\n}\n\nconst content = messageData.content.toLowerCase();\nconst fileUrl = messageData.fileUrl || '';\nconst hasImage = fileUrl && (fileUrl.includes('.jpg') || fileUrl.includes('.jpeg') || fileUrl.includes('.png') || fileUrl.includes('.gif') || fileUrl.includes('.webp'));\n\n// Auto-detect operation if not specified\nlet operation = extractedData.operation;\nif (operation === 'auto') {\n  if (hasImage) {\n    operation = 'analyze';\n  } else if (content.includes('generate') || content.includes('create') || content.includes('make') || content.includes('draw')) {\n    operation = 'generate';\n  } else {\n    throw new Error('Cannot determine image processing operation. Message must contain an image (for analysis) or generation keywords.');\n  }\n}\n\nconst result = {\n  ...messageData,\n  operation: operation,\n  hasImage: hasImage,\n  imageUrl: hasImage ? fileUrl : '',\n  prompt: messageData.content,\n  processingNeeded: true\n};\n\nconsole.log(`[IMAGE_ANALYZER] Operation: ${operation}, HasImage: ${hasImage}`);\nreturn result;"
+      },
+      "id": "7b959f2c-2b5b-4dc0-9071-33d2f1f5d92b",
+      "name": "Analyze Message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -660,
+        -180
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {
+              "leftValue": "={{ $json.operation }}",
+              "rightValue": "analyze",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e05a0960-ee0d-4bf0-9c0a-d1cd30f574e7",
+      "name": "Route to Analysis?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -460,
+        -280
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {
+              "leftValue": "={{ $json.operation }}",
+              "rightValue": "generate",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "86a558fc-1ebb-4c01-a095-f5758daaa058",
+      "name": "Route to Generation?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -460,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "gpt-4o"
+            },
+            {
+              "name": "messages",
+              "value": "=[\n  {\n    \"role\": \"user\",\n    \"content\": [\n      {\n        \"type\": \"text\",\n        \"text\": \"Analyze this image for business intelligence insights. Extract all visible text and data, identify trends and key metrics, provide ROI analysis and recommendations. Original message: {{ $json.prompt }}\"\n      },\n      {\n        \"type\": \"image_url\",\n        \"image_url\": {\n          \"url\": \"{{ $json.imageUrl }}\",\n          \"detail\": \"high\"\n        }\n      }\n    ]\n  }\n]"
+            },
+            {
+              "name": "max_tokens",
+              "value": "2000"
+            },
+            {
+              "name": "temperature",
+              "value": "0.1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d5740e70-95b8-4ee1-a75e-437fc0b17013",
+      "name": "Process Image Analysis",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -260,
+        -360
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "93xrPD7UUL9tV6EG",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/images/generations",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "gpt-image-1"
+            },
+            {
+              "name": "prompt",
+              "value": "={{ $json.prompt }}"
+            },
+            {
+              "name": "n",
+              "value": "1"
+            },
+            {
+              "name": "size",
+              "value": "1024x1024"
+            },
+            {
+              "name": "quality",
+              "value": "hd"
+            },
+            {
+              "name": "response_format",
+              "value": "url"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "89dedca4-354b-4ec7-a82c-de670991be93",
+      "name": "Process Image Generation",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -260,
+        -160
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "93xrPD7UUL9tV6EG",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Format analysis result and prepare for database update\nconst analysisResult = $input.first().json;\nconst originalMessage = $('Analyze Message').first().json;\n\nconst aiAnalysis = analysisResult.choices?.[0]?.message?.content || 'Analysis completed';\nconst usage = analysisResult.usage || {};\n\n// Create formatted response\nconst formattedResponse = `🔍 **Image Analysis Complete**\\n\\n**📸 Analysis Results**\\n${aiAnalysis}\\n\\n**📊 Processing Details**:\\n- **Model**: GPT-4o Vision\\n- **Tokens Used**: ${usage.total_tokens || 'N/A'}\\n- **Original Message**: \"${originalMessage.prompt}\"\\n- **Processing Time**: ${new Date().toLocaleTimeString()}\\n\\n**🚀 Business Intelligence Focus**:\\n- ✅ Advanced multimodal understanding\\n- ✅ Data extraction and insights\\n- ✅ ROI analysis and recommendations`;\n\nreturn {\n  messageId: originalMessage.id,\n  channelId: originalMessage.channelId,\n  newContent: formattedResponse,\n  operation: 'analyze',\n  success: true,\n  originalContent: originalMessage.content\n};"
+      },
+      "id": "783bf68f-e96c-4c45-87f9-68681a710768",
+      "name": "Format Analysis Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -60,
+        -360
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Format generation result and prepare for database update\nconst generationResult = $input.first().json;\nconst originalMessage = $('Analyze Message').first().json;\n\nconst imageUrl = generationResult.data?.[0]?.url || '';\nconst revisedPrompt = generationResult.data?.[0]?.revised_prompt || originalMessage.prompt;\n\nif (!imageUrl) {\n  throw new Error('No image URL returned from generation');\n}\n\n// Create formatted response\nconst formattedResponse = `🎨 **Image Generation Complete**\\n\\n**🚀 Generated with GPT Image 1**\\n\\n**Original Request**: \"${originalMessage.prompt}\"\\n\\n**Enhanced Prompt**: \"${revisedPrompt}\"\\n\\n**Generated Image**: ![Generated Image](${imageUrl})\\n\\n**🔬 Generation Details**:\\n- **Model**: GPT Image 1 (Latest)\\n- **Size**: 1024x1024 (High Resolution)\\n- **Quality**: Professional HD output\\n- **Processing Time**: ${new Date().toLocaleTimeString()}\\n\\n**🧠 Advanced Features**:\\n- ✅ World knowledge integration\\n- ✅ Context-aware generation\\n- ✅ Professional business focus\\n- ✅ High-resolution output`;\n\nreturn {\n  messageId: originalMessage.id,\n  channelId: originalMessage.channelId,\n  newContent: formattedResponse,\n  fileUrl: imageUrl, // Update the message with the generated image URL\n  operation: 'generate',\n  success: true,\n  originalContent: originalMessage.content\n};"
+      },
+      "id": "5307d06e-ce67-49a7-8da4-ebb897d801db",
+      "name": "Format Generation Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -60,
+        -160
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE message SET content = $1, fileUrl = COALESCE($2, fileUrl), updatedAt = NOW() WHERE id = $3",
+        "options": {
+          "queryReplacement": "=[\n  {\n    \"name\": \"content\",\n    \"value\": \"={{ $json.newContent }}\"\n  },\n  {\n    \"name\": \"fileUrl\",\n    \"value\": \"={{ $json.fileUrl || null }}\"\n  },\n  {\n    \"name\": \"messageId\",\n    \"value\": \"={{ $json.messageId }}\"\n  }\n]"
+        }
+      },
+      "id": "0f304638-481f-4b51-80b9-16411262ce82",
+      "name": "Update Message Database",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        140,
+        -260
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "TvnUCP0CFWmGulQM",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://discordant-git-main-ken-dev-co.vercel.app/api/ai/workflow-complete",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "User-Agent",
+              "value": "n8n-ImageProcessor/1.0"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  \"content\": $json.newContent,\n  \"metadata\": {\n    \"channelId\": $json.channelId,\n    \"messageId\": $json.messageId,\n    \"operation\": $json.operation,\n    \"platform\": \"discordant-image-processor\",\n    \"timestamp\": new Date().toISOString(),\n    \"workflowId\": \"image-processor-subworkflow\",\n    \"fileUrl\": $json.fileUrl || null\n  }\n}) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "6a3b2157-77ec-42f1-ba0f-69f691230a72",
+      "name": "Notify Completion",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        340,
+        -260
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"success\": true,\n  \"operation\": \"{{ $json.operation }}\",\n  \"messageId\": \"{{ $json.messageId }}\",\n  \"timestamp\": \"{{ new Date().toISOString() }}\",\n  \"status\": \"Image processing completed and message updated\"\n}",
+        "options": {}
+      },
+      "id": "d4218bcc-75b7-4daa-ab83-31f446398917",
+      "name": "Webhook Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        540,
+        -260
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Image Message Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract Message ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Message ID": {
+      "main": [
+        [
+          {
+            "node": "Get Message Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Message Details": {
+      "main": [
+        [
+          {
+            "node": "Analyze Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze Message": {
+      "main": [
+        [
+          {
+            "node": "Route to Analysis?",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Route to Generation?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route to Analysis?": {
+      "main": [
+        [
+          {
+            "node": "Process Image Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route to Generation?": {
+      "main": [
+        [
+          {
+            "node": "Process Image Generation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Image Analysis": {
+      "main": [
+        [
+          {
+            "node": "Format Analysis Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Image Generation": {
+      "main": [
+        [
+          {
+            "node": "Format Generation Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Analysis Result": {
+      "main": [
+        [
+          {
+            "node": "Update Message Database",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Generation Result": {
+      "main": [
+        [
+          {
+            "node": "Update Message Database",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Message Database": {
+      "main": [
+        [
+          {
+            "node": "Notify Completion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Completion": {
+      "main": [
+        [
+          {
+            "node": "Webhook Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "27a04aa0-4cea-45d0-b959-b472ee44f1a7",
+  "meta": {
+    "instanceId": "136461ac021bda65593ed5d2f70798d0433ed7859abfc9e2ca43aa4b9c0b779e"
+  },
+  "id": "PVpgx9i9dlsrlLgd",
+  "tags": []
+}

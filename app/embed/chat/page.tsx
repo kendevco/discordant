@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Send, MessageCircle, Minimize2, X } from "lucide-react";
-import { io, Socket } from "socket.io-client";
+// Socket.IO removed - using polling for real-time updates
 
 interface Message {
   id: string;
@@ -35,7 +35,7 @@ function EmbeddedChatWidget() {
   const [isLoading, setIsLoading] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [visitorData, setVisitorData] = useState<VisitorData | null>(null);
-  const [socket, setSocket] = useState<Socket | null>(null);
+  // Socket.IO removed - using polling for real-time updates
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Widget configuration from URL params
@@ -62,56 +62,14 @@ function EmbeddedChatWidget() {
     };
     setVisitorData(visitor);
 
-    // Initialize socket connection
-    const newSocket = io(window.location.origin, {
-      transports: ['websocket', 'polling']
-    });
-
-    setSocket(newSocket);
-
-    newSocket.on('connect', () => {
-      setIsConnected(true);
-      console.log('[WIDGET] Connected to Discordant');
-      
-      // Join channel for real-time updates
-      newSocket.emit('join-channel', channelId);
-      
-      // Send visitor session data
-      postVisitorActivity('widget-opened', {
-        page: visitor.page,
-        timestamp: new Date().toISOString()
-      });
-    });
-
-    newSocket.on('disconnect', () => {
-      setIsConnected(false);
-      console.log('[WIDGET] Disconnected from Discordant');
-    });
-
-    // Listen for new messages in the channel
-    newSocket.on(`chat:${channelId}:messages`, (message: any) => {
-      if (message.role === 'system' && message._external) {
-        // This is likely a response to our message
-        addMessage({
-          id: message.id,
-          content: message.content,
-          sender: {
-            name: message.member.profile.name,
-            type: 'agent',
-            avatar: message.member.profile.imageUrl
-          },
-          timestamp: new Date(message.createdAt),
-          isExternal: true
-        });
-      }
-    });
-
-    // Listen for portfolio notifications
-    newSocket.on(`portfolio:session:${visitor.sessionId}:notification`, (notification: any) => {
-      if (notification.type === 'ai-response') {
-        // Show notification for AI response
-        showNotification(notification.title, notification.message);
-      }
+    // Initialize connection status
+    setIsConnected(true);
+    console.log('[WIDGET] Connected to Discordant (polling mode)');
+    
+    // Send visitor session data
+    postVisitorActivity('widget-opened', {
+      page: visitor.page,
+      timestamp: new Date().toISOString()
     });
 
     // Add welcome message
@@ -125,9 +83,8 @@ function EmbeddedChatWidget() {
       timestamp: new Date()
     });
 
-    return () => {
-      newSocket.disconnect();
-    };
+    // Note: Real-time updates now handled by SSE or polling
+    // The widget will rely on message responses from the API
   }, [channelId, apiToken, sessionId]);
 
   useEffect(() => {
@@ -393,10 +350,10 @@ function EmbeddedChatWidget() {
 
 function LoadingFallback() {
   return (
-    <div className="flex items-center justify-center h-full bg-white">
+    <div className="flex items-center justify-center h-full bg-gradient-to-br from-[#7364c0] to-[#02264a] dark:from-[#000C2F] dark:to-[#003666]">
       <div className="text-center">
-        <MessageCircle className="mx-auto h-12 w-12 text-gray-400 mb-4 animate-pulse" />
-        <p className="text-gray-500">Loading chat widget...</p>
+        <MessageCircle className="mx-auto h-12 w-12 text-white/70 mb-4 animate-pulse" />
+        <p className="text-white/90 font-medium">Loading chat widget...</p>
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ export interface WorkflowRoute {
   workflowId: string;
   webhookPath: string;
   description: string;
+  mode: "sync" | "async";
 }
 
 export interface WorkflowPayload {
@@ -38,56 +39,104 @@ export class WorkflowRouter {
       priority: 1,
       workflowId: "general-assistant",
       webhookPath: "discordant-ai-services",
-      description: "General AI assistant"
+      description: "General AI assistant",
+      mode: "sync"
     }
   ];
 
   /**
-   * Determine which workflow should handle this message
-   * For now, everything goes to the general assistant
+   * Determine if this message requires complex workflow processing
+   * or can be handled with simple synchronous chat
    */
-  static getWorkflowRoute(message: string): WorkflowRoute {
+  static requiresAsyncWorkflow(message: string, hasFileUrl: boolean = false): boolean {
+    // File uploads ALWAYS require async processing for analysis
+    if (hasFileUrl) {
+      console.log('[WORKFLOW_ROUTER] File detected - forcing async workflow processing');
+      return true;
+    }
+    
+    const lowerMessage = message.toLowerCase();
+    
+    // Complex operations that need async workflow processing
+    const asyncKeywords = [
+      // Calendar operations
+      "schedule", "book", "create meeting", "set appointment", "calendar",
+      // Research operations  
+      "research", "analyze", "investigate", "find information about",
+      // Document operations
+      "create document", "generate report", "draft", "prepare",
+      // Phone/communication operations
+      "call", "phone", "contact", "send email",
+      // Search operations (complex)
+      "search for", "find all", "lookup", "query database"
+    ];
+    
+    // Check for complex operation indicators
+    const hasAsyncKeywords = asyncKeywords.some(keyword => 
+      lowerMessage.includes(keyword)
+    );
+    
+    // Check for time-based operations (usually complex)
+    const hasTimeOperations = /\b(today|tomorrow|next week|schedule|book|meeting)\b/.test(lowerMessage);
+    
+    // Check for data operations (usually complex)
+    const hasDataOperations = /\b(create|generate|analyze|research|find|search)\b/.test(lowerMessage);
+    
+    return hasAsyncKeywords || hasTimeOperations || hasDataOperations;
+  }
+
+  /**
+   * Determine which workflow should handle this message
+   */
+  static getWorkflowRoute(message: string, hasFileUrl: boolean = false): WorkflowRoute {
     const intent = this.detectIntent(message);
+    const requiresAsync = this.requiresAsyncWorkflow(message, hasFileUrl);
     
     const route = this.routes[0];
     return {
       ...route,
-      workflowId: `${route.workflowId}:${intent}`
+      workflowId: `${route.workflowId}:${intent}`,
+      mode: requiresAsync ? "async" : "sync"
     };
   }
 
   /**
-   * Detect the intent of the message
+   * Detect the intent of the message (more specific now)
    */
   static detectIntent(message: string): string {
     const lowerMessage = message.toLowerCase();
     
-    // Search intents - check first as they might overlap with others
-    if (/search|find|look for|looking for|locate|where|query/.test(lowerMessage)) {
-      return "search";
-    }
-    
-    // Calendar intents
-    if (/calendar|schedule|meeting|appointment|event|booking/.test(lowerMessage)) {
+    // Calendar intents (specific operations)
+    if (/\b(schedule|book|create meeting|set appointment|calendar event)\b/.test(lowerMessage)) {
       return "calendar";
     }
     
-    // Research intents
-    if (/research|analyze|investigate|study|explore|find out/.test(lowerMessage)) {
+    // Research intents (complex analysis)
+    if (/\b(research|analyze|investigate|study|explore|find information)\b/.test(lowerMessage)) {
       return "research";
     }
     
-    // Phone/call intents
-    if (/call|phone|dial|contact|reach out/.test(lowerMessage)) {
+    // Search intents (database/complex queries)
+    if (/\b(search for|find all|lookup|query|locate)\b/.test(lowerMessage)) {
+      return "search";
+    }
+    
+    // Phone/call intents (external operations)
+    if (/\b(call|phone|dial|contact|reach out)\b/.test(lowerMessage)) {
       return "phone";
     }
     
-    // Document intents
-    if (/document|file|report|prepare|draft/.test(lowerMessage)) {
+    // Document intents (creation/generation)
+    if (/\b(document|file|report|prepare|draft|generate|create)\b/.test(lowerMessage)) {
       return "document";
     }
     
-    // Default
+    // Status/info requests (simple)
+    if (/\b(status|how are you|what's up|hello|hi|hey)\b/.test(lowerMessage)) {
+      return "status";
+    }
+    
+    // Default to general conversation
     return "general";
   }
 

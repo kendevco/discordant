@@ -25,7 +25,6 @@ export interface MessageWithMember extends Message {
 export interface HandlerContext {
   channelId: string;
   serverId?: string;
-  socketIo?: any;
   context: any;
   req?: any;
 }
@@ -38,6 +37,8 @@ export interface SystemMessageHandler {
 }
 
 async function fetchSystemMember(channelId: string) {
+  console.log(`[FETCH_SYSTEM_MEMBER] Looking for System User in channel: ${channelId}`);
+  
   const channel = await db.channel.findUnique({
     where: { id: channelId },
     select: { serverId: true },
@@ -45,13 +46,18 @@ async function fetchSystemMember(channelId: string) {
 
   if (!channel) throw new Error("Channel not found");
 
+  console.log(`[FETCH_SYSTEM_MEMBER] Channel found, server ID: ${channel.serverId}`);
+
   const systemUser = await db.profile.findUnique({
     where: { id: SYSTEM_USER_ID },
   });
 
   if (!systemUser) {
+    console.error(`[FETCH_SYSTEM_MEMBER] System user profile not found: ${SYSTEM_USER_ID}`);
     throw new Error("System user not found");
   }
+
+  console.log(`[FETCH_SYSTEM_MEMBER] System user profile found: ${systemUser.name}`);
 
   const member = await db.member.findFirst({
     where: {
@@ -61,7 +67,8 @@ async function fetchSystemMember(channelId: string) {
   });
 
   if (!member) {
-    return db.member.create({
+    console.log(`[FETCH_SYSTEM_MEMBER] System member not found, creating new member`);
+    const newMember = await db.member.create({
       data: {
         id: randomUUID(),
         profileId: SYSTEM_USER_ID,
@@ -69,8 +76,11 @@ async function fetchSystemMember(channelId: string) {
         role: "GUEST",
       },
     });
+    console.log(`[FETCH_SYSTEM_MEMBER] Created new system member: ${newMember.id}`);
+    return newMember;
   }
 
+  console.log(`[FETCH_SYSTEM_MEMBER] Found existing system member: ${member.id}`);
   return member;
 }
 
@@ -322,7 +332,7 @@ class OnboardingHandler implements SystemMessageHandler {
   canHandle(message: MessageWithMember) {
     return message.asIs === true;
   }
-  async handle(message: MessageWithMember, { channelId, socketIo }: HandlerContext) {
+  async handle(message: MessageWithMember, { channelId }: HandlerContext) {
     // asIs logic
     const systemMember = await fetchSystemMember(message.channelId);
     const systemMessage = await db.message.create({
@@ -338,43 +348,107 @@ class OnboardingHandler implements SystemMessageHandler {
         member: { include: { profile: true } },
       },
     });
-    const channelKey = `chat:${channelId}:messages`;
-    socketIo?.emit(channelKey, systemMessage);
     return systemMessage;
   }
 }
 
-// Enhanced Workflow Handler with robust fallback mechanism
+// Enhanced Workflow Handler with dual-mode processing (sync/async)
 class WorkflowHandler implements SystemMessageHandler {
   canHandle(message: MessageWithMember) {
     // Handle all messages except onboarding
     return !message.asIs;
   }
 
-  async handle(message: MessageWithMember, { channelId, serverId, socketIo, context, req }: HandlerContext) {
+  async handle(message: MessageWithMember, { channelId, serverId, context, req }: HandlerContext) {
     // Determine which workflow should handle this message
-    const route = WorkflowRouter.getWorkflowRoute(message.content);
+    const hasFileUrl = !!message.fileUrl;
+    const route = WorkflowRouter.getWorkflowRoute(message.content, hasFileUrl);
     
-    console.log(`[WORKFLOW_HANDLER] === PRODUCTION DEBUG ===`);
-    console.log(`[WORKFLOW_HANDLER] Environment: ${process.env.NODE_ENV}`);
-    console.log(`[WORKFLOW_HANDLER] App URL: ${process.env.NEXT_PUBLIC_APP_URL}`);
-    console.log(`[WORKFLOW_HANDLER] Raw N8N URL: "${process.env.N8N_WEBHOOK_URL}"`);
-    // Sanitize the URL for debugging
-    const rawN8nUrl = process.env.N8N_WEBHOOK_URL || "https://n8n.kendev.co/webhook";
-    const sanitizedN8nUrl = rawN8nUrl.replace(/[";]/g, '').trim();
-    console.log(`[WORKFLOW_HANDLER] Sanitized N8N URL: "${sanitizedN8nUrl}"`);
+    console.log(`[WORKFLOW_HANDLER] === PROCESSING MODE DEBUG ===`);
+    console.log(`[WORKFLOW_HANDLER] Message: "${message.content}"`);
+    console.log(`[WORKFLOW_HANDLER] Has File: ${hasFileUrl}`);
+    console.log(`[WORKFLOW_HANDLER] File URL: ${message.fileUrl || 'none'}`);
+    console.log(`[WORKFLOW_HANDLER] Intent: ${route.workflowId}`);
+    console.log(`[WORKFLOW_HANDLER] Processing Mode: ${route.mode}`);
     console.log(`[WORKFLOW_HANDLER] Channel ID: ${channelId}`);
     console.log(`[WORKFLOW_HANDLER] Server ID: ${serverId}`);
-    console.log(`[WORKFLOW_HANDLER] Message content: ${message.content}`);
-    console.log(`[WORKFLOW_HANDLER] Routing message to: ${route.workflowId}`);
-    console.log(`[WORKFLOW_HANDLER] Webhook path: ${route.webhookPath}`);
 
+    // Route to appropriate processing mode
+    if (route.mode === "sync") {
+      return await this.handleSynchronousChat(message, { channelId, serverId, context, req }, route);
+    } else {
+      return await this.handleAsynchronousWorkflow(message, { channelId, serverId, context, req }, route);
+    }
+  }
+
+  /**
+   * Handle simple conversational AI with immediate response
+   */
+  private async handleSynchronousChat(
+    message: MessageWithMember, 
+    { channelId, serverId, context, req }: HandlerContext,
+    route: WorkflowRoute
+  ) {
+    console.log(`[WORKFLOW_HANDLER] 🚀 Starting synchronous chat processing`);
+    
+    try {
+      // Get immediate AI response using OpenAI
+      const aiResponse = await getSiteAIResponse(message, context, channelId, route);
+      
+      // Create AI response message directly
+      const systemMember = await fetchSystemMember(channelId);
+      const responseMessage = await db.message.create({
+        data: {
+          id: randomUUID(),
+          content: aiResponse,
+          channelId,
+          memberId: systemMember.id,
+          role: "system",
+          updatedAt: new Date(),
+        },
+        include: { member: { include: { profile: true } } },
+      });
+
+      console.log(`[WORKFLOW_HANDLER] ✅ Synchronous response created: ${responseMessage.id}`);
+      return responseMessage;
+
+    } catch (error) {
+      console.error(`[WORKFLOW_HANDLER] ❌ Synchronous chat failed:`, error);
+      
+      // Create error message
+      const systemMember = await fetchSystemMember(channelId);
+      const errorMessage = await db.message.create({
+        data: {
+          id: randomUUID(),
+          content: `🚨 **Chat System Error**\n\nI'm having trouble processing your message right now. Please try again in a moment.\n\n**Error**: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          channelId,
+          memberId: systemMember.id,
+          role: "system",
+          updatedAt: new Date(),
+        },
+        include: { member: { include: { profile: true } } },
+      });
+
+      return errorMessage;
+    }
+  }
+
+  /**
+   * Handle complex workflow processing with async callback
+   */
+  private async handleAsynchronousWorkflow(
+    message: MessageWithMember, 
+    { channelId, serverId, context, req }: HandlerContext,
+    route: WorkflowRoute
+  ) {
+    console.log(`[WORKFLOW_HANDLER] 🔄 Starting asynchronous workflow processing`);
+    
     // Create initial processing message FIRST
     const systemMember = await fetchSystemMember(channelId);
     const processingMessage = await db.message.create({
       data: {
         id: randomUUID(),
-        content: "🤖 **Processing your request...**\n\nYour message is being analyzed by our AI systems. Response incoming shortly...",
+        content: "🤖 **Processing Complex Request...**\n\nI'm working on your request using advanced AI tools. This may take a moment...",
         channelId,
         memberId: systemMember.id,
         role: "system",
@@ -384,17 +458,8 @@ class WorkflowHandler implements SystemMessageHandler {
     });
 
     console.log(`[WORKFLOW_HANDLER] Created processing message: ${processingMessage.id}`);
-
-    // Emit the processing message immediately
-    const channelKey = `chat:${channelId}:messages`;
-    if (socketIo && typeof socketIo.emit === 'function') {
-      try {
-        socketIo.emit(channelKey, processingMessage);
-        console.log(`[WORKFLOW_HANDLER] ✅ Processing message emitted`);
-      } catch (emitError) {
-        console.error(`[WORKFLOW_HANDLER] ❌ Processing message emission failed:`, emitError);
-      }
-    }
+    console.log(`[WORKFLOW_HANDLER] ✅ Processing message created`);
+    // Note: Real-time updates now handled by SSE system
 
     // Process message based on intent
     let processedMessage = message.content;
@@ -422,10 +487,6 @@ class WorkflowHandler implements SystemMessageHandler {
     console.log(`[WORKFLOW_HANDLER] Proxy URL: ${proxyUrl}`);
     console.log(`[WORKFLOW_HANDLER] Payload with messageId:`, JSON.stringify(payload, null, 2));
     
-    let workflowResponse;
-    let errorType = null;
-    let usedFallback = false;
-
     // First, try the n8n workflow
     try {
       console.log(`[WORKFLOW_HANDLER] Attempting n8n workflow connection...`);
@@ -452,7 +513,7 @@ class WorkflowHandler implements SystemMessageHandler {
         throw new Error(`HTTP ${res.status}: ${res.statusText} - ${errorText}`);
       }
 
-      workflowResponse = await res.json();
+      const workflowResponse = await res.json();
       console.log(`[WORKFLOW_HANDLER] ✅ n8n workflow response received:`, JSON.stringify(workflowResponse, null, 2));
 
       // If n8n workflow succeeds, return the processing message (it will be updated by n8n)
@@ -480,15 +541,8 @@ class WorkflowHandler implements SystemMessageHandler {
           include: { member: { include: { profile: true } } },
         });
 
-        // Emit the updated message
-        if (socketIo && typeof socketIo.emit === 'function') {
-          try {
-            socketIo.emit(channelKey, updatedMessage);
-            console.log(`[WORKFLOW_HANDLER] ✅ Fallback message updated and emitted`);
-          } catch (emitError) {
-            console.error(`[WORKFLOW_HANDLER] ❌ Fallback message emission failed:`, emitError);
-          }
-        }
+        console.log(`[WORKFLOW_HANDLER] ✅ Fallback message updated`);
+        // Note: Real-time updates now handled by SSE system
 
         console.log(`[WORKFLOW_HANDLER] ✅ Site AI fallback successful`);
         return updatedMessage;
@@ -520,15 +574,8 @@ Please try again in a few minutes, or contact your system administrator if the i
           include: { member: { include: { profile: true } } },
         });
 
-        // Emit the error message
-        if (socketIo && typeof socketIo.emit === 'function') {
-          try {
-            socketIo.emit(channelKey, errorUpdatedMessage);
-            console.log(`[WORKFLOW_HANDLER] ✅ Error message updated and emitted`);
-          } catch (emitError) {
-            console.error(`[WORKFLOW_HANDLER] ❌ Error message emission failed:`, emitError);
-          }
-        }
+        console.log(`[WORKFLOW_HANDLER] ✅ Error message updated`);
+        // Note: Real-time updates now handled by SSE system
 
         return errorUpdatedMessage;
       }
@@ -622,7 +669,7 @@ class ImageAnalysisHandler implements SystemMessageHandler {
   canHandle(message: MessageWithMember) {
     return !!message.fileUrl?.match(/\.(jpg|jpeg|png|gif|webp)$/i);
   }
-  async handle(message: MessageWithMember, { channelId, socketIo }: HandlerContext) {
+  async handle(message: MessageWithMember, { channelId }: HandlerContext) {
     // Image analysis functionality would be handled by n8n workflow instead
     // For now, route to WorkflowHandler
     throw new Error("Image analysis should be handled by workflow");
@@ -632,7 +679,6 @@ class ImageAnalysisHandler implements SystemMessageHandler {
 export async function createSystemMessage(
   channelId: string,
   message: MessageWithMember,
-  socketIo?: any,
   req?: any
 ) {
   try {
@@ -671,7 +717,6 @@ export async function createSystemMessage(
           const result = await handler.handle(message, { 
             channelId, 
             serverId: channel.serverId,
-            socketIo, 
             context,
             req 
           });

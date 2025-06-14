@@ -1,144 +1,54 @@
-// /hooks/use-socket.ts
-
 import { useEffect, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { socketHelper } from "@/lib/system/socket";
-import { useParams } from "next/navigation";
 import { MessageStatus } from "@/lib/system/types/messagestatus";
-import { useUser } from "@clerk/nextjs";
-import { PresenceUser } from "@/lib/system/presence-service";
+
+// Simple in-memory store for message statuses
+const messageStatuses = new Map<string, MessageStatus>();
 
 export const useSocket = () => {
-  const [status, setStatus] = useState<
-    "connected" | "disconnected" | "connecting"
-  >("connecting");
-  const [messageStatuses] = useState<Map<string, MessageStatus>>(new Map());
-  const [onlineUsers, setOnlineUsers] = useState<PresenceUser[]>([]);
-  const [typingUsers, setTypingUsers] = useState<PresenceUser[]>([]);
-  const queryClient = useQueryClient();
-  const params = useParams();
-  const { user } = useUser();
+  const [, setRerender] = useState(0);
 
-    useEffect(() => {
-    const socket = socketHelper.connect();
+  const getMessageStatus = (messageId: string): MessageStatus | undefined => {
+    return messageStatuses.get(messageId);
+  };
 
-    if (!socket) {
-      setStatus("disconnected");
-      return;
-    }
+  const setMessageStatus = (messageId: string, status: MessageStatus) => {
+    messageStatuses.set(messageId, status);
+    setRerender(prev => prev + 1);
+  };
 
-    socket.on("connect", () => {
-      setStatus("connected");
-
-      // Create session when connected
-      if (user && params?.serverId) {
-        socketHelper.emit("user:session:create", {
-          profileId: user.id,
-          serverId: params.serverId,
-          channelId: params.channelId,
-          metadata: {
-            userAgent: navigator.userAgent,
-          },
-        });
-      }
-    });
-
-    socket.on("disconnect", () => {
-      setStatus("disconnected");
-    });
-
-    socket.on("connect_error", () => {
-      setStatus("disconnected");
-    });
-
-    // Listen for presence updates
-    socket.on("presence:users:update", (users: PresenceUser[]) => {
-      setOnlineUsers(users);
-    });
-
-    // Listen for typing indicators
-    socket.on("typing:users:update", (users: PresenceUser[]) => {
-      setTypingUsers(users);
-    });
-
-    // Listen for activity updates
-    socket.on("activity:update", (activity) => {
-      // Invalidate relevant queries to refresh data
-      queryClient.invalidateQueries({ queryKey: ["messages"] });
-      queryClient.invalidateQueries({ queryKey: ["members"] });
-    });
-
-    // Update session activity periodically
-    const heartbeatInterval = setInterval(() => {
-      if (status === "connected" && user && params?.serverId) {
-        socketHelper.emit("user:session:heartbeat", {
-          serverId: params.serverId,
-          channelId: params.channelId,
-        });
-      }
-    }, 30000); // Every 30 seconds
-
-    return () => {
-      clearInterval(heartbeatInterval);
-      
-      // End session when disconnecting
-      if (user) {
-        socketHelper.emit("user:session:end", {
-          profileId: user.id,
-        });
-      }
-      
-      socketHelper.disconnect();
+  const updateMessageStatus = (
+    messageId: string, 
+    status: "sending" | "sent" | "delivered" | "failed",
+    error?: string
+  ) => {
+    const messageStatus: MessageStatus = {
+      id: messageId,
+      status,
+      error,
+      timestamp: Date.now()
     };
-  }, [user, params?.serverId, params?.channelId, status, queryClient]);
+    setMessageStatus(messageId, messageStatus);
+  };
 
-  // Update channel context when navigating
+  // Clean up old statuses periodically
   useEffect(() => {
-    if (status === "connected" && user && params?.serverId) {
-      socketHelper.emit("user:session:update", {
-        serverId: params.serverId,
-        channelId: params.channelId,
-      });
-    }
-  }, [params?.serverId, params?.channelId, status, user]);
+    const cleanup = setInterval(() => {
+      const now = Date.now();
+      const maxAge = 5 * 60 * 1000; // 5 minutes
+      
+      for (const [messageId, status] of messageStatuses.entries()) {
+        if (now - status.timestamp > maxAge) {
+          messageStatuses.delete(messageId);
+        }
+      }
+    }, 60000); // Clean up every minute
 
-  const startTyping = (channelId: string) => {
-    if (status === "connected" && user) {
-      socketHelper.emit("typing:start", {
-        channelId,
-        profileId: user.id,
-      });
-    }
-  };
-
-  const stopTyping = (channelId: string) => {
-    if (status === "connected" && user) {
-      socketHelper.emit("typing:stop", {
-        channelId,
-        profileId: user.id,
-      });
-    }
-  };
-
-  const updateOnlineStatus = (newStatus: "ONLINE" | "AWAY" | "DO_NOT_DISTURB" | "OFFLINE") => {
-    if (status === "connected" && user && params?.serverId) {
-      socketHelper.emit("presence:status:update", {
-        profileId: user.id,
-        serverId: params.serverId,
-        status: newStatus,
-      });
-    }
-  };
+    return () => clearInterval(cleanup);
+  }, []);
 
   return {
-    socket: socketHelper,
-    status,
-    messageStatuses,
-    onlineUsers,
-    typingUsers,
-    getMessageStatus: (id: string) => messageStatuses.get(id),
-    startTyping,
-    stopTyping,
-    updateOnlineStatus,
+    getMessageStatus,
+    setMessageStatus,
+    updateMessageStatus
   };
-};
+}; 

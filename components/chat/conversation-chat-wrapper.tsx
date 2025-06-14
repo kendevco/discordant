@@ -92,7 +92,7 @@ export const ConversationChatWrapper = ({
           chatId={conversation.id}
           type="conversation"
           apiUrl="/api/direct-messages"
-          socketUrl="/api/socket/direct-messages"
+          socketUrl="/api/direct-messages"
           socketQuery={{
             conversationId: conversation.id,
           }}
@@ -108,7 +108,7 @@ export const ConversationChatWrapper = ({
       {/* Fixed Footer */}
       <div className="flex-shrink-0">
         <ChatInput
-          apiUrl="/api/socket/direct-messages"
+          apiUrl="/api/direct-messages"
           name={otherMember.profile.name}
           type="conversation"
           query={{ conversationId: conversation.id }}

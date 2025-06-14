@@ -1,6 +1,5 @@
-import { Server as NetServer } from "http";
-import { NextApiResponse } from "next";
-import { Server as SocketIOServer } from "socket.io";
+// Legacy Socket.IO service - now stubbed for SSE compatibility
+// Real-time updates are now handled by the SSE system
 
 export interface SocketMessage {
   id: string;
@@ -24,20 +23,12 @@ export interface SocketMessage {
   _forceUpdate?: boolean;
 }
 
-export interface SocketIOResponse {
-  socket: {
-    server: NetServer & {
-      io: SocketIOServer;
-    };
-  };
-}
-
 /**
- * Socket service for external integrations
+ * External Socket Service - Stubbed for SSE compatibility
+ * Real-time updates are now handled by Server-Sent Events (SSE)
  */
 export class ExternalSocketService {
   private static instance: ExternalSocketService;
-  private io: SocketIOServer | null = null;
 
   private constructor() {}
 
@@ -49,120 +40,43 @@ export class ExternalSocketService {
   }
 
   /**
-   * Initialize socket server reference
+   * Initialize socket server reference - STUBBED
    */
-  initializeSocket(io: SocketIOServer) {
-    this.io = io;
-    console.log("[EXTERNAL_SOCKET] Socket server initialized for external integrations");
+  initializeSocket(io: any) {
+    console.log("[EXTERNAL_SOCKET] Socket.IO removed - using SSE for real-time updates");
   }
 
   /**
-   * Emit message to channel
+   * Emit message to channel - STUBBED (SSE handles real-time updates)
    */
-  emitChannelMessage(channelId: string, message: SocketMessage, io?: SocketIOServer) {
-    const socketIO = io || this.io;
-    if (!socketIO) {
-      console.warn("[EXTERNAL_SOCKET] No socket server available for channel message");
-      return false;
-    }
-
-    const channelKey = `chat:${channelId}:messages`;
-    
-    try {
-      socketIO.emit(channelKey, {
-        ...message,
-        _external: true,
-        _forceUpdate: true
-      });
-      
-      console.log(`[EXTERNAL_SOCKET] ✅ Channel message emitted: ${channelKey}`);
-      
-      // Also emit to external listeners
-      this.emitExternalEvent('message-created', {
-        type: 'channel',
-        channelId,
-        messageId: message.id,
-        sourceType: message._sourceType,
-        timestamp: new Date().toISOString()
-      }, socketIO);
-      
-      return true;
-    } catch (error) {
-      console.error("[EXTERNAL_SOCKET] ❌ Failed to emit channel message:", error);
-      return false;
-    }
+  emitChannelMessage(channelId: string, message: SocketMessage, io?: any) {
+    console.log(`[EXTERNAL_SOCKET] Channel message logged (SSE handles real-time): ${channelId}`);
+    // Note: Real-time updates are now handled by SSE system
+    // The message is already saved to database and will be picked up by SSE polling
+    return true;
   }
 
   /**
-   * Emit direct message to conversation
+   * Emit direct message to conversation - STUBBED (SSE handles real-time updates)
    */
-  emitDirectMessage(conversationId: string, message: SocketMessage, io?: SocketIOServer) {
-    const socketIO = io || this.io;
-    if (!socketIO) {
-      console.warn("[EXTERNAL_SOCKET] No socket server available for direct message");
-      return false;
-    }
-
-    const conversationKey = `conversation:${conversationId}:messages`;
-    
-    try {
-      socketIO.emit(conversationKey, {
-        ...message,
-        _external: true,
-        _forceUpdate: true
-      });
-      
-      console.log(`[EXTERNAL_SOCKET] ✅ Direct message emitted: ${conversationKey}`);
-      
-      // Also emit to external listeners
-      this.emitExternalEvent('message-created', {
-        type: 'conversation',
-        conversationId,
-        messageId: message.id,
-        sourceType: message._sourceType,
-        timestamp: new Date().toISOString()
-      }, socketIO);
-      
-      return true;
-    } catch (error) {
-      console.error("[EXTERNAL_SOCKET] ❌ Failed to emit direct message:", error);
-      return false;
-    }
+  emitDirectMessage(conversationId: string, message: SocketMessage, io?: any) {
+    console.log(`[EXTERNAL_SOCKET] Direct message logged (SSE handles real-time): ${conversationId}`);
+    // Note: Real-time updates are now handled by SSE system
+    // The message is already saved to database and will be picked up by SSE polling
+    return true;
   }
 
   /**
-   * Emit external integration events
+   * Emit external integration events - STUBBED
    */
-  emitExternalEvent(eventType: string, data: any, io?: SocketIOServer) {
-    const socketIO = io || this.io;
-    if (!socketIO) {
-      console.warn("[EXTERNAL_SOCKET] No socket server available for external event");
-      return false;
-    }
-
-    try {
-      // Emit to external event channel
-      socketIO.emit(`external:${eventType}`, data);
-      
-      // Emit to specific channels if applicable
-      if (data.channelId) {
-        socketIO.emit(`external:channel:${data.channelId}:${eventType}`, data);
-      }
-      
-      if (data.conversationId) {
-        socketIO.emit(`external:conversation:${data.conversationId}:${eventType}`, data);
-      }
-      
-      console.log(`[EXTERNAL_SOCKET] ✅ External event emitted: ${eventType}`);
-      return true;
-    } catch (error) {
-      console.error("[EXTERNAL_SOCKET] ❌ Failed to emit external event:", error);
-      return false;
-    }
+  emitExternalEvent(eventType: string, data: any, io?: any) {
+    console.log(`[EXTERNAL_SOCKET] External event logged: ${eventType}`);
+    // Note: External events are now handled by SSE system or direct API calls
+    return true;
   }
 
   /**
-   * Emit agent status update
+   * Emit agent status update - STUBBED
    */
   emitAgentStatusUpdate(agentId: string, status: {
     isOnline: boolean;
@@ -170,78 +84,28 @@ export class ExternalSocketService {
     messageCount: number;
     agentType: string;
     displayName: string;
-  }, io?: SocketIOServer) {
-    const socketIO = io || this.io;
-    if (!socketIO) {
-      console.warn("[EXTERNAL_SOCKET] No socket server available for agent status");
-      return false;
-    }
-
-    try {
-      socketIO.emit('agent-status-update', {
-        agentId,
-        ...status,
-        timestamp: new Date().toISOString()
-      });
-      
-      socketIO.emit(`agent:${agentId}:status-update`, {
-        ...status,
-        timestamp: new Date().toISOString()
-      });
-      
-      console.log(`[EXTERNAL_SOCKET] ✅ Agent status update emitted: ${agentId}`);
-      return true;
-    } catch (error) {
-      console.error("[EXTERNAL_SOCKET] ❌ Failed to emit agent status:", error);
-      return false;
-    }
+  }, io?: any) {
+    console.log(`[EXTERNAL_SOCKET] Agent status logged: ${agentId}`);
+    // Note: Agent status updates are now handled by SSE system or direct API calls
+    return true;
   }
 
   /**
-   * Emit visitor activity
+   * Emit visitor activity - STUBBED
    */
   emitVisitorActivity(sessionId: string, activity: {
     type: string;
     data: any;
     channelId?: string;
     conversationId?: string;
-  }, io?: SocketIOServer) {
-    const socketIO = io || this.io;
-    if (!socketIO) {
-      console.warn("[EXTERNAL_SOCKET] No socket server available for visitor activity");
-      return false;
-    }
-
-    try {
-      socketIO.emit('visitor-activity', {
-        sessionId,
-        ...activity,
-        timestamp: new Date().toISOString()
-      });
-      
-      socketIO.emit(`visitor:${sessionId}:activity`, {
-        ...activity,
-        timestamp: new Date().toISOString()
-      });
-      
-      if (activity.channelId) {
-        socketIO.emit(`visitor:channel:${activity.channelId}:activity`, {
-          sessionId,
-          ...activity,
-          timestamp: new Date().toISOString()
-        });
-      }
-      
-      console.log(`[EXTERNAL_SOCKET] ✅ Visitor activity emitted: ${sessionId}`);
-      return true;
-    } catch (error) {
-      console.error("[EXTERNAL_SOCKET] ❌ Failed to emit visitor activity:", error);
-      return false;
-    }
+  }, io?: any) {
+    console.log(`[EXTERNAL_SOCKET] Visitor activity logged: ${sessionId}`);
+    // Note: Visitor activity is now handled by SSE system or direct API calls
+    return true;
   }
 
   /**
-   * Emit workflow execution status
+   * Emit workflow execution status - STUBBED
    */
   emitWorkflowExecution(workflowData: {
     workflowId: string;
@@ -251,41 +115,14 @@ export class ExternalSocketService {
     responseMessageId?: string;
     processingTime?: number;
     error?: string;
-  }, io?: SocketIOServer) {
-    const socketIO = io || this.io;
-    if (!socketIO) {
-      console.warn("[EXTERNAL_SOCKET] No socket server available for workflow execution");
-      return false;
-    }
-
-    try {
-      socketIO.emit('workflow-execution', {
-        ...workflowData,
-        timestamp: new Date().toISOString()
-      });
-      
-      socketIO.emit(`workflow:${workflowData.workflowId}:execution`, {
-        ...workflowData,
-        timestamp: new Date().toISOString()
-      });
-      
-      if (workflowData.externalMessageId) {
-        socketIO.emit(`external-message:${workflowData.externalMessageId}:workflow`, {
-          ...workflowData,
-          timestamp: new Date().toISOString()
-        });
-      }
-      
-      console.log(`[EXTERNAL_SOCKET] ✅ Workflow execution emitted: ${workflowData.workflowId}`);
-      return true;
-    } catch (error) {
-      console.error("[EXTERNAL_SOCKET] ❌ Failed to emit workflow execution:", error);
-      return false;
-    }
+  }, io?: any) {
+    console.log(`[EXTERNAL_SOCKET] Workflow execution logged: ${workflowData.workflowId}`);
+    // Note: Workflow execution status is now handled by SSE system or direct API calls
+    return true;
   }
 
   /**
-   * Emit portfolio notification
+   * Emit portfolio notification - STUBBED
    */
   emitPortfolioNotification(notification: {
     type: 'contact-form' | 'ai-response' | 'admin-action' | 'system-alert';
@@ -295,56 +132,24 @@ export class ExternalSocketService {
     channelId?: string;
     messageId?: string;
     metadata?: any;
-  }, io?: SocketIOServer) {
-    const socketIO = io || this.io;
-    if (!socketIO) {
-      console.warn("[EXTERNAL_SOCKET] No socket server available for portfolio notification");
-      return false;
-    }
-
-    try {
-      // Emit to general portfolio listeners
-      socketIO.emit('portfolio-notification', {
-        ...notification,
-        timestamp: new Date().toISOString()
-      });
-      
-      // Emit to specific session if available
-      if (notification.sessionId) {
-        socketIO.emit(`portfolio:session:${notification.sessionId}:notification`, {
-          ...notification,
-          timestamp: new Date().toISOString()
-        });
-      }
-      
-      // Emit to specific channel listeners
-      if (notification.channelId) {
-        socketIO.emit(`portfolio:channel:${notification.channelId}:notification`, {
-          ...notification,
-          timestamp: new Date().toISOString()
-        });
-      }
-      
-      console.log(`[EXTERNAL_SOCKET] ✅ Portfolio notification emitted: ${notification.type}`);
-      return true;
-    } catch (error) {
-      console.error("[EXTERNAL_SOCKET] ❌ Failed to emit portfolio notification:", error);
-      return false;
-    }
+  }, io?: any) {
+    console.log(`[EXTERNAL_SOCKET] Portfolio notification logged: ${notification.type}`);
+    // Note: Portfolio notifications are now handled by SSE system or direct API calls
+    return true;
   }
 
   /**
-   * Get socket server instance
+   * Get socket server instance - STUBBED
    */
-  getSocketServer(): SocketIOServer | null {
-    return this.io;
+  getSocketServer(): any | null {
+    return null; // Socket.IO removed - using SSE
   }
 
   /**
-   * Check if socket server is available
+   * Check if socket server is available - STUBBED
    */
   isSocketAvailable(): boolean {
-    return this.io !== null;
+    return false; // Socket.IO removed - using SSE
   }
 }
 

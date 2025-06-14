@@ -1,0 +1,798 @@
+Building ai agents in n8n
+0:00
+today I'm going to be showing you eight AI agent use cases with nadn and these
+0:05
+agents do a variety of different things from data analysis to creating viral shorts there's a wide variety in here
+0:11
+these are things that I'm using every day and members of my community are using every single day as well these are
+0:17
+meant to get your mind spinning give you some good ideas for building agents and also show you some ways that AI agents
+0:23
+can be used now these agents that I will be showing you today they're very cool they're very helpful but they're also
+0:29
+very hard to build and if you've ever tried building an AI agent on your own or you've ever looked for an AI agent
+0:35
+that can fulfill your use case you know even that is a difficult task a lot of people are stuck in something I like to
+0:40
+call the template handcuffs they're on the move all the time searching for another template to help them fulfill
+0:45
+their use case when in reality all they need to do is switch their mindset from consumer to Creator and that's what we
+0:52
+do at AI foundations we have a community built around teaching you the fundamentals of AI making AI easy to
+0:58
+understand and we literally go from the fundamentals the history of AI all the way up to building agents with tools
+1:05
+like n8n we have an entire 30 plus module n8n course in order for you to
+1:10
+learn how to build agents yourself that way you can create the things that I'm about to show you in today's video and
+1:16
+we also have a lot of these agents that I'm going to show you today within our agent builds with blueprints so you can
+1:22
+easily just click one click installs but the main thing we're teaching you here is the actual knowledge on how to fish
+1:29
+right we're not just giving you fish we're teaching you how to fish so that you can eat forever so if you want to join us and you want to become a part of
+1:35
+our 989 member Community then I recommend doing so this is more than just an AI
+1:42
+place like we're making friends here if and when you join go introduce yourself we have over 8,000 comments on the
+1:47
+introduction thread we'd love to get to know you come in here make friends Network learn about AI from the start to
+1:52
+the finish and it's a never- ending process so buckle up I'll leave a link in the description or the topend comment
+1:58
+if this group interests you I promise you won't regret it all right now let's take a look at some of these AI agent
+2:03
+use cases with nadn use case number one is an llm routing agent now this is an
+LLM routing agent
+2:09
+agent that can be implemented pretty much in any workflow but what I've done is I've extracted it and I've set it up
+2:14
+in a dual agent system just like this where I have one agent and two agent just so you can see how this process is
+2:21
+working now like I said you could take these two and put them in any workflow that you want I've just broken it down
+2:28
+very simple so you can see how this llm routing agent is actually working behind the scenes now the idea of this agent is
+2:34
+to take in your request so if I were to chat something and I were to type out
+2:40
+any prompt I want based on your prompt what the decider agent would do in this
+2:45
+llm router is determine which model to use so I've given it three options in
+2:51
+here it can use perplexity it can use chat gbt's new 03 mini high or it can use Claude 3.5 Sonet now the reason you
+2:58
+might want to do this with within your automations or your agentic systems is because certain models have certain
+3:04
+strengths and certain weaknesses as well so as you can see in here I'm giving model and then I list the model and I'm
+3:12
+giving the strengths of that model so for perplexity for instance as you can see I say it can search the web for live
+3:18
+data so if I ever have any questions where live search is needed this agent is going to be able to decide to use the
+3:24
+perplexity model here and I have the same thing with o03 mini high as you can see I say this is for advanced reasoning
+3:31
+tasks and I also do the same for anthropics claw so I'm basically listing model strength model strength and I go
+3:38
+on and I could have as many models as I want in here now if you start developing of course more than 10 models you
+3:44
+probably want to break this down into three agents and have a categorizer that breaks it down into categories and then
+3:50
+selects models within those categories first that way you have more room for system messages and then we have this
+3:56
+model right here and this uses open router which can connect to many many
+4:01
+different models I'm going to copy my output right here and I just want to show you what open router can connect to
+4:07
+so I'm going to change this to fixed and as you can see open router can connect to all of these different models
+4:13
+everything from anthropic everything from coh here everything from Deep seek
+4:19
+and then just Gemini I mean it can literally connect to all of these different language models so basically
+4:25
+within my first agent I'm just using the tag or the ID that I can dynamically map
+4:30
+to this model field so it can change the model based on my query and we can do that with an expression so it's watching
+4:36
+my output so let's test this out so I can show you what this actually looks like if I chat with this and I say find
+4:42
+me restaurants for St Patrick's Day I can go to in Chicago and since I'm
+4:50
+asking a question like find me some restaurants what it's going to do this model is going to have to decide which
+4:56
+model to use based on my query here so if I'm asking for live data most likely it should use perplexity so I'm going to
+5:03
+send this off and as you can see this model is going to run and then it's going to give me a structured output
+5:08
+here which will change the model depending on what this agent decides to do and then give me a response and then
+5:15
+it gives me an up-to-date response with restaurants in downtown Chicago that I
+5:20
+could celebrate uh St Patrick's Day at if I go into my structured output parser what this does is this passes my query
+5:27
+and also the model that it needs to use to the other agent so as you can see it says find me restaurants for St
+5:33
+Patrick's Day I can go to in Chicago and then it also passes the model so it's passing query and model to this other
+5:40
+agent and that's what the agent is receiving in here is my query and the model gets mapped to the model field so
+5:48
+it's going to give me a response Now using this model since we have the model on expression and also since we have
+5:54
+that query point in the text this would be an example of using a routing agent and this can do many different things
+6:00
+for you like save on costs give you more accurate responses it can just completely revolutionize your AI agents
+6:08
+and these also are two agents that you can use so I like using this whenever I need to decide between different models
+6:15
+to select the next AI agent use case is my deep research agent now this thing
+Ultimate research agent
+6:21
+has revolutionized the space so many different people have been using it for so many different things phds Radio
+6:27
+broadcasters everyday people wanting to learn about nadn everyday people wanting to learn about any topic that comes to
+6:33
+their mind this thing is great and don't worry about you know modeling this exact system it is pretty complex with
+6:40
+everything that I've created but think about the idea of this system and what it's doing and how it can just do all of
+6:46
+the work for you before I send off a customer quest for this video what I'm going to do is show you what a result
+6:52
+looks like from this automation all you have to do is type in a topic so what I did was I typed in beekeeping and how it
+6:59
+reduced is stress and what this automation is going to do for you is create a deep researched PDF with
+7:05
+citations that was a big problem with in the AI space people wanted deep research but there was no way to get all the
+7:11
+information backed up by actual sources in a nice format very quickly so that's
+7:17
+what this automation does you type in a topic and it does deep research for you gives you citations that you can click
+7:23
+on for instance this one I just did beekeeping and how it reduces stress something that I had no idea if it even
+7:29
+correlated or not but I wanted to see if it did and it gave me loads and loads of information on how beekeeping actually
+7:36
+does reduce stress and how there have actually been real studies on this and you can actually click on all of these
+7:42
+sources as well so if I click on this source as you can see it takes me to a page called the therapeutic benefits of
+7:47
+beekeeping so it's getting information from this website URL right here and
+7:53
+actually putting it within its research that's what this agent does so let me send off a request test for a new topic
+8:01
+and we will see what research we can get generated the research that I'm going to be testing is water only fasting for 9
+8:08
+days and how it regenerates the body something very interesting uh we can actually submit this and this is just a
+8:14
+basic form that is native to n8n so when I hit test workflow this form pops up I
+8:20
+could have this anywhere I could have it in Google forms air table doesn't really matter but I'm going to hit submit and
+8:25
+what this automation is going to do is actually just start running it's going to create some queries for me a style
+8:31
+going to research uh go to the research manager and create some outlines and some topics so that it can run through
+8:38
+the big loop of the research operations where we're actually using perplexity as a research model so very cool automation
+8:46
+I will be back when it is finished running and along with this research agent actually comes a research agent
+8:53
+table in air table and this is something I like to call a rotating aggregation system because what this does is is it
+9:00
+automatically will add certain items to that database as the automation is
+9:05
+running so it's adding all of its citations it's HTML Snippets citations to HTML all of its research as it's
+9:12
+going it's updating your table live so you also have the raw information in here for each research paper that you
+9:19
+create everything is linked back to a paper and we also have a place to store each and every one of our PDFs which is
+9:25
+great so this automation is just finishing up and as you're going to see it's it's going to go down this done route and then actually create a PDF for
+9:33
+us so after the PDF has been created the workflow is executed successfully it's added that PDF back to that air table I
+9:40
+was showing you just to show you how long that took to run as you can see it took 6 minutes and 32 seconds which
+9:48
+isn't bad and when you see this paper you're going to understand how long it would have actually taken you to do the
+9:53
+same work so I'm going to go back to this research agent and I'm going to go to the PDF that was just cre created I
+9:59
+can click to open it up and as you can see we have my topic at the top so water only fasting for 9 days and how it
+10:05
+regenerates the body and then it goes into an introduction understanding the regenerative potential which is an
+10:11
+interesting introduction you know what is the regenerative potential and as you can see it just breaks down my topic in
+10:17
+such a nice way and gives me resources and everything so if I click on these resources let's just click on this first
+10:23
+one as you can see it was using an article or a research paper from Columbia Columbia University how fasting
+10:30
+refeeding Paradigm rejuvenates old stem cells and it's pulling information from
+10:36
+these reputable sources in order to develop its research paper and this is an 11 page PDF and not only does it you
+10:44
+know map the sources with the data but what this also does is pulls in a big
+10:50
+list of references that it used for its research so very professional very cool this is one way that you could build out
+10:56
+an AI agent is to create PDF for you give you sources and uh just start doing
+11:02
+research for you on any topic that you desire that is this agent and that is what we've built within the community if
+11:09
+you want this template we also have it within the community so you can easily install this and get it up and running
+YouTube transcript scraper
+11:14
+the next agent that I want to show you is an agent that allows me to talk with all of my YouTube videos so how could
+11:20
+this actually be beneficial well it's not only beneficial for me but also somebody who would want to talk with my
+11:26
+YouTube videos somebody who learns from my YouTube videos what I've done is I've created an agent that has access to all
+11:32
+of my YouTube video transcripts in something called a vector store and a vector store is just a better system for
+11:38
+AI to reference PDFs it's like a Google Drive on steroids that breaks down your PDFs in small segments so that whenever
+11:45
+you ask a question it can go and get that segment of text it's not just using all the transcripts as context but I
+11:51
+will say this agent did not come to life without the help of two automations so
+11:57
+as you can see we have automation number one and this automation takes in YouTube video URLs and then turns them into
+12:04
+transcripts the next automation actually processes my YouTube transcripts and uploads them to my Vector store which
+12:12
+when it's in my Vector store I can then talk to it and ask very granular questions through hours hours and hours
+12:20
+of my footage so let me show you how this works again this one all starts within my air table I've built an air
+12:26
+table database for myself and my Community for uh to store YouTube transcripts I have a form over here so
+12:33
+whenever I want to uh get a transcript from a YouTube video I can just upload that video URL maybe I'm scrolling along
+12:39
+productive dudes YouTube channel and I want to ask some questions about a certain video with my agent so I can go
+12:45
+even deeper on that subject let's say I want to ask questions about Carter's self-learning agent I can click on that
+12:52
+video I can grab this URL and then I can go over to my air table form and paste
+12:58
+that and hit submit and what this is going to do is that's automatically going to create a YouTube transcript in
+13:05
+a matter of seconds based on that video URL and it's going to be using the first
+13:10
+Automation in this agentic workflow as you can see it just populated in in a matter of about 10 to 15 seconds and now
+13:18
+from this entire video I've pulled in the entire video transcript this in
+13:23
+itself is an amazing automation use case within n8n but today I want to show you how we can make that agentic right how
+13:30
+we can actually have an agent in the loop first what I'm going to do is I'm going to process that within my Vector
+13:35
+store so what that's going to do is grab my video URL vectorize it and then
+13:40
+change that stage automatically for me so now I know it's vectorized within my database and all good to go and now I
+13:47
+can actually go talk with that video and ask specific questions so I could say uh what does Carter say in this video about
+13:55
+writing a system prompt you know I could copy the video title even since I a ton of videos in my database and I could
+14:01
+talk with individual videos I could say in paste in that video what does Carter
+14:07
+say about writing a system prompt and how can I implement this in other agents
+14:17
+so this would be an example of going deeper with a YouTube transcript but first I needed to import that entire
+14:22
+transcript into my database so I could vectorize it then I can talk to it so I could send off this question and it's
+14:29
+actually going to search my database right here for that specific video and for that part of the video about writing
+14:36
+a system prompt and then it's going to give me tips on how I can use Carter's advice for my other agents as well he
+14:42
+says that a system prompt should be concise and only include essential characters no extra filler he advises
+14:47
+crafting prompts that are structured using XML and Json to ensure consistent behavior from a your AI so this is
+14:54
+actual advice that Carter gave in the video within the writing a system some prompt message here so this is another
+15:01
+agent use case that can just absolutely transform your workflows when you have the ability to talk to YouTube videos
+15:07
+that you enjoyed that you learned from think about what that can do to your learning experience and how that can
+15:12
+Propel you to learn even deeper the next AI agent use case is a data analyst
+Data analysis agent
+15:18
+agent now this can become very robust for now I want to show you a very basic example in order to get your mind
+15:25
+spinning on how you might be able to implement a data analyst in your next gentic workflow as you can see I have an
+15:31
+AI agent node connected to two tools financial data and chart types I have my
+15:36
+financial data in a very basic Google sheet at the end of this video I'm going to show you how I've connected an agent
+15:43
+to a database that has over 300,000 records so when you see this just know
+15:49
+you can definitely scale it up but we're going to have to move out of Google Sheets but for now this data analyst has
+15:55
+access to this sheet so we can see things like what month I tracked certain metrics like Revenue total expenses net
+16:01
+profit research and development Marketing sales and so on so I also have my air table tool showing the different
+16:08
+chart types and data examples of how to generate specific charts uh in my
+16:13
+workflow here so this workflow utilizes something called quick chart and quick chart allows you to generate images with
+16:19
+a simple open API so when you use this URL and you type in data for instance
+16:25
+you can just display those like this and it will generate you a chart so that's what we've implemented into our agent
+16:31
+instructions so that we can generate charts and do data analysis on our uh
+16:36
+data that we have so what I'm going to do is I'm just going to chat with this data analyst here and then I could say
+16:43
+something like maybe I'll go look at my financial data like uh give me a chart uh comparing revenue and net profit
+16:51
+let's just say I can say generate a chart comparing revenue and net profit
+16:58
+and then I can send that off and what this is going to do is use uh one of chat gbt's new models actually 03 in
+17:05
+order to analyze my data it's going to search my financial data search my chart
+17:10
+types if it needs to in order to generate a chart so now you can see it's searching to see which type of chart it
+17:16
+should generate uh based on my request here and then it's going to return all of that to the chat now you could hook
+17:22
+this up to telegram WhatsApp slack you don't have to do all of this within nadn I'm just doing it for the sake of
+17:28
+example but as you're going to see I'm going to extend this chat a little bit
+17:33
+when it Returns the response we're going to also have a graph with that response so it just got done generating and it
+17:39
+says this line chart Compares revenue and net profit over the latest 10 months and it generates an entire chart for us
+17:45
+at the bottom here it says this visualization clearly displays the fluctuations and Trends in both revenue
+17:51
+and net profit we can save this image if we want this entire chart and then we could even ask further questions and do
+17:56
+more data analysis I can ask a a question like based on my revenue and net profit how would you say my profit
+18:02
+margins are I could send that off and then it generates an analysis based on my profit margin showing uh actual
+18:09
+percentages based on my data and even generating me a profit margin chart now you could edit the styling of this any
+18:15
+way you want but now I can see my profit margin I could save this image and as you can see when I click in I can see it
+18:20
+a little bit better all this data is arbitrary of course I just generated some fake data with chat GPT but as you
+18:27
+can see this data shows negative 80% profit margins in May of 2024 so this
+18:32
+company must have been struggling but they quickly rebounded back around 30% and this is just a good way to uh talk
+18:38
+with data view data using nadn and creating a data analyst agent AI agent
+Database creator
+18:45
+use case number five is a database Creator yes I have this agent create
+18:50
+databases for me now I'm somebody who uses air table quite a bit as you can see I've got a ton of different
+18:55
+databases in here and one of the main reasons I have all these databases in here is because I have an agent that can
+19:01
+create them for me so whenever I need a database whether it's for sorting information creating a tool for my agent
+19:08
+literally whatever I need a database for I can have this agent use air table HTTP
+19:14
+request and a simple form input where I describe using natural language the goal
+19:19
+of my database after that it's going to in entirely create a database for me
+19:25
+with rows columns select options and and so on so for instance I could tell this
+19:32
+uh form here the exact type of database I want for example I could say I want a construction project database that
+19:39
+tracks job status and deadline I could keep it simple for now or I could make it even more robust but once I hit
+19:45
+submit it's going to send this to my AI agent that's going to decide on which
+19:51
+structure to use for my workflow and as you can see it didn't even need to
+19:56
+search the field types because I've Ed it in the back end here on how to build air table databases and as you can see
+20:03
+this HTTP request ran successfully so if I go to my air table as you can see we
+20:09
+now have a construction project tracker so when I open this up as you can see it
+20:14
+gives us exactly what we need a database pre-populated with descriptions with job status in here of not started in
+20:21
+progress under review completed and we even have a deadline field within our air table something very simple but this
+20:27
+AI agent really helps me out because I can implement this in my own workflows I could call this agent whenever I need to
+20:34
+in order to create a database for me which just definitely adds to that non-deterministic output if I need a
+20:41
+database it can create one for me and even populate it with information all without me intervening at all AI agent
+Meeting manager
+20:47
+use case number six is my meeting manager agent system now this thing is
+20:53
+crazy you might be looking at this going what in the world is going on here well don't worry this is not all happening in
+20:59
+one workflow but I did drag all of these automations and agents and tools all
+21:04
+into one space so you could see everything that went into creating my meeting manager now where the system
+21:10
+starts is the meeting orchestrator and whenever I have a problem whenever I have a request a question this
+21:16
+orchestrator agent's job is to call the proper tool I need in order to solve my problem is it a question about my
+21:22
+calendar my CRM do I want to create a zoom meeting do I want to email somebody that's what this orchestrator AG job is
+21:29
+it then sends it to the respective tool that even has more tools to fulfill my
+21:35
+request so very robust solution let me show you how it works in the meting orchestrator I can just use telegram for
+21:42
+this so I have telegram open on the right and I have my orchestrator agent open on the left now you're not going to
+21:47
+be able to see this run because I have it activated but I can ask it a question something like what's on my schedule for
+21:56
+tomorrow and when you set up an agent like this with an orchestrator that connects to other tools you have one
+22:01
+cohesive workflow that works like magic because each tool has its own responsibility each workflow rather has
+22:09
+its own responsibility so when I ask it a question like that what it's going to do is go search my Google Calendar and
+22:14
+reply back with all of my events that I have tomorrow so as you can see morning routine haircut with Carter AI
+22:20
+foundations Q&A and when I go to my events tomorrow as you can see on the 19th over here I have all of those
+22:27
+events so I have morning routine and I'm going to make my screen maximized haircut with Carter and then AI
+22:34
+foundations Q&A now these are arbitrary events that I created on a test calendar but it works with your real one too I
+22:39
+was just showing you this as an example another thing I could do is I could create events uh in here so I could say
+22:46
+something like create an event with Nolan for tomorrow at
+22:53
+5:30 p.m. we will talk about Marathon on
+22:59
+training for an hour on a zoom call so it's going to take in all of this
+23:05
+information tomorrow 5:30 p.m. an hour on a zoom call and then I say create a
+23:11
+calendar event with Nolan well how does it know who Nolan is well remember it has access to my CRM database so it's
+23:17
+going to know everything about Nolan right it's going to know that Nolan's the lead editor at AI foundations it's going to know Nolan's email Nolan's full
+23:24
+name here so this solution works for you when you set it up in the correct way
+23:29
+uh as these different tools and you give it access to certain things so I'm going to send off this request and what this
+23:36
+is going to do is create an event on my calendar it's going to create an actual Zoom meeting on my zoom account but this
+23:42
+is the great part about this automation it says there's a scheduling conflict at the time you requested you have an event
+23:49
+AI foundation's Q&A from 4:30 to 6:00 tomorrow because remember I asked to do it from 5:30 uh to 6:30 and it says that
+23:58
+I've got a conflicting event which is great this is what you want it to do so now I can even reply back in voice I'll
+24:04
+just say let's do 6:30 to 7:30 instead thank you for that and since this is multimodal it can accept my voice it can
+24:10
+accept the text and I love how it just gives me suggestions based on my actual schedule and then it will actually make
+24:16
+that event on the correct day as you can see it already added it in marathon training and now it's just going to add
+24:22
+in a zoom call to that event as well because remember I said I want it on a zoom call so it's going to create a zoom
+24:28
+meeting for me I'm going to wait for this message to populate in the chat and it should give me a nice summary with my
+24:35
+event details my link to the event and so on as you can see it said the marathon training discussion with Nolan
+24:40
+sriraj has been successfully scheduled here are the details it gives me the date the time if I go to my zoom and I
+24:48
+hit refresh what you're going to notice is that we have marathon training discussion coming up tomorrow 6:30 to
+24:54
+7:30 we have a description a zoom meeting link an event link and everything we need ready to go in here I
+25:01
+could even say email Nolan the event details and send that over and what
+25:07
+that's going to do is search my CRM for Nolan's email address here and then it's going to email him with the event
+25:12
+details this is my meeting manager agent I have this one within the community as well and I've showcased it in other
+25:17
+YouTube videos but just to show you that the email works says the email to Nolan confirming the marathon training
+25:23
+discussion has been successfully sent as you can see the email would have sent this is a test email no let an ex
+25:28
+example.com doesn't actually exist but this is the thing that it would have sent you could work on the formatting
+Viral YT shorts agent
+25:34
+very easily AI agent use case number 7 allows you to create viral YouTube shorts now I'm going to send this one
+25:40
+over to my brother/ co-founder of AI foundations Carter in order to demonstrate this because he's actually
+25:46
+the one who built this but I do want to mention this is one of the automations within our community as a lot of these
+25:53
+have been throughout the video but now here's Carter with the viral YouTube shorts agent thanks Drake I'm glad to be
+25:59
+stepping in for use case number seven use case number seven is generating short form videos inside of n8n I'm just
+26:07
+going to be using telegram here so that I can chat with this agent on my computer or on my phone when I'm on the
+26:13
+go and the neat thing about this automation is that it has three steps so
+26:18
+it has a check step right here and then it has the actual automation itself and
+26:23
+finally there's a check step for if we want to upload that video to YouTube directly in this agent is going to check
+26:29
+back with me and see if I actually want to upload this or if I want to move forward with a video idea the first part
+26:35
+here as I said is just checking if we want to use the idea and basically just helping me brainstorm ideas so this
+26:42
+agent right here has two different responses that it can use it can use a conversational response if it's just
+26:47
+talking to me or it can actually send off a request for a video idea to go through and if it sends off a request
+26:54
+for a video to go through it'll go down this route over here where it moves either to the actual automation or it
+27:01
+Loops back around if I deny the video idea that it gives me once a video idea is accepted it moves on to the generate
+27:07
+video flow and the ideator actually creates the script title and description
+27:12
+for the video and this is where you can get really creative with your system prompts and you can really make this
+27:17
+your style then we move on to some HTTP requests here first we have an HTTP
+27:23
+request in 11 labs and this goes off in two directions first it chunks out the
+27:28
+script into each individual character and sees how long that script is actually going to be so that my image
+27:35
+prompter can decide what images to generate for the video and it also goes down this route here to just get the
+27:40
+audio file itself once it gets to the image prompter the image prompter is going to create a variable amount of
+27:46
+images right here based on the length of the script and it's going to Output those to replicate where it's going to
+27:52
+generate images using flux Laura which is an image generation model then it will wait right here until the images
+27:58
+are complete and get the images and then those images are used to request a video
+28:04
+very similar step here it's just going to request that video wait for the video to complete and then get the final video
+28:10
+and it's going to iterate through this flow as many times as it needs to based on how many images actually came in
+28:17
+which is based on the script length then it's going to aggregate all of those videos together pull together the audio
+28:23
+file and upload it to run some code on zero Cod kit this code job is to
+28:28
+generate the video editor request and then once the video editor request is generated we're going to send that off
+28:34
+to a video editing API called creatom mate we'll wait for the video to render and then finally we'll have the get
+28:41
+final video node right here which just gets the final video URL then we'll save that final video URL and all of the
+28:48
+stats in an air table and we'll hand it off for another check step in telegram where it's going to come back and ask me
+28:54
+if I want to post the video to YouTube If I say no no it's just going to come down and it's going to say okay I didn't
+29:01
+upload that but you can access it in the air table but if I say yes and I approve of the video and I want it to upload to
+29:07
+Youtube then it'll go down this route right here where it's going to get the base 64 for that video convert it to a
+29:14
+file upload it to YouTube and then add the YouTube video ID to our air table database so that I can get a video link
+29:21
+then it'll send me a message with the final video upload on YouTube so let me show you how this works I can just say I
+29:27
+want to generate a video idea about coffee I can send that off and here it
+29:34
+gives me a video idea so it says interesting fact about the science behind coffee brewing if I wanted to I
+29:40
+could just decline this and hit open and then it's going to come back to me very intuitively and it's going to say what
+29:47
+can I improve upon right so it says could you tell me a bit more about what you're envisioning for the coffee video
+29:53
+are you leaning towards a quick Brewing tip a fun fact about Coffee Culture or maybe maybe something else and I could
+29:59
+just say let's think of some Brewing tips that we could make videos about and
+30:08
+then it's just going to come back with a conversational reply and say let's narrow down some Brewing tips would you like a tip focused on water temperature
+30:15
+grind size or Brewing duration we can even cover equipment differences like french press versus drip coffee what do
+30:22
+you prefer and I'm just going to say I want some tips on how to create
+30:28
+beautiful latte art but the video should only cover one tip so let's narrow down
+30:38
+some tips we could cover in the video and it gives me the response here and it
+30:44
+has this tip here for ensuring the right espresso blend to create the best canvas I'm just going to copy that and I'm
+30:50
+going to say let's go with this idea and send that off and here it gives me the
+30:56
+idea so it says single tip show showing how the right espresso blend creates the perfect canvas for stunning latte art
+31:02
+I'm just going to copy this and I'll decline I'm going to say this looks good
+31:08
+but when you pass the video idea give the actual tip for this as more of an
+31:16
+answer to the video idea so that the video can be generated based on your
+31:26
+prompt rather than passing just an idea and I'll send that off and finally we
+31:32
+have an idea here that's pretty solid it says espresso blend with balanced acidity and thick Crea creates an ideal
+31:38
+canvas for latte art I'm just going to send this off by hitting approve and now
+31:43
+my video is going to work if I click on the executions tab here I'll see that it's running so if I click on this I can
+31:51
+just wait until the execution is done running or until it needs the next step from me and then it'll come back in
+31:57
+improve with me if it's ready to upload to Youtube all right so this automation has been running for a little while now
+32:03
+and if I zoom in here you're going to see that it's at this last weight step and it's asking me if I want to post this to YouTube so at this point I can
+32:10
+just check the video out and make sure it's solid and then if I like it I can post it to YouTube so I'll click the
+32:16
+link and this is my first time watching this video so we'll check it out and see how it went discover how a rich espresso
+32:22
+blend Sparks creative latte art join me as I explore the enchanting process cess
+32:28
+of blending a finely tuned espresso with balanced acidity and a velvety thick
+32:34
+Crea watch every step transform this ideal canvas into a vibrant latte art
+32:40
+masterpiece from extraction to intricate design techniques discover how precision
+32:45
+and passion come together to redefine your coffee ritual subscribe for daily
+32:50
+espresso art tips and tricks today now if I really wanted to go in and customize this to improve the script and
+32:57
+the image prompting for this then I could go into the ideator and the image prompter and I could update the system
+33:03
+prompts but just for the sake of this video I'm going to show you what happens when I approve this and upload it to
+33:09
+YouTube so I'll hit approve then I'll hit open and now the execution is going to continue running and it's going to go
+33:15
+upload that video to YouTube and boom just like that it uploaded the video to YouTube and I can just click this link
+33:21
+to go and watch the video so let's click this link and check it out all right perfect so let's go ahead and play this
+33:27
+discover how a rich espresso blend Sparks creative latte art join me as I
+33:33
+explore the enchanting process so that's how quick you can get a video uploaded on YouTube and if I come over to air
+33:39
+table I can see a log of all the videos that I've created and I can see the ones that both haven't been uploaded yet and
+33:45
+the ones that have been uploaded with a YouTube link now the one that I did upload is this one right here and if I
+33:51
+scroll over as you can see it even has analytics in here so right now it has zero views zero likes zero comments
+33:58
+but if I drop a quick like on this video and we'll also just leave a quick comment as you can see it hasn't updated
+34:04
+here in air table yet but if I hit run on this script that I created to automate this it's going to come back
+34:10
+and give me the updated stats so it has one view one like and one comment now so
+34:15
+if you head over to the AI foundations community and go to the classroom and then you scroll down to the n8n Mastery
+34:21
+course you can access this by going down to our agent builds here and going to the viral shorts Automation and then
+34:27
+here I'm going to have all of the versions for this so that you can quick install them and then here at the very bottom of this you can go to the
+34:34
+oneclick install for viral shorts I'm going to have a few different versions in here this is the basic version but if
+34:40
+you want the one with the check step I'm going to be uploading that as well here now back to Drake for your final use
+Postgres database agent
+34:46
+case thank you Carter for sharing your viral shorts agent with us highly appreciate it next we have ai agent use
+34:53
+case number eight and this one is honestly one of my favorites because what it allows you to do is chat with
+34:58
+hundreds of thousands of rows of data get very specific insights get ranges of
+35:04
+data and so much more AI agent use case number eight is chatting with a postgress database with your AI agent
+35:11
+and using your postgress database as a tool that might sound kind of confusing but I just want to show you what this is
+35:17
+capable of it's a very small agent right but we were giving it tools to use
+35:23
+non-deterministically so it can search the scheme on whatever it can search anything in my sleep data ever and what
+35:28
+we have here is these two tools for a postgress database now the first one is
+35:34
+just searching the schema so it's searching like my database rows my columns my names literally everything so
+35:40
+it can just pick up a bunch of context on what I want but as you can see this
+35:45
+schema is composed of columns right the schema is just like the structure you can think of schema like structure and
+35:51
+the Sleep data is actual queries that are used in order to go and find very specific items now what I do is each
+35:59
+night I have this ring that tracks my sleep the aura ring I've showed it off in a few videos but that ring tracks my
+36:05
+sleep and I can actually hook this up to an HTTP request and automatically append
+36:11
+all of my sleep data to this database right and what I have is five tables I
+36:17
+have my heart rate data and this tracks every five minutes in my sleep so it has a time stamp every every five minutes of
+36:23
+every night when I'm sleeping so this heart rate data has 22,000 records in it
+36:30
+my HRV data that's the same it's tracking in 5 minute Tim stamp so I have another 23,000 records in here my
+36:37
+movement data on the other hand is tracking every 30 seconds and it scores my movement you know it gives it a two
+36:43
+for moderate three for heavy one for light as you can see uh initially in the night I'm kind of moving all over the
+36:49
+place but as the night goes on my movement gets a lot lighter so every 30 seconds it's tracking my movement every
+36:55
+single night so you can imagine all the day I receive when we're talking about 300 nights of 30second timestamps this
+37:02
+movement data database has almost 225,000 records and this is just an
+37:08
+estimate I also have sleep sessions and sleep stages to determine whether I was awake in deep sleep or I had light sleep
+37:15
+also there's a category for Ram sleep in here so I can really create some awesome data analysis with this but let's get
+37:20
+back to the agent because with this agent what I can do is I can actually talk to a postgress database and
+37:26
+postgress databases are great for large data with many time stamps so let me just send off a few queries here so you
+37:32
+can see how this works I could ask something hyp specific you know you saw all the records I have in there I could
+37:38
+ask what was my heart rate on January
+37:45
+2nd at 4:21 a.m. and it's going to be able to query my database after
+37:51
+searching the schema as you can see it's searching the structure of my schema right there and then it's going to develop a query to give to my sleep data
+37:59
+in order to execute it and pull that exact heartbeat that I recorded at 422
+38:06
+a.m. eastern time on January 2nd so it said it was 65 beats per minute I was sick on January 2nd so my heartbeat was
+38:12
+a little high I could even get a data range right I could say how about for
+38:18
+all of January what was my average heart
+38:24
+rate each night and I'm just asking about my heart rate right here I could even ask about my movement data was I
+38:29
+moving around a lot at this time at this night on this date some people might think this is unnecessary but honestly
+38:34
+where AI is going you're going to need a database structured with everything as you can see it gives me my average heart rate for each night in January of 2025
+38:42
+and now I could even ask some data analysis like questions I could say based on my average heart rate which
+38:49
+nights might I have been sick I could send that off and now it can make
+38:55
+guesses based on my average average heart rate throughout January on which nights I was sick so January 3rd it
+39:01
+tracked a really high BPM so that was a day I was sick I actually got sick twice in January and the other time was in the
+39:08
+back half so as you can see it can even track the days that I'm sick based on my heart rate because it knows my baseline
+39:15
+from my data or it can at least get my baseline from my data so this is AI agent use case number 8 is using a
+39:22
+postgress database and an agent in order to communicate with that postgress database but with that being said that
+39:29
+is all I have for this video I hope you enjoyed I hope that you learned a thing or two about agents and what you can
+Access the agents
+39:35
+start implementing in your own workflows again if you want the knowledge on how to build awesome stuff like this in this
+39:40
+AI Revolution then I highly recommend joining our AI foundations Community this is where all of the magic is
+39:45
+happening we don't just give you templates although we do give you templates we also give you the knowledge
+39:51
+that it takes to go out and build this stuff on your own and that's what is going to separate everyone in this AI Revolution is who can build and who
+39:59
+can't build right it's the halves and the Have Nots when you change your mindset from consumer template Grabber
+40:05
+to template Builder great things happen and you can actually start implementing this stuff in so many different ways
+40:11
+Landing your first client automating your process that saves 5 minutes a day
+40:17
+20 minutes a day 30 minutes a day whatever it may be we teach you how to do it in here all the way from the
+40:22
+fundamentals too it's not just about AI agents right you have to understand the fundamentals first so that's what we
+40:27
+teach in there break the chains of being a template consumer and start learning the actual skills it takes to build
+40:33
+agents and you will be a lot more successful all right that's all I have for this video If you like this video
+40:39
+well then drop a like And subscribe I would highly appreciate it I'm going to be showing a playlist here with all of Carter and I's n8n tutorials if you want
+40:46
+to watch that go ahead and with that being said I will see you in the next
+40:51
+video

@@ -211,3 +211,146 @@ export async function GET(req: Request) {
     );
   }
 }
+
+export async function POST(req: Request) {
+  try {
+    console.log('[MESSAGES_POST] Request started:', {
+      url: req.url,
+      timestamp: new Date().toISOString()
+    });
+
+    const profile = await currentProfile();
+    const { searchParams } = new URL(req.url);
+    const body = await req.json();
+    
+    const channelId = searchParams.get("channelId");
+    const serverId = searchParams.get("serverId");
+    const { content, fileUrl } = body;
+
+    console.log('[MESSAGES_POST] Request params:', {
+      profileId: profile?.id,
+      channelId,
+      serverId,
+      hasContent: !!content,
+      hasFileUrl: !!fileUrl
+    });
+
+    if (!profile) {
+      console.error('[MESSAGES_POST] No profile found - user not authenticated');
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    if (!channelId) {
+      console.error('[MESSAGES_POST] No channelId provided in request');
+      return new NextResponse("Channel ID missing", { status: 400 });
+    }
+
+    if (!serverId) {
+      console.error('[MESSAGES_POST] No serverId provided in request');
+      return new NextResponse("Server ID missing", { status: 400 });
+    }
+
+    if (!content && !fileUrl) {
+      console.error('[MESSAGES_POST] No content or file provided');
+      return new NextResponse("Content or file required", { status: 400 });
+    }
+
+    // Validate IDs format (UUID format)
+    if (!/^[a-f0-9-]{36}$/.test(channelId) || !/^[a-f0-9-]{36}$/.test(serverId)) {
+      console.error('[MESSAGES_POST] Invalid ID format:', { channelId, serverId });
+      return new NextResponse("Invalid ID format", { status: 400 });
+    }
+
+    // Check if user is a member of the server and has access to the channel
+    console.log('[MESSAGES_POST] Checking member access...');
+    const member = await db.member.findFirst({
+      where: {
+        profileId: profile.id,
+        serverId: serverId,
+      },
+    });
+
+    if (!member) {
+      console.error('[MESSAGES_POST] User is not a member of the server:', {
+        profileId: profile.id,
+        serverId
+      });
+      return new NextResponse("Not a member of this server", { status: 403 });
+    }
+
+    // Verify channel exists and belongs to the server
+    const channel = await db.channel.findFirst({
+      where: {
+        id: channelId,
+        serverId: serverId,
+      },
+    });
+
+    if (!channel) {
+      console.error('[MESSAGES_POST] Channel not found or does not belong to server:', {
+        channelId,
+        serverId
+      });
+      return new NextResponse("Channel not found", { status: 404 });
+    }
+
+    console.log('[MESSAGES_POST] Access verified, creating message...');
+
+    // Create the message
+    const message = await db.message.create({
+      data: {
+        id: require('crypto').randomUUID(),
+        content: content || "",
+        fileUrl: fileUrl || null,
+        channelId: channelId,
+        memberId: member.id,
+        role: "user",
+        updatedAt: new Date(),
+      },
+      include: {
+        member: {
+          include: {
+            profile: true,
+          },
+        },
+      },
+    });
+
+    console.log('[MESSAGES_POST] Message created successfully:', {
+      messageId: message.id,
+      memberId: member.id,
+      channelId: channelId
+    });
+
+    // Trigger system message processing for AI workflow
+    try {
+      console.log('[MESSAGES_POST] Triggering system message processing...');
+      const { createSystemMessage } = await import('@/lib/system/system-messages');
+      
+      // Create system message processing in the background (don't await to avoid blocking user response)
+      setImmediate(async () => {
+        try {
+          await createSystemMessage(channelId, message, req);
+          console.log('[MESSAGES_POST] ✅ System message processing completed');
+        } catch (systemError) {
+          console.error('[MESSAGES_POST] ❌ System message processing failed:', systemError);
+        }
+      });
+      
+      console.log('[MESSAGES_POST] ✅ System message processing initiated');
+    } catch (importError) {
+      console.error('[MESSAGES_POST] ❌ Failed to import system message handler:', importError);
+    }
+
+    // Return the created message
+    return NextResponse.json(message);
+
+  } catch (error) {
+    console.error("[MESSAGES_POST] Error details:", {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      timestamp: new Date().toISOString()
+    });
+    return new NextResponse("Internal Error", { status: 500 });
+  }
+}

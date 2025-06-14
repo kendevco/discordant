@@ -9,11 +9,13 @@ import { Loader2, ServerCrash, RefreshCw, AlertTriangle } from "lucide-react";
 import React, { ElementRef, useRef, useState, useEffect } from "react";
 import { ChatItem } from "./chat-item";
 import { format } from "date-fns";
-import { useChatSocket } from "@/hooks/use-chat-socket";
 import { useChatScroll } from "@/hooks/use-chat-scroll";
 import { useUser } from "@clerk/nextjs";
 import { useErrorHandler } from "@/components/error-boundary";
 import { ChatItemSkeleton } from "./chat-item-skeleton";
+import { useSSEChannel } from "@/hooks/use-sse-channel";
+import { useSSEConversation } from "@/hooks/use-sse-conversation";
+import { useQueryClient } from "@tanstack/react-query";
 
 type MessageWithMemberWithProfile = Message & {
   member: Member & {
@@ -70,6 +72,7 @@ export const ChatMessages = ({
 }: ChatMessagesProps) => {
   const { user } = useUser();
   const { captureError } = useErrorHandler();
+  const queryClient = useQueryClient();
   
   const [internalSearchFilters, setInternalSearchFilters] = useState<SearchFilters>({
     query: "",
@@ -166,7 +169,39 @@ export const ChatMessages = ({
     }
   }, [isFiltering, totalCount, filteredCount, onSearchStateChange]);
 
-  useChatSocket({ queryKey, addKey, updateKey });
+  // Set up SSE for real-time updates based on type
+  const channelSSE = useSSEChannel(
+    type === "channel" ? paramValue : null,
+    {
+      autoRefresh: false, // NEVER auto-refresh, we handle updates manually
+      onNewMessages: () => {
+        // Invalidate and refetch the query when new messages arrive
+        try {
+          console.log(`[CHAT_MESSAGES] SSE detected new messages, refreshing query`);
+          queryClient.invalidateQueries({ queryKey: [queryKey] });
+        } catch (error) {
+          console.error("Error invalidating messages query:", error);
+        }
+      }
+    }
+  );
+
+  const conversationSSE = useSSEConversation(
+    type === "conversation" ? paramValue : null,
+    {
+      autoRefresh: false, // NEVER auto-refresh, we handle updates manually
+      onNewMessages: () => {
+        // Invalidate and refetch the query when new messages arrive
+        try {
+          console.log(`[CHAT_MESSAGES] SSE detected new conversation messages, refreshing query`);
+          queryClient.invalidateQueries({ queryKey: [queryKey] });
+        } catch (error) {
+          console.error("Error invalidating messages query:", error);
+        }
+      }
+    }
+  );
+
   useChatScroll({
     chatRef,
     bottomRef,

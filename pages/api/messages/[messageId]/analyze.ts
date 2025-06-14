@@ -32,7 +32,7 @@ export default async function handler(
     const updatedMessage = await createSystemMessage(
       message.channelId,
       message,
-      req.body.socketIo // Optional socket instance
+      req // Pass request for context
     );
 
     return res.status(200).json(updatedMessage);
