@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { initialProfile } from '@/lib/initial-profile';
+import { initialProfile } from '@/lib/initial.profile';
 
 export default async function RootPage() {
   // Get or create the user profile
