@@ -1,5 +1,7 @@
 # Discordant
 
+![Discordant GitHub Preview](./social-preview.png)
+
 **Discordant** is a production-ready Discord-style communication platform with extensible n8n workflow automation. Built with **Next.js 15**, **Prisma**, **MySQL**, and **LiveKit**, it provides real-time chat, video/audio conferencing, and chat-driven AI workflows.
 
 Each deployment creates a **private communication hub** with secure channels, file sharing, and intelligent automation. Perfect for consulting firms, agencies, and service providers who need AI-powered workflows in controlled environments.

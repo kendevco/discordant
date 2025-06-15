@@ -1,13 +1,13 @@
 import { NextPage } from 'next';
 import { notFound } from 'next/navigation';
 import { db } from '@/lib/db';
-import { Bot, Brain, Eye, Calendar, User, ExternalLink, ArrowLeft, Copy } from 'lucide-react';
+import { Bot, Brain, Eye, Calendar, User, ExternalLink, ArrowLeft } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { getAIContentTypeLabel } from '@/lib/utils/ai-detection';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { CopyLinkButton } from '@/components/shared/copy-link-button';
 import Link from 'next/link';
 
 interface SharedAIResponsePageProps {
@@ -273,15 +273,7 @@ const SharedAIResponsePage: NextPage<SharedAIResponsePageProps> = async ({ param
                 Back to Discordant
               </Link>
               <div className="flex items-center gap-2">
-                <Button
-                  onClick={() => navigator.clipboard.writeText(window.location.href)}
-                  variant="outline"
-                  size="sm"
-                  className="border-white/20 text-white hover:bg-white/10"
-                >
-                  <Copy className="w-4 h-4 mr-2" />
-                  Share Link
-                </Button>
+                <CopyLinkButton />
               </div>
             </div>
             
