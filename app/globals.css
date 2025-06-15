@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* UploadThing styles */
+@import "@uploadthing/react/styles.css";
+
 html,
 :root {
   height: 100%;

@@ -8,6 +8,9 @@ import { ensureUserInDefaultServer } from "@/lib/system/system-onboarding";
 
 const DEFAULT_SERVER_NAME = "Code with KenDev";
 
+// Force dynamic rendering to prevent static generation issues
+export const dynamic = 'force-dynamic';
+
 const SetupPage = async () => {
   const profile = await initialProfile();
   
